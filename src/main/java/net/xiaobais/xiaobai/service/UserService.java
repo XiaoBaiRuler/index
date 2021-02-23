@@ -1,5 +1,9 @@
 package net.xiaobais.xiaobai.service;
 
+import net.xiaobais.xiaobai.model.User;
+
+import java.util.List;
+
 /**
  * 用户Service
  *
@@ -24,4 +28,25 @@ public interface UserService {
      * @return boolean
      */
     boolean hasUser(String username);
+
+    /**
+     * 根据userId删除用户
+     * @param userId userId
+     * @return int
+     */
+    int deleteUserById(Integer userId);
+
+    /**
+     * 获取所有用户
+     * @return List<User>
+     */
+    List<User> getAll();
+
+    /**
+     * 更新User(必须包含UserID)
+     * @param user user
+     * @return int
+     */
+    int updateUser(User user);
+
 }
