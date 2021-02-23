@@ -3,7 +3,7 @@ package net.xiaobais.xiaobai.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value="net.xiaobais.xiaobai.model.RoleAuthority")
+@ApiModel(value="net.xiaobais.xiaobai.model.RoleAuthorityService")
 public class RoleAuthority {
     @ApiModelProperty(value="roleId角色ID")
     private Integer roleId;

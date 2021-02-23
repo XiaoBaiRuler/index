@@ -25,6 +25,13 @@ public interface AuthorityService {
     Authority getAuthorityByTag(String authorityTag);
 
     /**
+     * 根据Id查找authority
+     * @param authorityId authorityId
+     * @return Authority
+     */
+    Authority getAuthorityById(Integer authorityId);
+
+    /**
      * 根据ID删除Authority
      * @param id id
      * @return int

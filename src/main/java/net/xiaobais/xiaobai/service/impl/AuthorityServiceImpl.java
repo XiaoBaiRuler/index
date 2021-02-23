@@ -34,6 +34,11 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
+    public Authority getAuthorityById(Integer authorityId) {
+        return authorityMapper.selectByPrimaryKey(authorityId);
+    }
+
+    @Override
     public int deleteAuthorityById(Integer id) {
         return authorityMapper.deleteByPrimaryKey(id);
     }
