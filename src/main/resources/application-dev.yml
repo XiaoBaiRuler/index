@@ -1,0 +1,66 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/xiaobai?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: '#Huang888666'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+---
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+---
+
+spring:
+  redis:
+    host: localhost
+    database: 0
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+    timeout: 3000ms
+
+---
+
+spring:
+  thymeleaf:
+    cache: false
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
+    servlet:
+      content-type: text/html
+
+---
+
+spring:
+  mail:
+    host: smtp.qq.com
+    username: 3122594244@qq.com
+    password: wspyaypnxzdhddbd
+    default-encoding: utf-8
+    port: 465
+    protocol: smtp
+    test-connection: false
+    properties:
+      mail.smtp.ssl.enable: true
+
+---
+redis:
+  key:
+    prefix:
+      authCode: "auth:"
+    expire:
+      authCode: 120
+
+mail:
+  prefixUrl: "http://localhost:8080/verifyCode"

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.xiaobais.xiaobai.mapper.NodeMapper">
+  <resultMap id="BaseResultMap" type="net.xiaobais.xiaobai.model.Node">
+    <id column="node_id" jdbcType="INTEGER" property="nodeId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="node_name" jdbcType="VARCHAR" property="nodeName" />
+    <result column="blog_id" jdbcType="INTEGER" property="blogId" />
+    <result column="map_id" jdbcType="INTEGER" property="mapId" />
+    <result column="collect" jdbcType="INTEGER" property="collect" />
+    <result column="is_private" jdbcType="BIT" property="isPrivate" />
+    <result column="star" jdbcType="INTEGER" property="star" />
+    <result column="create_date" jdbcType="DATE" property="createDate" />
+    <result column="update_date" jdbcType="DATE" property="updateDate" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    node_id, user_id, node_name, blog_id, map_id, collect, is_private, star, create_date, 
+    update_date
+  </sql>
+  <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.NodeExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from node
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from node
+    where node_id = #{nodeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from node
+    where node_id = #{nodeId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.xiaobais.xiaobai.model.NodeExample">
+    delete from node
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Node">
+    insert into node (node_id, user_id, node_name, 
+      blog_id, map_id, collect, 
+      is_private, star, create_date, 
+      update_date)
+    values (#{nodeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{nodeName,jdbcType=VARCHAR}, 
+      #{blogId,jdbcType=INTEGER}, #{mapId,jdbcType=INTEGER}, #{collect,jdbcType=INTEGER}, 
+      #{isPrivate,jdbcType=BIT}, #{star,jdbcType=INTEGER}, #{createDate,jdbcType=DATE}, 
+      #{updateDate,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Node">
+    insert into node
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="nodeId != null">
+        node_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="nodeName != null">
+        node_name,
+      </if>
+      <if test="blogId != null">
+        blog_id,
+      </if>
+      <if test="mapId != null">
+        map_id,
+      </if>
+      <if test="collect != null">
+        collect,
+      </if>
+      <if test="isPrivate != null">
+        is_private,
+      </if>
+      <if test="star != null">
+        star,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="nodeId != null">
+        #{nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="nodeName != null">
+        #{nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="blogId != null">
+        #{blogId,jdbcType=INTEGER},
+      </if>
+      <if test="mapId != null">
+        #{mapId,jdbcType=INTEGER},
+      </if>
+      <if test="collect != null">
+        #{collect,jdbcType=INTEGER},
+      </if>
+      <if test="isPrivate != null">
+        #{isPrivate,jdbcType=BIT},
+      </if>
+      <if test="star != null">
+        #{star,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=DATE},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.xiaobais.xiaobai.model.NodeExample" resultType="java.lang.Long">
+    select count(*) from node
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update node
+    <set>
+      <if test="record.nodeId != null">
+        node_id = #{record.nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.nodeName != null">
+        node_name = #{record.nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blogId != null">
+        blog_id = #{record.blogId,jdbcType=INTEGER},
+      </if>
+      <if test="record.mapId != null">
+        map_id = #{record.mapId,jdbcType=INTEGER},
+      </if>
+      <if test="record.collect != null">
+        collect = #{record.collect,jdbcType=INTEGER},
+      </if>
+      <if test="record.isPrivate != null">
+        is_private = #{record.isPrivate,jdbcType=BIT},
+      </if>
+      <if test="record.star != null">
+        star = #{record.star,jdbcType=INTEGER},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=DATE},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=DATE},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update node
+    set node_id = #{record.nodeId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      node_name = #{record.nodeName,jdbcType=VARCHAR},
+      blog_id = #{record.blogId,jdbcType=INTEGER},
+      map_id = #{record.mapId,jdbcType=INTEGER},
+      collect = #{record.collect,jdbcType=INTEGER},
+      is_private = #{record.isPrivate,jdbcType=BIT},
+      star = #{record.star,jdbcType=INTEGER},
+      create_date = #{record.createDate,jdbcType=DATE},
+      update_date = #{record.updateDate,jdbcType=DATE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.xiaobais.xiaobai.model.Node">
+    update node
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="nodeName != null">
+        node_name = #{nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="blogId != null">
+        blog_id = #{blogId,jdbcType=INTEGER},
+      </if>
+      <if test="mapId != null">
+        map_id = #{mapId,jdbcType=INTEGER},
+      </if>
+      <if test="collect != null">
+        collect = #{collect,jdbcType=INTEGER},
+      </if>
+      <if test="isPrivate != null">
+        is_private = #{isPrivate,jdbcType=BIT},
+      </if>
+      <if test="star != null">
+        star = #{star,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=DATE},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=DATE},
+      </if>
+    </set>
+    where node_id = #{nodeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.xiaobais.xiaobai.model.Node">
+    update node
+    set user_id = #{userId,jdbcType=INTEGER},
+      node_name = #{nodeName,jdbcType=VARCHAR},
+      blog_id = #{blogId,jdbcType=INTEGER},
+      map_id = #{mapId,jdbcType=INTEGER},
+      collect = #{collect,jdbcType=INTEGER},
+      is_private = #{isPrivate,jdbcType=BIT},
+      star = #{star,jdbcType=INTEGER},
+      create_date = #{createDate,jdbcType=DATE},
+      update_date = #{updateDate,jdbcType=DATE}
+    where node_id = #{nodeId,jdbcType=INTEGER}
+  </update>
+</mapper>

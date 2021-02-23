@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="MySqlContext" targetRuntime="MyBatis3">
+        <!--自动为entity生成swagger2文档-->
+        <plugin type="mybatis.generator.plugins.GeneratorSwagger2Doc">
+            <property name="apiModelAnnotationPackage" value="io.swagger.annotations.ApiModel" />
+            <property name="apiModelPropertyAnnotationPackage" value="io.swagger.annotations.ApiModelProperty" />
+        </plugin>
+        <!--可以自定义生成model的代码注释-->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="true"/>
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+        <!--配置数据库的链接信息-->
+        <jdbcConnection
+                driverClass="com.mysql.cj.jdbc.Driver"
+                connectionURL="jdbc:mysql://localhost:3306/xiaobai?serverTimezone=Asia/Shanghai"
+                userId="root" password="#Huang888666">
+            <property name="nullCatalogMeansCurrent" value="true"/>
+            <property name="useInformationSchema" value="true"/>
+        </jdbcConnection>
+        <!--数据库BigDecimals字段在java中定义-->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!--实体类生成信息-->
+        <javaModelGenerator targetPackage="net.xiaobais.xiaobai.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        <!--mybatis的xml文件地址-->
+        <sqlMapGenerator targetPackage="mybatis.mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+        <!--mybatis的mapper接口-->
+        <javaClientGenerator targetPackage="net.xiaobais.xiaobai.mapper" targetProject="src/main/java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <table tableName="user" domainObjectName="User">
+            <generatedKey column="user_id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="role" domainObjectName="Role"/>
+        <table tableName="authority" domainObjectName="Authority"/>
+        <table tableName="user_role" domainObjectName="UserRole"/>
+        <table tableName="role_authority" domainObjectName="RoleAuthority"/>
+
+        <table tableName="fans" domainObjectName="Fans"/>
+        <table tableName="follow" domainObjectName="Follow"/>
+
+        <table tableName="blog" domainObjectName="Blog"/>
+        <table tableName="node" domainObjectName="Node"/>
+        <table tableName="map" domainObjectName="Map"/>
+
+        <table tableName="previous" domainObjectName="Previous"/>
+        <table tableName="next" domainObjectName="Next"/>
+        <table tableName="collect" domainObjectName="Collect"/>
+        <table tableName="iterator" domainObjectName="Iterator"/>
+
+        <table tableName="suggest" domainObjectName="Suggest"/>
+        <table tableName="comment" domainObjectName="Comment"/>
+        <table tableName="type" domainObjectName="Type"/>
+
+        <table tableName="record" domainObjectName="Record"/>
+        <table tableName="node_config" domainObjectName="NodeConfig"/>
+        <table tableName="map_config" domainObjectName="MapConfig"/>
+        <table tableName="blog_config" domainObjectName="BlogConfig"/>
+    </context>
+</generatorConfiguration>

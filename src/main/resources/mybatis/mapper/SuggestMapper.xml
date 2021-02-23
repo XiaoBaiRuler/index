@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.xiaobais.xiaobai.mapper.SuggestMapper">
+  <resultMap id="BaseResultMap" type="net.xiaobais.xiaobai.model.Suggest">
+    <id column="suggest_id" jdbcType="INTEGER" property="suggestId" />
+    <result column="node_id" jdbcType="INTEGER" property="nodeId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="net.xiaobais.xiaobai.model.Suggest">
+    <result column="suggest_content" jdbcType="LONGVARCHAR" property="suggestContent" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    suggest_id, node_id
+  </sql>
+  <sql id="Blob_Column_List">
+    suggest_content
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="net.xiaobais.xiaobai.model.SuggestExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from suggest
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.SuggestExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from suggest
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from suggest
+    where suggest_id = #{suggestId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from suggest
+    where suggest_id = #{suggestId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.xiaobais.xiaobai.model.SuggestExample">
+    delete from suggest
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Suggest">
+    insert into suggest (suggest_id, node_id, suggest_content
+      )
+    values (#{suggestId,jdbcType=INTEGER}, #{nodeId,jdbcType=INTEGER}, #{suggestContent,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Suggest">
+    insert into suggest
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="suggestId != null">
+        suggest_id,
+      </if>
+      <if test="nodeId != null">
+        node_id,
+      </if>
+      <if test="suggestContent != null">
+        suggest_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="suggestId != null">
+        #{suggestId,jdbcType=INTEGER},
+      </if>
+      <if test="nodeId != null">
+        #{nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="suggestContent != null">
+        #{suggestContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.xiaobais.xiaobai.model.SuggestExample" resultType="java.lang.Long">
+    select count(*) from suggest
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update suggest
+    <set>
+      <if test="record.suggestId != null">
+        suggest_id = #{record.suggestId,jdbcType=INTEGER},
+      </if>
+      <if test="record.nodeId != null">
+        node_id = #{record.nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.suggestContent != null">
+        suggest_content = #{record.suggestContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update suggest
+    set suggest_id = #{record.suggestId,jdbcType=INTEGER},
+      node_id = #{record.nodeId,jdbcType=INTEGER},
+      suggest_content = #{record.suggestContent,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update suggest
+    set suggest_id = #{record.suggestId,jdbcType=INTEGER},
+      node_id = #{record.nodeId,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.xiaobais.xiaobai.model.Suggest">
+    update suggest
+    <set>
+      <if test="nodeId != null">
+        node_id = #{nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="suggestContent != null">
+        suggest_content = #{suggestContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where suggest_id = #{suggestId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="net.xiaobais.xiaobai.model.Suggest">
+    update suggest
+    set node_id = #{nodeId,jdbcType=INTEGER},
+      suggest_content = #{suggestContent,jdbcType=LONGVARCHAR}
+    where suggest_id = #{suggestId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.xiaobais.xiaobai.model.Suggest">
+    update suggest
+    set node_id = #{nodeId,jdbcType=INTEGER}
+    where suggest_id = #{suggestId,jdbcType=INTEGER}
+  </update>
+</mapper>

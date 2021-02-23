@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.xiaobais.xiaobai.mapper.MapMapper">
+  <resultMap id="BaseResultMap" type="net.xiaobais.xiaobai.model.Map">
+    <id column="map_id" jdbcType="INTEGER" property="mapId" />
+    <result column="map_name" jdbcType="VARCHAR" property="mapName" />
+    <result column="map_author" jdbcType="VARCHAR" property="mapAuthor" />
+    <result column="map_version" jdbcType="VARCHAR" property="mapVersion" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="net.xiaobais.xiaobai.model.Map">
+    <result column="map_data" jdbcType="LONGVARCHAR" property="mapData" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    map_id, map_name, map_author, map_version
+  </sql>
+  <sql id="Blob_Column_List">
+    map_data
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="net.xiaobais.xiaobai.model.MapExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from map
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.MapExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from map
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from map
+    where map_id = #{mapId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from map
+    where map_id = #{mapId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.xiaobais.xiaobai.model.MapExample">
+    delete from map
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Map">
+    insert into map (map_id, map_name, map_author, 
+      map_version, map_data)
+    values (#{mapId,jdbcType=INTEGER}, #{mapName,jdbcType=VARCHAR}, #{mapAuthor,jdbcType=VARCHAR}, 
+      #{mapVersion,jdbcType=VARCHAR}, #{mapData,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Map">
+    insert into map
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="mapId != null">
+        map_id,
+      </if>
+      <if test="mapName != null">
+        map_name,
+      </if>
+      <if test="mapAuthor != null">
+        map_author,
+      </if>
+      <if test="mapVersion != null">
+        map_version,
+      </if>
+      <if test="mapData != null">
+        map_data,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="mapId != null">
+        #{mapId,jdbcType=INTEGER},
+      </if>
+      <if test="mapName != null">
+        #{mapName,jdbcType=VARCHAR},
+      </if>
+      <if test="mapAuthor != null">
+        #{mapAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="mapVersion != null">
+        #{mapVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="mapData != null">
+        #{mapData,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.xiaobais.xiaobai.model.MapExample" resultType="java.lang.Long">
+    select count(*) from map
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update map
+    <set>
+      <if test="record.mapId != null">
+        map_id = #{record.mapId,jdbcType=INTEGER},
+      </if>
+      <if test="record.mapName != null">
+        map_name = #{record.mapName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mapAuthor != null">
+        map_author = #{record.mapAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mapVersion != null">
+        map_version = #{record.mapVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mapData != null">
+        map_data = #{record.mapData,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update map
+    set map_id = #{record.mapId,jdbcType=INTEGER},
+      map_name = #{record.mapName,jdbcType=VARCHAR},
+      map_author = #{record.mapAuthor,jdbcType=VARCHAR},
+      map_version = #{record.mapVersion,jdbcType=VARCHAR},
+      map_data = #{record.mapData,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update map
+    set map_id = #{record.mapId,jdbcType=INTEGER},
+      map_name = #{record.mapName,jdbcType=VARCHAR},
+      map_author = #{record.mapAuthor,jdbcType=VARCHAR},
+      map_version = #{record.mapVersion,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.xiaobais.xiaobai.model.Map">
+    update map
+    <set>
+      <if test="mapName != null">
+        map_name = #{mapName,jdbcType=VARCHAR},
+      </if>
+      <if test="mapAuthor != null">
+        map_author = #{mapAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="mapVersion != null">
+        map_version = #{mapVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="mapData != null">
+        map_data = #{mapData,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where map_id = #{mapId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="net.xiaobais.xiaobai.model.Map">
+    update map
+    set map_name = #{mapName,jdbcType=VARCHAR},
+      map_author = #{mapAuthor,jdbcType=VARCHAR},
+      map_version = #{mapVersion,jdbcType=VARCHAR},
+      map_data = #{mapData,jdbcType=LONGVARCHAR}
+    where map_id = #{mapId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.xiaobais.xiaobai.model.Map">
+    update map
+    set map_name = #{mapName,jdbcType=VARCHAR},
+      map_author = #{mapAuthor,jdbcType=VARCHAR},
+      map_version = #{mapVersion,jdbcType=VARCHAR}
+    where map_id = #{mapId,jdbcType=INTEGER}
+  </update>
+</mapper>
