@@ -1,17 +1,106 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <span th:replace="com/head :: head"></span>
     <title>login</title>
-    <link rel="stylesheet" href="" th:href="@{static/favicon.ico}">
+    <style type="text/css">
+        body {
+            background-color: #DADADA;
+            background-image: url(http://localhost:8080/img/fh.jpg);
+            background-size: 100% 100%;
+        }
+
+        body>.grid {
+            height: 100%;
+        }
+        .container{
+            padding-top: 18%;
+        }
+        .image {
+            margin-top: -100px;
+        }
+
+        .column {
+            max-width: 450px;
+        }
+    </style>
 </head>
 <body>
-    <h1>login</h1>
-    <form th:action="@{/login}" method="post">
-        <input type="text" name="username" placeholder="用户名">
-        <input type="password" name="password" placeholder="密码">
-        <input type="submit" value="提交">
-        <input type="reset" value="重置">
-    </form>
+    <div id="app">
+        <div class="ui container">
+            <div class="ui middle aligned center aligned grid">
+                <div class="column">
+                    <h2 class="ui inverted center aligned header">
+                        <img src="static/img/logo.png" th:src="@{img/logo.png}" class="ui image">
+                        <div class="content">请登录你的账号</div>
+                    </h2>
+                    <div class="ui red message" v-if="noUser">用户不存在</div>
+                    <div class="ui red message" v-if="isWrong">密码错误</div>
+                    <form class="ui form" th:action="@{/login}" method="post">
+                        <div class="ui stacked segment">
+                            <div class="field">
+                                <div class="ui left icon input">
+                                    <input type="text" placeholder="请输入用户名"
+                                           name="username" v-model="username"
+                                           minlength="6" maxlength="20">
+                                    <i class="user icon"></i>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui left icon input">
+                                    <input type="password" placeholder="请输入密码"
+                                            name="password" v-model="password"
+                                            minlength="6" maxlength="20">
+                                    <i class="lock icon"></i>
+                                </div>
+                            </div>
+                            <button role="button" class="ui violet basic fluid large button">
+                                登录
+                            </button>
+                        </div>
+                    </form>
+                    <div class="ui message">
+                        新人? <a th:href="@{/toSign}">加入我们</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        let app = new Vue({
+            el: '#app',
+            data: {
+                username: '',
+                password: '',
+                noUser: false,
+                isWrong: false
+            },
+            watch: {
+                // 已存在用户？
+                username: function(){
+                    if (this.username != ''){
+                        axios.get(`http://localhost:8080/hasUser?username=` + this.username)
+                            .then(response => {
+                                response.data == '0' ? this.noUser = true: this.noUser = false
+                            })
+                            .catch(error => console.log(error))
+                    }
+                },
+                password: function (){
+                    if (this.password.length >= 6){
+                        let data = {
+                            'username': this.username,
+                            'password': this.password
+                        }
+                        axios.post('/isWrong', JSON.stringify(data),
+                            {headers:{'Content-Type':'application/x-www-form-urlencoded'}}
+                        )
+                            .then((res) => res.data == "1" ? this.isWrong = false : this.isWrong = true)
+                            .catch((error) => console.log(error))
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

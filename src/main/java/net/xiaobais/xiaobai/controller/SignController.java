@@ -5,9 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.service.RoleService;
 import net.xiaobais.xiaobai.service.UserRoleService;
 import net.xiaobais.xiaobai.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @Controller
 public class SignController {
 
-    @Resource
+    @Autowired
     private UserService userService;
     @Resource
     private RoleService roleService;
@@ -36,12 +36,19 @@ public class SignController {
     @ApiOperation("注册处理")
     @PostMapping("/sign")
     public String sign(String username, String email, String password){
-
         //1. 添加用户
         int userId = userService.addUser(username, email, password);
         //2. 添加普通用户权限
         int roleId = roleService.getRoleIdByRoleName("user");
         userRoleService.addUserRole(userId, roleId);
         return "redirect:/index";
+    }
+
+    @CrossOrigin
+    @ApiOperation("是否已存在用户名")
+    @GetMapping("/hasUser")
+    @ResponseBody
+    public String hasUser(@RequestParam String username){
+        return userService.hasUser(username) ? "1" : "0";
     }
 }

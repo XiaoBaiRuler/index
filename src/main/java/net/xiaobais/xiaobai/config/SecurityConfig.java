@@ -77,9 +77,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         expressionInterceptUrlRegistry
                 .antMatchers(HttpMethod.GET, "/*.html", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js",
-                        "/swagger-resources/**", "v2/api-docs/**", "/webjars/**").permitAll()
+                        "/swagger-resources/**", "v2/api-docs/**", "/webjars/**", "/item/**", "/img/**").permitAll()
                 .antMatchers("/index", "/").permitAll()
-                .antMatchers("/open/**").permitAll()
+                .antMatchers("/generateCode").permitAll()
+                .antMatchers("/hasUser").permitAll()
+                .antMatchers("/isWrong").permitAll()
+                .antMatchers("/node/**").permitAll()
                 .antMatchers("/toLogin").permitAll()
                 .antMatchers("/toSign").permitAll()
                 .antMatchers("/**").fullyAuthenticated()

@@ -1,10 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <span th:replace="com/head :: head"></span>
+    <title>login</title>
+    <style type="text/css">
+        body {
+            background-color: #DADADA;
+            background-image: url(http://localhost:8080/img/fh.jpg);
+            background-size: 100% 100%;
+        }
+
+        body>.grid {
+            height: 100%;
+        }
+        .container{
+            padding-top: 18%;
+        }
+        .image {
+            margin-top: -100px;
+        }
+
+        .column {
+            max-width: 450px;
+        }
+    </style>
 </head>
 <body>
-
+    <div id="app">
+        <div class="ui container">
+            <div class="ui middle aligned center aligned grid">
+                <div class="column">
+                    <h2 class="ui inverted center aligned header">
+                        <img th:src="@{img/logo.png}" class="ui image">
+                        <div class="content">欢迎{{username}}加入我们</div>
+                    </h2>
+                    <div class="ui red message" v-if="hasUser">用户已存在</div>
+                    <div class="ui red message" v-if="isSame">密码不一致</div>
+                    <div class="ui red message" v-if="isCode">验证码错误</div>
+                    <form class="ui form" th:action="@{/sign}" method="post">
+                        <div class="ui stacked segment">
+                            <div class="field">
+                                <div class="ui left icon input">
+                                    <input type="text" name="username" v-model="username"
+                                           placeholder="请输入用户名(6-20个字符)" minlength="6" maxlength="20">
+                                    <i class="user icon"></i>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui left icon input">
+                                    <input type="email" name="email" v-model="email"
+                                           placeholder="请输入联系邮箱">
+                                    <i class="envelope icon"></i>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui left icon input">
+                                    <input type="password" name="password" v-model="password"
+                                           placeholder="请输入密码(6-20个字符)" minlength="6" maxlength="20">
+                                    <i class="lock icon"></i>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui left icon input">
+                                    <input type="password" name="repassed" v-model="repassed"
+                                           placeholder="请重输入密码(6-20个字符)" minlength="6" maxlength="20">
+                                    <i class="lock icon"></i>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui left icon input">
+                                    <input type="text" name="recode" v-model="recode"
+                                           placeholder="验证码" maxlength="6">
+                                    <i class="code icon"></i>
+                                    <span @click.prevent="refreshCode"
+                                          style="width: 140px; height: 40px; font-size: 1.25rem;
+                                          text-align: center;line-height: 40px;">{{code}}</span>
+                                </div>
+                            </div>
+                            <button role="button" class="ui violet basic fluid large button">
+                                注册
+                            </button>
+                        </div>
+                    </form>
+                    <div class="ui message">
+                        已有账号? <a th:href="@{/toLogin}">请登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        let app = new Vue({
+            el: '#app',
+            data: {
+                username: '',
+                email: '',
+                password: '',
+                repassed: '',
+                recode: '',
+                code: '',
+                hasUser: false,
+                isSame: false,
+                isCode: false
+            },
+            beforeMount(){
+                axios.get(`http://localhost:8080/generateCode?email=NE`)
+                    .then(response => (this.code = response.data))
+                    .catch(error => console.log(error))
+            },
+            methods:{
+                refreshCode:async function() {
+                    if (this.email === ''){
+                        axios.get(`http://localhost:8080/generateCode?email=NE`)
+                            .then(response => (this.code = response.data))
+                            .catch(error => console.log(error))
+                    }
+                    else{
+                        axios.get(`http://localhost:8080/generateCode?email=` + this.email)
+                            .then(response => (this.code = response.data))
+                            .catch(error => console.log(error))
+                    }
+                }
+            },
+            watch:{
+                // 已存在用户？
+                username: function(){
+                    if (this.username != ''){
+                        axios.get(`http://localhost:8080/hasUser?username=` + this.username)
+                            .then(response => {
+                                response.data == '1' ? this.hasUser = true: this.hasUser = false
+                            })
+                            .catch(error => console.log(error))
+                    }
+                },
+                // 密码一致？
+                repassed: function (){
+                    if (this.repassed != '' && this.repassed.length == this.password.length){
+                        this.repassed != this.password ? this.isSame = true : this.isSame = false
+                    }
+                },
+                // 验证码正确?
+                recode: function (){
+                    if (this.recode.length == 6){
+                        this.code != this.recode ? this.isCode = true : this.iscode = false
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -5,10 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.service.CodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author xiaobai
@@ -21,6 +18,7 @@ public class CodeController {
     @Autowired
     private CodeService codeService;
 
+    @CrossOrigin
     @ApiOperation("获取验证码")
     @GetMapping("/generateCode")
     @ResponseBody

@@ -62,4 +62,13 @@ public class UserServiceImpl implements UserService {
     public int updateUser(User user) {
         return userMapper.updateByPrimaryKeySelective(user);
     }
+
+    @Override
+    public String checkPassword(String username, String password) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUsernameEqualTo(username)
+                .andPasswordEqualTo(DigestUtils.md5Hex(password + KEY));
+        List<User> users = userMapper.selectByExample(userExample);
+        return users != null && !users.isEmpty() ? "1" : "0";
+    }
 }

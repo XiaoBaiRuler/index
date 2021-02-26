@@ -49,4 +49,11 @@ public interface UserService {
      */
     int updateUser(User user);
 
+    /**
+     * 检查是否用户名和密码正确
+     * @param username username
+     * @param password password
+     * @return String
+     */
+    String checkPassword(String username, String password);
 }
