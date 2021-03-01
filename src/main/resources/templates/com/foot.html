@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div class="ui inverted vertical footer segment" th:fragment="foot">
+        <div class="ui center aligned container">
+            <div class="ui stackable inverted divided grid">
+                <div class="five wide column">
+                    <h4 class="ui inverted header">搜索最多</h4>
+                    <div class="ui inverted link list">
+                        <a v-for="item in MostSearch" :href="item.url" class="item">{{item.title}}</a>
+                    </div>
+                </div>
+                <div class="five wide column">
+                    <h4 class="ui inverted header">点赞最多</h4>
+                    <div class="ui inverted link list">
+                        <a v-for="item in MostStar" :href="item.url" class="item">{{item.title}}</a>
+                    </div>
+                </div>
+                <div class="six wide column">
+                    <h4 class="ui inverted header">联系方式</h4>
+                    <div class="ui inverted link list">
+                        <a href="https://mail.google.com" class="item">
+                            <i class="qq teal icon"></i> 3122594244
+                        </a>
+                        <a href="https://mail.google.com" class="item">
+                            <i class="envelope teal icon"></i> xiaobai.ruler@gmail.com
+                        </a>
+                        <a href="https://weixin.qq.com" class="item">
+                            <i class="wechat teal icon"></i> xiaobai_ruler
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="ui inverted section divider"></div>
+            <img src="static/images/logo.png" class="ui centered mini image" th:src="@{img/logo.png}">
+            <div class="ui horizontal inverted small divided link list">
+                <p>&copy; 2020-2021 xiaobais.net 版权所有ICP证：<a href="http://www.beian.miit.gov.cn">粤ICP备20043849号-1</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

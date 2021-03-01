@@ -1,10 +1,375 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <span th:replace="com/head :: head"></span>
     <title >index</title>
 </head>
 <body>
-    <h3 th:text="abc">index</h3>
+
+    <div id="app">
+        <div th:replace="com/menu :: menu"></div>
+        <br><br><br>
+        <div class="ui fluid container" v-show="isNode">
+            <div class="ui three column grid">
+                <div :class="left" v-show="isLeft">
+                    <div class="ui fluid container">
+                        <br>
+                        <div class="ui stacked left aligned segment">
+                            <div class="ui action input" :style="{width: inputWidth}">
+                                <input type="text" placeholder="搜索...">
+                                <button class="ui icon button">
+                                    <i class="search icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ui stacked right aligned segment"></div>
+                        <div class="ui stacked right aligned segment"></div>
+                        <div class="ui stacked right aligned segment"></div>
+                        <div class="ui stacked right aligned segment"></div>
+                        <div class="ui stacked right aligned segment"></div>
+
+                    </div>
+                </div>
+                <div :class="middle">
+                    <div class="ui container" :style="{width: middleWidth}">
+                        <div class="ui piled segment" v-show="isBlog">
+                            <h4 class="ui header">A header</h4>
+                            <p>Te eum doming eirmod, nominati pertinacia argumentum ad his. Ex eam alia facete scriptorem, est autem
+                                aliquip detraxit at. Usu ocurreret referrentur at, cu epicurei appellantur vix. Cum ea laoreet recteque
+                                electram, eos choro alterum definiebas in. Vim dolorum definiebas an. Mei ex natum rebum iisque.</p>
+                            <p>Audiam quaerendum eu sea, pro omittam definiebas ex. Te est latine definitiones. Quot wisi nulla ex duo. Vis
+                                sint solet expetenda ne, his te phaedrum referrentur consectetuer. Id vix fabulas oporteat, ei quo vide
+                                phaedrum, vim vivendum maiestatis in.</p>
+                            <p>Eu quo homero blandit intellegebat. Incorrupte consequuntur mei id. Mei ut facer dolores adolescens, no
+                                illum aperiri quo, usu odio brute at. Qui te porro electram, ea dico facete utroque quo. Populo quodsi te eam,
+                                wisi everti eos ex, eum elitr altera utamur at. Quodsi convenire mnesarchum eu per, quas minimum postulant per
+                                id.</p>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                        </div>
+                        <div class="ui raised segment" v-show="!isBlog">
+                            <h4 class="ui header">A header</h4>
+                            <p>Te eum doming eirmod, nominati pertinacia argumentum ad his. Ex eam alia facete scriptorem, est autem
+                                aliquip detraxit at. Usu ocurreret referrentur at, cu epicurei appellantur vix. Cum ea laoreet recteque
+                                electram, eos choro alterum definiebas in. Vim dolorum definiebas an. Mei ex natum rebum iisque.</p>
+                            <p>Audiam quaerendum eu sea, pro omittam definiebas ex. Te est latine definitiones. Quot wisi nulla ex duo. Vis
+                                sint solet expetenda ne, his te phaedrum referrentur consectetuer. Id vix fabulas oporteat, ei quo vide
+                                phaedrum, vim vivendum maiestatis in.</p>
+                            <p>Eu quo homero blandit intellegebat. Incorrupte consequuntur mei id. Mei ut facer dolores adolescens, no
+                                illum aperiri quo, usu odio brute at. Qui te porro electram, ea dico facete utroque quo. Populo quodsi te eam,
+                                wisi everti eos ex, eum elitr altera utamur at. Quodsi convenire mnesarchum eu per, quas minimum postulant per
+                                id.</p>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+                <div :class="right" v-show="isRight">
+                    <div class="ui fluid container">
+                        <br>
+                        <div class="ui stacked left aligned segment">
+                            <div class="ui action input" :style="{width: inputWidth}">
+                                <input type="text" placeholder="搜索...">
+                                <button class="ui icon button">
+                                    <i class="search icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ui stacked left aligned segment"></div>
+                        <div class="ui stacked left aligned segment"></div>
+                        <div class="ui stacked left aligned segment"></div>
+                        <div class="ui stacked left aligned segment"></div>
+                        <div class="ui stacked left aligned segment"></div>
+                        <div class="ui stacked left aligned segment"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui container" v-show="!isNode">
+            <div class="ui stacked segment">
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+            </div>
+        </div>
+        <br><br>
+        <div th:replace="com/foot :: foot"></div>
+    </div>
+
+    <script type="text/javascript">
+        let app = new Vue({
+            el: '#app',
+            data: {
+                isLeft: false,
+                isRight: false,
+                isBlog: true,
+                isNode: true,
+                isLogin: false,
+                left: 'five wide column',
+                middle: 'sixteen wide column',
+                right: 'five wide column',
+                middleWidth: '95%',
+                inputWidth: '75%',
+                str: '',
+                MostSearch: [{
+                    url: 'https://baidu.com',
+                    title: '百度网站'
+                },
+                    {
+                        url: 'https://baidu.com',
+                        title: '百度网站'
+                    },
+                    {
+                        url: 'https://baidu.com',
+                        title: '百度网站'
+                    }
+                ],
+                MostStar: [{
+                    url: 'https://baidu.com',
+                    title: '百度网站'
+                },
+                    {
+                        url: 'https://baidu.com',
+                        title: '百度网站'
+                    },
+                    {
+                        url: 'https://baidu.com',
+                        title: '百度网站'
+                    }
+                ]
+            },
+            methods: {
+                changeSize: function() {
+                    if (this.isLeft && this.isRight) {
+                        this.middleWidth = '100%'
+                        this.left = 'three wide column'
+                        this.middle = 'ten wide column'
+                        this.right = 'three wide column'
+                    } else if (!this.isLeft && this.isRight) {
+                        this.middleWidth = '95%'
+                        this.middle = 'eleven wide column'
+                        this.right = 'five wide column'
+                    } else if (this.isLeft && !this.isRight) {
+                        this.middleWidth = '95%'
+                        this.left = 'five wide column'
+                        this.middle = 'eleven wide column'
+                        this.right = 'three wide column'
+                    } else {
+                        this.middleWidth = '80%'
+                        this.left = 'three wide column'
+                        this.middle = 'sixteen wide column'
+                        this.right = 'three wide column'
+                    }
+                },
+                showPreNode: function() {
+                    this.isLeft = !this.isLeft
+                    this.changeSize()
+                },
+                showNextNode: function() {
+                    this.isRight = !this.isRight
+                    this.changeSize()
+                },
+                changeBlog: function() {
+                    this.isBlog = !this.isBlog
+                },
+                changeNode: function() {
+                    this.isNode = !this.isNode
+                },
+                logout: function() {
+                    this.isLogin = false
+                },
+                search: function() {
+                    if (this.str === "") {
+                        alert("请输入搜索内容")
+                    } else {
+                        console.log(this.str)
+                    }
+                }
+            }
+        })
+    </script>
 </body>
 </html>
