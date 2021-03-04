@@ -3,7 +3,7 @@
 <mapper namespace="net.xiaobais.xiaobai.mapper.BlogMapper">
   <resultMap id="BaseResultMap" type="net.xiaobais.xiaobai.model.Blog">
     <id column="blog_id" jdbcType="INTEGER" property="blogId" />
-    <result column="blog_title" jdbcType="INTEGER" property="blogTitle" />
+    <result column="blog_title" jdbcType="VARCHAR" property="blogTitle" />
     <result column="blog_picture" jdbcType="VARCHAR" property="blogPicture" />
     <result column="blog_des" jdbcType="VARCHAR" property="blogDes" />
     <result column="create_date" jdbcType="DATE" property="createDate" />
@@ -129,7 +129,7 @@
     insert into blog (blog_id, blog_title, blog_picture, 
       blog_des, create_date, update_date, 
       is_comment, blog_content)
-    values (#{blogId,jdbcType=INTEGER}, #{blogTitle,jdbcType=INTEGER}, #{blogPicture,jdbcType=VARCHAR}, 
+    values (#{blogId,jdbcType=INTEGER}, #{blogTitle,jdbcType=VARCHAR}, #{blogPicture,jdbcType=VARCHAR}, 
       #{blogDes,jdbcType=VARCHAR}, #{createDate,jdbcType=DATE}, #{updateDate,jdbcType=DATE}, 
       #{isComment,jdbcType=BIT}, #{blogContent,jdbcType=LONGVARCHAR})
   </insert>
@@ -166,7 +166,7 @@
         #{blogId,jdbcType=INTEGER},
       </if>
       <if test="blogTitle != null">
-        #{blogTitle,jdbcType=INTEGER},
+        #{blogTitle,jdbcType=VARCHAR},
       </if>
       <if test="blogPicture != null">
         #{blogPicture,jdbcType=VARCHAR},
@@ -201,7 +201,7 @@
         blog_id = #{record.blogId,jdbcType=INTEGER},
       </if>
       <if test="record.blogTitle != null">
-        blog_title = #{record.blogTitle,jdbcType=INTEGER},
+        blog_title = #{record.blogTitle,jdbcType=VARCHAR},
       </if>
       <if test="record.blogPicture != null">
         blog_picture = #{record.blogPicture,jdbcType=VARCHAR},
@@ -229,7 +229,7 @@
   <update id="updateByExampleWithBLOBs" parameterType="map">
     update blog
     set blog_id = #{record.blogId,jdbcType=INTEGER},
-      blog_title = #{record.blogTitle,jdbcType=INTEGER},
+      blog_title = #{record.blogTitle,jdbcType=VARCHAR},
       blog_picture = #{record.blogPicture,jdbcType=VARCHAR},
       blog_des = #{record.blogDes,jdbcType=VARCHAR},
       create_date = #{record.createDate,jdbcType=DATE},
@@ -243,7 +243,7 @@
   <update id="updateByExample" parameterType="map">
     update blog
     set blog_id = #{record.blogId,jdbcType=INTEGER},
-      blog_title = #{record.blogTitle,jdbcType=INTEGER},
+      blog_title = #{record.blogTitle,jdbcType=VARCHAR},
       blog_picture = #{record.blogPicture,jdbcType=VARCHAR},
       blog_des = #{record.blogDes,jdbcType=VARCHAR},
       create_date = #{record.createDate,jdbcType=DATE},
@@ -257,7 +257,7 @@
     update blog
     <set>
       <if test="blogTitle != null">
-        blog_title = #{blogTitle,jdbcType=INTEGER},
+        blog_title = #{blogTitle,jdbcType=VARCHAR},
       </if>
       <if test="blogPicture != null">
         blog_picture = #{blogPicture,jdbcType=VARCHAR},
@@ -282,7 +282,7 @@
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="net.xiaobais.xiaobai.model.Blog">
     update blog
-    set blog_title = #{blogTitle,jdbcType=INTEGER},
+    set blog_title = #{blogTitle,jdbcType=VARCHAR},
       blog_picture = #{blogPicture,jdbcType=VARCHAR},
       blog_des = #{blogDes,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=DATE},
@@ -293,7 +293,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="net.xiaobais.xiaobai.model.Blog">
     update blog
-    set blog_title = #{blogTitle,jdbcType=INTEGER},
+    set blog_title = #{blogTitle,jdbcType=VARCHAR},
       blog_picture = #{blogPicture,jdbcType=VARCHAR},
       blog_des = #{blogDes,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=DATE},

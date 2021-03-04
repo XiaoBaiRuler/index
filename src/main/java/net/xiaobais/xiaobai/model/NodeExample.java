@@ -741,6 +741,76 @@ public class NodeExample {
             addCriterionForJDBCDate("update_date not between", value1, value2, "updateDate");
             return (Criteria) this;
         }
+
+        public Criteria andRelationshipIsNull() {
+            addCriterion("relationship is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipIsNotNull() {
+            addCriterion("relationship is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipEqualTo(String value) {
+            addCriterion("relationship =", value, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipNotEqualTo(String value) {
+            addCriterion("relationship <>", value, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipGreaterThan(String value) {
+            addCriterion("relationship >", value, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipGreaterThanOrEqualTo(String value) {
+            addCriterion("relationship >=", value, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipLessThan(String value) {
+            addCriterion("relationship <", value, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipLessThanOrEqualTo(String value) {
+            addCriterion("relationship <=", value, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipLike(String value) {
+            addCriterion("relationship like", value, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipNotLike(String value) {
+            addCriterion("relationship not like", value, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipIn(List<String> values) {
+            addCriterion("relationship in", values, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipNotIn(List<String> values) {
+            addCriterion("relationship not in", values, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipBetween(String value1, String value2) {
+            addCriterion("relationship between", value1, value2, "relationship");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationshipNotBetween(String value1, String value2) {
+            addCriterion("relationship not between", value1, value2, "relationship");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

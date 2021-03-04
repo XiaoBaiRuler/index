@@ -96,6 +96,19 @@ public class JwtUtils {
     }
 
     /**
+     * 根据token查找用户Id
+     * @param token token
+     * @return Integer
+     */
+    public static Integer getUserId(String token){
+        Claims claims = Jwts.parser().
+                setSigningKey(KEY).
+                parseClaimsJws(token)
+                .getBody();
+        return (Integer) claims.get("id");
+    }
+
+    /**
      * 根据token查找用户权限
      * @param token token
      * @return List<SimpleGrantedAuthority>

@@ -12,6 +12,7 @@
     <result column="star" jdbcType="INTEGER" property="star" />
     <result column="create_date" jdbcType="DATE" property="createDate" />
     <result column="update_date" jdbcType="DATE" property="updateDate" />
+    <result column="relationship" jdbcType="VARCHAR" property="relationship" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -73,7 +74,7 @@
   </sql>
   <sql id="Base_Column_List">
     node_id, user_id, node_name, blog_id, map_id, collect, is_private, star, create_date, 
-    update_date
+    update_date, relationship
   </sql>
   <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.NodeExample" resultMap="BaseResultMap">
     select
@@ -109,11 +110,11 @@
     insert into node (node_id, user_id, node_name, 
       blog_id, map_id, collect, 
       is_private, star, create_date, 
-      update_date)
+      update_date, relationship)
     values (#{nodeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{nodeName,jdbcType=VARCHAR}, 
       #{blogId,jdbcType=INTEGER}, #{mapId,jdbcType=INTEGER}, #{collect,jdbcType=INTEGER}, 
       #{isPrivate,jdbcType=BIT}, #{star,jdbcType=INTEGER}, #{createDate,jdbcType=DATE}, 
-      #{updateDate,jdbcType=DATE})
+      #{updateDate,jdbcType=DATE}, #{relationship,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Node">
     insert into node
@@ -148,6 +149,9 @@
       <if test="updateDate != null">
         update_date,
       </if>
+      <if test="relationship != null">
+        relationship,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="nodeId != null">
@@ -179,6 +183,9 @@
       </if>
       <if test="updateDate != null">
         #{updateDate,jdbcType=DATE},
+      </if>
+      <if test="relationship != null">
+        #{relationship,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -221,6 +228,9 @@
       <if test="record.updateDate != null">
         update_date = #{record.updateDate,jdbcType=DATE},
       </if>
+      <if test="record.relationship != null">
+        relationship = #{record.relationship,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -237,7 +247,8 @@
       is_private = #{record.isPrivate,jdbcType=BIT},
       star = #{record.star,jdbcType=INTEGER},
       create_date = #{record.createDate,jdbcType=DATE},
-      update_date = #{record.updateDate,jdbcType=DATE}
+      update_date = #{record.updateDate,jdbcType=DATE},
+      relationship = #{record.relationship,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -272,6 +283,9 @@
       <if test="updateDate != null">
         update_date = #{updateDate,jdbcType=DATE},
       </if>
+      <if test="relationship != null">
+        relationship = #{relationship,jdbcType=VARCHAR},
+      </if>
     </set>
     where node_id = #{nodeId,jdbcType=INTEGER}
   </update>
@@ -285,7 +299,8 @@
       is_private = #{isPrivate,jdbcType=BIT},
       star = #{star,jdbcType=INTEGER},
       create_date = #{createDate,jdbcType=DATE},
-      update_date = #{updateDate,jdbcType=DATE}
+      update_date = #{updateDate,jdbcType=DATE},
+      relationship = #{relationship,jdbcType=VARCHAR}
     where node_id = #{nodeId,jdbcType=INTEGER}
   </update>
 </mapper>

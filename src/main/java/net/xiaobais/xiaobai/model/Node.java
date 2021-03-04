@@ -36,6 +36,9 @@ public class Node {
     @ApiModelProperty(value="updateDate更新日期")
     private Date updateDate;
 
+    @ApiModelProperty(value="relationship是否存在某种关系的标志位")
+    private String relationship;
+
     public Integer getNodeId() {
         return nodeId;
     }
@@ -114,5 +117,13 @@ public class Node {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(String relationship) {
+        this.relationship = relationship == null ? null : relationship.trim();
     }
 }

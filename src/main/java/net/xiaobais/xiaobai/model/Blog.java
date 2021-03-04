@@ -10,7 +10,7 @@ public class Blog {
     private Integer blogId;
 
     @ApiModelProperty(value="blogTitle博客标题")
-    private Integer blogTitle;
+    private String blogTitle;
 
     @ApiModelProperty(value="blogPicture博客图片")
     private String blogPicture;
@@ -38,12 +38,12 @@ public class Blog {
         this.blogId = blogId;
     }
 
-    public Integer getBlogTitle() {
+    public String getBlogTitle() {
         return blogTitle;
     }
 
-    public void setBlogTitle(Integer blogTitle) {
-        this.blogTitle = blogTitle;
+    public void setBlogTitle(String blogTitle) {
+        this.blogTitle = blogTitle == null ? null : blogTitle.trim();
     }
 
     public String getBlogPicture() {

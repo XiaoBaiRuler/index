@@ -202,52 +202,62 @@ public class BlogExample {
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleEqualTo(Integer value) {
+        public Criteria andBlogTitleEqualTo(String value) {
             addCriterion("blog_title =", value, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleNotEqualTo(Integer value) {
+        public Criteria andBlogTitleNotEqualTo(String value) {
             addCriterion("blog_title <>", value, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleGreaterThan(Integer value) {
+        public Criteria andBlogTitleGreaterThan(String value) {
             addCriterion("blog_title >", value, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleGreaterThanOrEqualTo(Integer value) {
+        public Criteria andBlogTitleGreaterThanOrEqualTo(String value) {
             addCriterion("blog_title >=", value, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleLessThan(Integer value) {
+        public Criteria andBlogTitleLessThan(String value) {
             addCriterion("blog_title <", value, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleLessThanOrEqualTo(Integer value) {
+        public Criteria andBlogTitleLessThanOrEqualTo(String value) {
             addCriterion("blog_title <=", value, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleIn(List<Integer> values) {
+        public Criteria andBlogTitleLike(String value) {
+            addCriterion("blog_title like", value, "blogTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andBlogTitleNotLike(String value) {
+            addCriterion("blog_title not like", value, "blogTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andBlogTitleIn(List<String> values) {
             addCriterion("blog_title in", values, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleNotIn(List<Integer> values) {
+        public Criteria andBlogTitleNotIn(List<String> values) {
             addCriterion("blog_title not in", values, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleBetween(Integer value1, Integer value2) {
+        public Criteria andBlogTitleBetween(String value1, String value2) {
             addCriterion("blog_title between", value1, value2, "blogTitle");
             return (Criteria) this;
         }
 
-        public Criteria andBlogTitleNotBetween(Integer value1, Integer value2) {
+        public Criteria andBlogTitleNotBetween(String value1, String value2) {
             addCriterion("blog_title not between", value1, value2, "blogTitle");
             return (Criteria) this;
         }
