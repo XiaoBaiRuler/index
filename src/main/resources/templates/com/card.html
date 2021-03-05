@@ -44,17 +44,17 @@
             </div>
             <div class="extra content">
                 <span class="left floated like">
-                    <i class="like icon" @click.once="countLike(node.id, index)"></i>
+                    <i class="like icon" @click.once="countLike(node.id, index, true)"></i>
                     {{node.like}}点赞
                 </span>
                 <span class="right floated star">
-                    <i class="star icon" @click.once="countStar(node.id, index)"></i>
+                    <i class="star icon" @click.once="countStar(node.id, index, true)"></i>
                     {{node.collect}}收藏
                 </span>
             </div>
         </div>
     </div>
-    <div class="ui green inverted stacked right aligned segment" th:fragment="publicNexCard" v-for="node in nexNodes">
+    <div class="ui green inverted stacked right aligned segment" th:fragment="publicNexCard" v-for="node,index in nexNodes">
         <div class="ui fluid card">
             <div class="content">
                 <i class="red inverted right floated paper plane icon" @click.once="edit(node.id)"></i>
@@ -68,11 +68,11 @@
             </div>
             <div class="extra content">
                 <span class="left floated like">
-                    <i class="like icon" @click.once="countLike(node.id)"></i>
+                    <i class="like icon" @click.once="countLike(node.id, index, false)"></i>
                     {{node.like}}点赞
                 </span>
                 <span class="right floated star">
-                    <i class="star icon" @click.once="countStar(node.id)"></i>
+                    <i class="star icon" @click.once="countStar(node.id, index, false)"></i>
                     {{node.collect}}收藏
                 </span>
             </div>

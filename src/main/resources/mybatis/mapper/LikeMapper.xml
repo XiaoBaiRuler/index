@@ -72,7 +72,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from like
+    from likes
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -81,17 +81,17 @@
     </if>
   </select>
   <delete id="deleteByExample" parameterType="net.xiaobais.xiaobai.model.LikeExample">
-    delete from like
+    delete from likes
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Like">
-    insert into like (user_id, like_id)
+    insert into likes (user_id, like_id)
     values (#{userId,jdbcType=INTEGER}, #{likeId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Like">
-    insert into like
+    insert into likes
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userId != null">
         user_id,
@@ -110,13 +110,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="net.xiaobais.xiaobai.model.LikeExample" resultType="java.lang.Long">
-    select count(*) from like
+    select count(*) from likes
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update like
+    update likes
     <set>
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=INTEGER},
@@ -130,7 +130,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update like
+    update likes
     set user_id = #{record.userId,jdbcType=INTEGER},
       like_id = #{record.likeId,jdbcType=INTEGER}
     <if test="_parameter != null">

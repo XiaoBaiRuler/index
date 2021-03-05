@@ -12,9 +12,18 @@ import java.util.List;
 public interface NextService {
 
     /**
-     * 通过id查找所有后置节点
+     * 查找非私有后置节点
      * @param nodeId nodeId
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
      * @return List<Node>
      */
-    List<Node> findNextByNodeId(Integer nodeId);
+    List<Node> findNextByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize);
+
+    /**
+     * 统计非私有后置节点
+     * @param nodeId nodeId
+     * @return int
+     */
+    int countNextNode(Integer nodeId);
 }

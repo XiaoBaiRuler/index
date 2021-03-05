@@ -44,6 +44,14 @@
                             </div>
                         </div>
                         <div th:replace="com/card :: publicPreCard"></div>
+                        <div class="ui stacked right aligned segment" v-if="prePage">
+                            <div class="ui four bottom attached buttons">
+                                <div class="ui teal button" @click.prevent="toPrePage(true)">上一页</div>
+                                <div class="ui button active">第{{nowPreNum}}页</div>
+                                <div class="ui button active">共{{preSize}}条</div>
+                                <div class="ui teal button" @click.prevent="toNexPage(true)">下一页</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div :class="middle">
@@ -146,6 +154,14 @@
                             </div>
                         </div>
                         <div th:replace="com/card :: publicNexCard"></div>
+                        <div class="ui stacked right aligned segment" v-if="nexPage">
+                            <div class="ui four bottom attached buttons">
+                                <div class="ui teal button" @click.prevent="toPrePage(false)">上一页</div>
+                                <div class="ui button active">第{{nowNexNum}}页</div>
+                                <div class="ui button active">共{{nexSize}}条</div>
+                                <div class="ui teal button" @click.prevent="toNexPage(false)">下一页</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -272,16 +288,48 @@
                 ],
                 html: '',
                 preNodes: [],
-                nexNodes: []
+                nexNodes: [],
+                nowPreNum: 0,
+                nowNexNum: 0,
+                preSize: 0,
+                nexSize: 0,
+                nodeId: 0,
+                prePage: true,
+                nexPage: true
             },
             mounted: function(){
                 let nodeId = document.getElementById('nodeId').value;
-                console.log(nodeId)
-                axios.get("/getPreNode?nodeId=" + nodeId)
-                    .then(response => this.preNodes = response.data)
+                this.nodeId = nodeId;
+                let pageNumber = 0
+                let pageSize = 0
+                // 前置节点
+                axios.get("/getPreCount?nodeId=" + nodeId)
+                    .then(response => {
+                        this.preSize = response.data
+                        if(this.preSize > 6){
+                            pageSize = 6
+                        }
+                        else{
+                            pageSize = this.preSize
+                            this.prePage = false
+                        }
+                        this.getPreNode(pageNumber, pageSize, this.nodeId)
+                    })
                     .catch(error => console.log(error))
-                axios.get("/getNexNode?nodeId=" + nodeId)
-                    .then(response => this.nexNodes = response.data)
+
+                // 后置节点
+                axios.get("/getNexCount?nodeId=" + nodeId)
+                    .then(response => {
+                        this.nexSize = response.data
+                        if(this.nexSize > 6){
+                            pageSize = 6
+                        }
+                        else{
+                            pageSize = this.nexSize
+                            this.nexPage = false
+                        }
+                        this.getNexNode(pageNumber, pageSize, this.nodeId)
+                    })
                     .catch(error => console.log(error))
             },
             methods: {
@@ -331,13 +379,60 @@
                         console.log(this.str)
                     }
                 },
-                countLike: function(nodeId, index){
-                    this.preNodes[index].like += 1;
-                    axios.get("/addNodeLike?nodeId=" + nodeId);
+                countLike: function(nodeId, index, flag){
+                    axios.get("/addNodeLike?nodeId=" + nodeId)
+                        .then(response => {
+                            if(response.data == "1"){
+                                flag ? this.preNodes[index].like += 1 : this.nexNodes[index].like += 1;
+                            }
+                        })
+                        .catch(error => console.log(error))
                 },
-                countStar: function(nodeId, index){
-                    this.nexNodes[index].collect += 1;
-                    axios.get("/addNodeStar?nodeId=" + nodeId);
+                countStar: function(nodeId, index, flag){
+                    axios.get("/addNodeStar?nodeId=" + nodeId)
+                        .then(response => {
+                            if(response.data == "1"){
+                                flag ? this.preNodes[index].collect += 1 : this.nexNodes[index].collect += 1;
+                            }
+                        })
+                        .catch(error => console.log(error))
+                },
+                toPrePage: function(flag){
+                    if (flag && this.nowPreNum > 0){
+                        this.nowPreNum -= 1
+                        this.getPreNode(this.nowPreNum, 6, this.nodeId)
+                    }
+                    if (!flag && this.nowNexNum > 0){
+                        this.nowNexNum -= 1
+                        this.getNexNode(this.nowNexNum, 6, this.nodeId)
+                    }
+                },
+                toNexPage: function(flag){
+                    let pre = this.preSize - (this.nowPreNum + 1) * 6
+                    if (flag && pre > 0){
+                        this.nowPreNum += 1
+                        pre > 6 ?
+                            this.getPreNode(this.nowPreNum, 6, this.nodeId) :
+                            this.getPreNode(this.nowPreNum, pre, this.nodeId)
+                    }
+
+                    let nex = this.nexSize - (this.nowNexNum + 1) * 6
+                    if (!flag && nex > 0){
+                        this.nowNexNum += 1
+                        nex > 6 ?
+                            this.getNexNode(this.nowNexNum, 6, this.nodeId) :
+                            this.getNexNode(this.nowNexNum, nex, this.nodeId)
+                    }
+                },
+                getPreNode: function(pageNumber, pageSize, nodeId){
+                    axios.get("/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize)
+                        .then(response => this.preNodes = response.data)
+                        .catch(error => console.log(error))
+                },
+                getNexNode: function(pageNumber, pageSize, nodeId){
+                    axios.get("/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize)
+                        .then(response => this.nexNodes = response.data)
+                        .catch(error => console.log(error))
                 }
             },
         })

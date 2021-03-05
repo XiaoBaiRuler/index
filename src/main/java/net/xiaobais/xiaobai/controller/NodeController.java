@@ -36,8 +36,10 @@ public class NodeController {
     @ApiOperation("获取前置节点")
     @GetMapping("/getPreNode")
     @ResponseBody
-    public List<NodeVo> getPreNode(@RequestParam Integer nodeId){
-        List<Node> previousNodes = previousService.findPreviousByNodeId(nodeId);
+    public List<NodeVo> getPreNode(@RequestParam Integer nodeId,
+                                   @RequestParam Integer pageNumber,
+                                   @RequestParam Integer pageSize){
+        List<Node> previousNodes = previousService.findPreviousByNodeId(nodeId, pageNumber, pageSize);
         List<NodeVo> previousNodesVo = new ArrayList<>();
         previousNodes.forEach(node -> previousNodesVo.add(nodeToNodeVo(node)));
         return previousNodesVo;
@@ -46,12 +48,29 @@ public class NodeController {
     @ApiOperation("获取后置节点")
     @GetMapping("/getNexNode")
     @ResponseBody
-    public List<NodeVo> getNexNode(@RequestParam Integer nodeId){
-        List<Node> nextNodes = nextService.findNextByNodeId(nodeId);
+    public List<NodeVo> getNexNode(@RequestParam Integer nodeId,
+                                   @RequestParam Integer pageNumber,
+                                   @RequestParam Integer pageSize){
+        List<Node> nextNodes = nextService.findNextByNodeId(nodeId, pageNumber, pageSize);
         List<NodeVo> nextNodesVo = new ArrayList<>();
         nextNodes.forEach(node -> nextNodesVo.add(nodeToNodeVo(node)));
         return nextNodesVo;
     }
+
+    @ApiOperation("获取前置节点个数")
+    @GetMapping("/getPreCount")
+    @ResponseBody
+    public int getPreNodeCount(@RequestParam Integer nodeId){
+        return previousService.countPreviousNode(nodeId);
+    }
+
+    @ApiOperation("获取后置节点个数")
+    @GetMapping("/getNexCount")
+    @ResponseBody
+    public int getNexNodeCount(@RequestParam Integer nodeId){
+        return nextService.countNextNode(nodeId);
+    }
+
 
     private NodeVo nodeToNodeVo(Node node){
         NodeVo nodeVo = new NodeVo();

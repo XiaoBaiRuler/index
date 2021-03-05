@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.xiaobais.xiaobai.mapper.MyNextMapper">
+    <select id="findNotPrivateNextByNodeId" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Node">
+        select node.*
+        from node
+        where node.node_id in (
+            select next.next_id
+            from next
+            where next.node_id = #{nodeId}
+        )
+          and node.is_private = 0
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="countNotPrivateNextByNodeId" parameterType="integer" resultType="int">
+        select count(*)
+        from node
+        where node.node_id in (
+            select next.next_id
+            from next
+            where next.node_id = #{nodeId}
+        )
+          and node.is_private = 0
+    </select>
+
+    <select id="findNotPrivateNextByNodeIdAndTitle" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Node">
+        select node.*
+        from node
+        where node.node_id in (
+            select next.next_id
+            from next
+            where next.node_id = #{nodeId}
+        )
+          and node.is_private = 0
+          and node.node_name like #{title}
+            limit #{pageNumber}, #{pageSize}
+    </select>
+</mapper>

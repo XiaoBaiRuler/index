@@ -25,7 +25,8 @@ public class CollectServiceImpl implements CollectService {
             Collect collect = new Collect();
             collect.setUserId(userId);
             collect.setCollectId(nodeId);
-            collectMapper.insert(collect);
+            collect.setCollectType("normal");
+            collectMapper.insertSelective(collect);
         }
     }
 

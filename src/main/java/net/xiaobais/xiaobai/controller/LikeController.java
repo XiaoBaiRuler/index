@@ -28,7 +28,7 @@ public class LikeController {
     @Resource
     private NodeService nodeService;
 
-    @ApiOperation("给当前用户添加点赞数")
+    @ApiOperation("添加点赞")
     @GetMapping("/addNodeLike")
     @ResponseBody
     public String addNodeLike(@RequestParam Integer nodeId, HttpServletRequest request){

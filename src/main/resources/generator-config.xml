@@ -70,6 +70,6 @@
         <table tableName="node_config" domainObjectName="NodeConfig"/>
         <table tableName="map_config" domainObjectName="MapConfig"/>
         <table tableName="blog_config" domainObjectName="BlogConfig"/>
-        <table tableName="like" domainObjectName="Like"/>
+        <table tableName="likes" domainObjectName="Like"/>
     </context>
 </generatorConfiguration>
