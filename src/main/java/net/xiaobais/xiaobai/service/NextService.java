@@ -26,4 +26,22 @@ public interface NextService {
      * @return int
      */
     int countNextNode(Integer nodeId);
+
+    /**
+     * 查找非私有后置节点
+     * @param nodeId nodeId
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param title title
+     * @return List<Node>
+     */
+    List<Node> findNextByNodeIdAndTitle(Integer nodeId, Integer pageNumber, Integer pageSize, String title);
+
+    /**
+     * 根据title统计非私有后置节点
+     * @param nodeId nodeId
+     * @param title title
+     * @return int
+     */
+    int countNextNode(Integer nodeId, String title);
 }

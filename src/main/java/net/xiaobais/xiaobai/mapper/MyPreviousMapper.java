@@ -1,6 +1,7 @@
 package net.xiaobais.xiaobai.mapper;
 
 import net.xiaobais.xiaobai.model.Node;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -35,5 +36,19 @@ public interface MyPreviousMapper {
      * @param title title
      * @return List<node>
      */
-    List<Node> findNotPrivatePreviousByNodeIdAndTitle(Integer nodeId, Integer pageNumber, Integer pageSize, String title);
+    List<Node> findNotPrivatePreviousByNodeIdAndTitle(
+            @Param("nodeId") Integer nodeId,
+            @Param("pageNumber") Integer pageNumber,
+            @Param("pageSize") Integer pageSize,
+            @Param("title") String title);
+
+    /**
+     * 统计nodeId的非私有前置Id的个数
+     * @param nodeId nodeId
+     * @param title title
+     * @return int
+     */
+    int countNotPrivatePreviousByNodeIdAndTitle(
+            @Param("nodeId") Integer nodeId,
+            @Param("title") String title);
 }

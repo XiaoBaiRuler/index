@@ -24,7 +24,7 @@
           and node.is_private = 0
     </select>
 
-    <select id="findNotPrivateNextByNodeIdAndTitle" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Node">
+    <select id="findNotPrivateNextByNodeIdAndTitle" resultType="net.xiaobais.xiaobai.model.Node">
         select node.*
         from node
         where node.node_id in (
@@ -35,5 +35,17 @@
           and node.is_private = 0
           and node.node_name like #{title}
             limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="countNotPrivateNextByNodeIdAndTitle" resultType="int">
+        select count(*)
+        from node
+        where node.node_id in (
+            select next.next_id
+            from next
+            where next.node_id = #{nodeId}
+        )
+          and node.is_private = 0
+          and node.node_name like #{title}
     </select>
 </mapper>

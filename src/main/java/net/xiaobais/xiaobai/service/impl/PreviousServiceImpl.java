@@ -40,4 +40,10 @@ public class PreviousServiceImpl implements PreviousService {
                 nodeId, pageNumber, pageSize, title
         );
     }
+
+    @Override
+    public int countPreviousNode(Integer nodeId, String title) {
+        title = "%" + title + "%";
+        return myPreviousMapper.countNotPrivatePreviousByNodeIdAndTitle(nodeId, title);
+    }
 }

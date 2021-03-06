@@ -38,8 +38,15 @@ public class NodeController {
     @ResponseBody
     public List<NodeVo> getPreNode(@RequestParam Integer nodeId,
                                    @RequestParam Integer pageNumber,
-                                   @RequestParam Integer pageSize){
-        List<Node> previousNodes = previousService.findPreviousByNodeId(nodeId, pageNumber, pageSize);
+                                   @RequestParam Integer pageSize,
+                                   @RequestParam String title){
+        List<Node> previousNodes = null;
+        if (title == null || "".equals(title)){
+            previousNodes = previousService.findPreviousByNodeId(nodeId, pageNumber, pageSize);
+        }
+        else{
+            previousNodes = previousService.findPreviousByNodeIdAndTitle(nodeId, pageNumber, pageSize, title);
+        }
         List<NodeVo> previousNodesVo = new ArrayList<>();
         previousNodes.forEach(node -> previousNodesVo.add(nodeToNodeVo(node)));
         return previousNodesVo;
@@ -50,8 +57,14 @@ public class NodeController {
     @ResponseBody
     public List<NodeVo> getNexNode(@RequestParam Integer nodeId,
                                    @RequestParam Integer pageNumber,
-                                   @RequestParam Integer pageSize){
-        List<Node> nextNodes = nextService.findNextByNodeId(nodeId, pageNumber, pageSize);
+                                   @RequestParam Integer pageSize,
+                                   @RequestParam String title){
+        List<Node> nextNodes = null;
+        if (title == null || "".equals(title)) {
+            nextNodes = nextService.findNextByNodeId(nodeId, pageNumber, pageSize);
+        } else {
+            nextNodes = nextService.findNextByNodeIdAndTitle(nodeId, pageNumber, pageSize, title);
+        }
         List<NodeVo> nextNodesVo = new ArrayList<>();
         nextNodes.forEach(node -> nextNodesVo.add(nodeToNodeVo(node)));
         return nextNodesVo;
@@ -60,22 +73,33 @@ public class NodeController {
     @ApiOperation("获取前置节点个数")
     @GetMapping("/getPreCount")
     @ResponseBody
-    public int getPreNodeCount(@RequestParam Integer nodeId){
-        return previousService.countPreviousNode(nodeId);
+    public int getPreNodeCount(@RequestParam Integer nodeId,
+                               @RequestParam String title){
+        if (title == null || "".equals(title)) {
+            return previousService.countPreviousNode(nodeId);
+        }
+        else{
+            return previousService.countPreviousNode(nodeId, title);
+        }
     }
 
     @ApiOperation("获取后置节点个数")
     @GetMapping("/getNexCount")
     @ResponseBody
-    public int getNexNodeCount(@RequestParam Integer nodeId){
-        return nextService.countNextNode(nodeId);
+    public int getNexNodeCount(@RequestParam Integer nodeId,
+                               @RequestParam String title){
+        if (title == null || "".equals(title)) {
+            return nextService.countNextNode(nodeId);
+        }
+        else{
+            return nextService.countNextNode(nodeId, title);
+        }
     }
-
 
     private NodeVo nodeToNodeVo(Node node){
         NodeVo nodeVo = new NodeVo();
         nodeVo.setId(node.getNodeId());
-        nodeVo.setUrl("/node/xiaobai/" + node.getNodeId());
+        nodeVo.setUrl("/node/" + node.getNodeId());
         nodeVo.setTitle(node.getNodeName());
         nodeVo.setRelationship(node.getRelationship());
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");

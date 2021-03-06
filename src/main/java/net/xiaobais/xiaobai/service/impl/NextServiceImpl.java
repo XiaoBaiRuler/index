@@ -31,5 +31,19 @@ public class NextServiceImpl implements NextService {
         return myNextMapper.countNotPrivateNextByNodeId(nodeId);
     }
 
+    @Override
+    public List<Node> findNextByNodeIdAndTitle(Integer nodeId, Integer pageNumber,
+                                       Integer pageSize, String title) {
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * pageSize + 1;
+        title = "%" + title + "%";
+        return myNextMapper.findNotPrivateNextByNodeIdAndTitle(nodeId, pageNumber, pageSize, title);
+    }
+
+    @Override
+    public int countNextNode(Integer nodeId, String title) {
+        title = "%" + title + "%";
+        return myNextMapper.countNotPrivateNextByNodeIdAndTitle(nodeId, title);
+    }
+
 
 }

@@ -36,4 +36,12 @@ public interface PreviousService {
      * @return List<Node>
      */
     List<Node> findPreviousByNodeIdAndTitle(Integer nodeId, Integer pageNumber, Integer pageSize, String title);
+
+    /**
+     * 根据title统计该前置节点有多少个
+     * @param nodeId nodeId
+     * @param title title
+     * @return int
+     */
+    int countPreviousNode(Integer nodeId, String title);
 }

@@ -1,3 +1,48 @@
+## Version 10.6.0
+
+New Languages:
+
+- Added 3rd party Laravel Blade grammar to SUPPORTED_LANGUAGES (#2944) [Michael Newton][]
+
+Language grammar improvements:
+
+- enh(scala) fix triple quoted strings (#2987) [Josh Goebel][]
+- enh(perl) Much improved regex detection (#2960) [Josh Goebel][]
+- enh(swift) Improved highlighting for operator and precedencegroup declarations. (#2938) [Steven Van Impe][]
+- fix(xml) Support single-character namespaces. (#2957) [Jan Pilzer][]
+- enh(ruby) Support for character literals (#2950) [Vaibhav Chanana][]
+- enh(powershell) Add three VALID_VERBS and update the reference link (#2981) [davidhcefx][]
+
+Grammar Deprecations:
+
+- Deprecate `c-like`, though you should not be using it directly anyways.
+  - will be removed in v11.
+- `c` and `cpp` are now wholly unique grammars that will diverge over time
+
+Parser:
+
+- new simpler `highlightAll()` API (#2962) [Josh Goebel][]
+  - this should be a drop-in replacement for both `initHighlighting()` and `initHighlightingOnLoad()`
+  - note: it does not prevent itself from being called multiple times (as the previous API did)
+- `beginKeyword` no longer bestows double relevance (#2953) [Josh Goebel][]
+- allow `keywords` to be an array of strings [Josh Goebel][]
+- add `modes.MATCH_NOTHING_RE` that will never match
+  - This can be used with `end` to hold a mode open (it must then be ended with `endsParent` in one of it's children modes) [Josh Goebel][]
+
+Deprecations:
+
+- `initHighlighting()` and `initHighlightingOnLoad()` deprecated.
+  - Please use the new `highlightAll()` API instead.
+  - Deprecated as of 10.6.
+  - These will both be aliases to `highlightAll` in v11.
+
+[Michael Newton]: https://github.com/miken32
+[Steven Van Impe]: https://github.com/svanimpe/
+[Josh Goebel]: https://github.com/joshgoebel
+[Vaibhav Chanana]: https://github.com/il3ven
+[davidhcefx]: https://github.com/davidhcefx
+
+
 ## Version 10.5.0
 
 Build:
@@ -18,6 +63,11 @@ New Languages:
 
 Language grammar improvements:
 
+- enh: CSS grammars now share common foundation, keywords, etc. (#2937) [Josh Goebel][]
+  - enh(css): many consistency improvements
+  - enh(scss): many consistency improvements
+  - enh(stylus): many consistency improvements
+  - enh(less): many consistency improvements
 - enh(cpp): Support C++ pack expansion in function arguments [Martin Dørum][]
 - enh(makefile): Add `make` as an alias (#2883) [tripleee][]
 - enh(swift) Improved grammar for strings (#2819) [Steven Van Impe][]
@@ -28,6 +78,7 @@ Language grammar improvements:
   - Added support for quoted identifiers, implicit parameters, and property wrapper projections
   - Support for more complex expressions in string interpolation
 - enh(swift) Improved highlighting for types and generic arguments (#2920) [Steven Van Impe][]
+- enh(swift) Improved highlighting for functions, initializers, and subscripts (#2930) [Steven Van Impe][]
 - fix(http) avoid recursive sublanguage and tighten rules (#2893) [Josh Goebel][]
 - fix(asciidoc): Handle section titles level 5 (#2868) [Vaibhav Chanana][]
 - fix(asciidoc): Support unconstrained emphasis syntax (#2869) [Guillaume Grossetie][]
@@ -82,6 +133,7 @@ Recent Deprecations:
 [Steven Van Impe]: https://github.com/svanimpe/
 [Vaibhav Chanana]: https://github.com/il3ven
 [Guillaume Grossetie]: https://github.com/mogztter
+
 
 ## Version 10.4.1 (tentative)
 

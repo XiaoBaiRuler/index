@@ -3,9 +3,9 @@
 <head>
     <span th:replace="com/head :: head"></span>
     <title >index</title>
-    <link rel="stylesheet" th:href="@{item/highlight/styles/monokai-sublime.css}">
-    <script type="text/javascript" th:src="@{item/marked-master/marked.min.js}"></script>
-    <script type="text/javascript" th:src="@{item/highlight/highlight.pack.js}"></script>
+    <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
+    <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
+    <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
     <style type="text/css">
         table{
             border: 1px solid skyblue;
@@ -37,14 +37,14 @@
                         <br>
                         <div class="ui stacked left aligned segment">
                             <div class="ui action input" :style="{width: inputWidth}">
-                                <input type="text" placeholder="搜索...">
-                                <button class="ui icon button">
+                                <input type="text" placeholder="搜索..." name="preInput" v-model="preInput">
+                                <button class="ui icon button" @click.prevent="preSearch">
                                     <i class="search icon"></i>
                                 </button>
                             </div>
                         </div>
                         <div th:replace="com/card :: publicPreCard"></div>
-                        <div class="ui stacked right aligned segment" v-if="prePage">
+                        <div class="ui stacked right aligned segment" v-show="prePage">
                             <div class="ui four bottom attached buttons">
                                 <div class="ui teal button" @click.prevent="toPrePage(true)">上一页</div>
                                 <div class="ui button active">第{{nowPreNum}}页</div>
@@ -147,14 +147,14 @@
                         <br>
                         <div class="ui stacked left aligned segment">
                             <div class="ui action input" :style="{width: inputWidth}">
-                                <input type="text" placeholder="搜索...">
-                                <button class="ui icon button">
+                                <input type="text" placeholder="搜索..." name="nexInput" v-model="nexInput">
+                                <button class="ui icon button" @click.prevent="nexSearch">
                                     <i class="search icon"></i>
                                 </button>
                             </div>
                         </div>
                         <div th:replace="com/card :: publicNexCard"></div>
-                        <div class="ui stacked right aligned segment" v-if="nexPage">
+                        <div class="ui stacked right aligned segment" v-show="nexPage">
                             <div class="ui four bottom attached buttons">
                                 <div class="ui teal button" @click.prevent="toPrePage(false)">上一页</div>
                                 <div class="ui button active">第{{nowNexNum}}页</div>
@@ -295,41 +295,16 @@
                 nexSize: 0,
                 nodeId: 0,
                 prePage: true,
-                nexPage: true
+                nexPage: true,
+                preInput: "",
+                nexInput: ""
             },
             mounted: function(){
-                let nodeId = document.getElementById('nodeId').value;
-                this.nodeId = nodeId;
-                let pageNumber = 0
-                let pageSize = 0
-                // 前置节点
-                axios.get("/getPreCount?nodeId=" + nodeId)
-                    .then(response => {
-                        this.preSize = response.data
-                        if(this.preSize > 6){
-                            pageSize = 6
-                        }
-                        else{
-                            pageSize = this.preSize
-                            this.prePage = false
-                        }
-                        this.getPreNode(pageNumber, pageSize, this.nodeId)
-                    })
-                    .catch(error => console.log(error))
-
-                // 后置节点
-                axios.get("/getNexCount?nodeId=" + nodeId)
-                    .then(response => {
-                        this.nexSize = response.data
-                        if(this.nexSize > 6){
-                            pageSize = 6
-                        }
-                        else{
-                            pageSize = this.nexSize
-                            this.nexPage = false
-                        }
-                        this.getNexNode(pageNumber, pageSize, this.nodeId)
-                    })
+                let nodeId = document.getElementById('nodeId').value
+                this.nodeId = nodeId
+                this.preparePage(nodeId, "", "", 0, 0)
+                axios.get("/generateLogin")
+                    .then(response => response.data == "1" ? this.isLogin = true : this.isLogin = false)
                     .catch(error => console.log(error))
             },
             methods: {
@@ -400,39 +375,77 @@
                 toPrePage: function(flag){
                     if (flag && this.nowPreNum > 0){
                         this.nowPreNum -= 1
-                        this.getPreNode(this.nowPreNum, 6, this.nodeId)
+                        this.getPreNode(this.nowPreNum, 6, this.nodeId, this.preInput)
                     }
                     if (!flag && this.nowNexNum > 0){
                         this.nowNexNum -= 1
-                        this.getNexNode(this.nowNexNum, 6, this.nodeId)
+                        this.getNexNode(this.nowNexNum, 6, this.nodeId, this.nexInput)
                     }
                 },
                 toNexPage: function(flag){
                     let pre = this.preSize - (this.nowPreNum + 1) * 6
                     if (flag && pre > 0){
                         this.nowPreNum += 1
-                        pre > 6 ?
-                            this.getPreNode(this.nowPreNum, 6, this.nodeId) :
-                            this.getPreNode(this.nowPreNum, pre, this.nodeId)
+                        pre = pre > 6 ? 6 : pre
+                        this.getPreNode(this.nowPreNum, pre, this.nodeId, this.preInput)
                     }
 
                     let nex = this.nexSize - (this.nowNexNum + 1) * 6
                     if (!flag && nex > 0){
                         this.nowNexNum += 1
-                        nex > 6 ?
-                            this.getNexNode(this.nowNexNum, 6, this.nodeId) :
-                            this.getNexNode(this.nowNexNum, nex, this.nodeId)
+                        nex = nex > 6 ? 6 : nex
+                        this.getNexNode(this.nowNexNum, nex, this.nodeId, this.nexInput)
                     }
                 },
-                getPreNode: function(pageNumber, pageSize, nodeId){
-                    axios.get("/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize)
+                getPreNode: function(pageNumber, pageSize, nodeId, title){
+                    axios.get("/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
                         .then(response => this.preNodes = response.data)
                         .catch(error => console.log(error))
                 },
-                getNexNode: function(pageNumber, pageSize, nodeId){
-                    axios.get("/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize)
+                getNexNode: function(pageNumber, pageSize, nodeId, title){
+                    axios.get("/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
                         .then(response => this.nexNodes = response.data)
                         .catch(error => console.log(error))
+                },
+                preSearch: function(){
+                    this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
+                },
+                nexSearch: function(){
+                    this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
+                },
+                preparePage: function(nodeId, preInput, nexInput, pageSize, pageNumber){
+                    // 前置节点
+                    axios.get("/getPreCount?nodeId=" + nodeId + "&title=" + preInput)
+                        .then(response => {
+                            this.preSize = response.data
+                            if(this.preSize > 6){
+                                pageSize = 6
+                                this.prePage = true
+                            }
+                            else{
+                                pageSize = this.preSize
+                                this.prePage = false
+                            }
+                            this.getPreNode(pageNumber, pageSize, this.nodeId, preInput)
+                        })
+                        .catch(error => console.log(error))
+
+                    // 后置节点
+                    axios.get("/getNexCount?nodeId=" + nodeId + "&title=" + nexInput)
+                        .then(response => {
+                            this.nexSize = response.data
+                            if(this.nexSize > 6){
+                                pageSize = 6
+                                this.nexPage = true
+                            }
+                            else{
+                                pageSize = this.nexSize
+                                this.nexPage = false
+                            }
+                            this.getNexNode(pageNumber, pageSize, this.nodeId, nexInput)
+                        })
+                        .catch(error => console.log(error))
+
                 }
             },
         })

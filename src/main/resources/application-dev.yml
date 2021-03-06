@@ -64,3 +64,9 @@ redis:
 
 mail:
   prefixUrl: "http://localhost:8080/verifyCode"
+
+---
+user:
+  key:
+    prefix: "user:"
+    expire: 86400

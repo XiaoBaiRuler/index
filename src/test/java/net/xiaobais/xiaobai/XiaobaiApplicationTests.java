@@ -1,6 +1,5 @@
 package net.xiaobais.xiaobai;
 
-import net.xiaobais.xiaobai.mapper.MyPreviousMapper;
 import net.xiaobais.xiaobai.service.PreviousService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,12 +12,9 @@ class XiaobaiApplicationTests {
     @Resource
     private PreviousService previousService;
 
-    @Resource
-    private MyPreviousMapper mapper;
-
     @Test
     void contextLoads() {
-        System.out.println(mapper.findNotPrivatePreviousByNodeId(1, 0, 2).size());
+        System.out.println(previousService.findPreviousByNodeIdAndTitle(1, 0, 2, "分页").size());
     }
 
 }
