@@ -3,9 +3,13 @@
 <head>
     <span th:replace="com/head :: head"></span>
     <title >index</title>
+    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
     <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
     <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
     <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
     <style type="text/css">
         table{
             border: 1px solid skyblue;
@@ -22,6 +26,10 @@
         }
         blockquote{
             border-left: 1px solid skyblue;
+        }
+        #jsmind_container{
+            height: 1000px;
+
         }
     </style>
 </head>
@@ -68,77 +76,7 @@
                             </span>
                         </div>
                         <div class="ui raised segment" v-show="!isBlog">
-                            <h4 class="ui header">A header</h4>
-                            <p>Te eum doming eirmod, nominati pertinacia argumentum ad his. Ex eam alia facete scriptorem, est autem
-                                aliquip detraxit at. Usu ocurreret referrentur at, cu epicurei appellantur vix. Cum ea laoreet recteque
-                                electram, eos choro alterum definiebas in. Vim dolorum definiebas an. Mei ex natum rebum iisque.</p>
-                            <p>Audiam quaerendum eu sea, pro omittam definiebas ex. Te est latine definitiones. Quot wisi nulla ex duo. Vis
-                                sint solet expetenda ne, his te phaedrum referrentur consectetuer. Id vix fabulas oporteat, ei quo vide
-                                phaedrum, vim vivendum maiestatis in.</p>
-                            <p>Eu quo homero blandit intellegebat. Incorrupte consequuntur mei id. Mei ut facer dolores adolescens, no
-                                illum aperiri quo, usu odio brute at. Qui te porro electram, ea dico facete utroque quo. Populo quodsi te eam,
-                                wisi everti eos ex, eum elitr altera utamur at. Quodsi convenire mnesarchum eu per, quas minimum postulant per
-                                id.</p>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
+                            <div id="jsmind_container"></div>
                         </div>
                     </div>
                 </div>
@@ -287,6 +225,7 @@
                     }
                 ],
                 html: '',
+                mind: [],
                 preNodes: [],
                 nexNodes: [],
                 nowPreNum: 0,
@@ -305,6 +244,53 @@
                 this.preparePage(nodeId, "", "", 0, 0)
                 axios.get("/generateLogin")
                     .then(response => response.data == "1" ? this.isLogin = true : this.isLogin = false)
+                    .catch(error => console.log(error))
+
+                let options = {
+                    mode: 'full',
+                    container:'jsmind_container',
+                    editable:true,
+                    theme:'clouds',
+                    support_html: true,
+                    view:{
+                        engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                        hmargin:100,        // 思维导图距容器外框的最小水平距离
+                        vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                        line_width:3,       // 思维导图线条的粗细
+                        line_color:'#555'   // 思维导图线条的颜色
+                    },
+                    layout:{
+                        hspace:100,          // 节点之间的水平间距
+                        vspace:200,          // 节点之间的垂直间距
+                        pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                    },
+                }
+                let jm = new jsMind(options)
+                axios.get("/getMind?nodeId=" + nodeId)
+                    .then(response => {
+                        let m = response.data
+                        let res = []
+                        m.forEach((item) =>{
+                            let obj = {}
+                            obj.id = item.id
+                            obj.parentid = item.parentid
+                            obj.isroot = item.isroot
+                            obj.topic = item.topic
+                            obj.direction = item.direction
+                            obj.expanded = item.expanded
+                            res.push(obj)
+                        })
+                        let mind = {
+                            "meta":{
+                                "name":"测试",
+                                "author":"xiaobai",
+                                "version":"1.0",
+                            },
+                            "format":"node_array",
+                            "data": res
+                        }
+                        jm.show(mind)
+                    })
                     .catch(error => console.log(error))
             },
             methods: {
@@ -451,6 +437,7 @@
         })
 
         let html = document.getElementById('html').value;
+        app.html = html;
         document.getElementById('content').innerHTML = marked(html
             , {
                 baseUrl: null,
@@ -471,7 +458,7 @@
                 smartypants: true,
                 xhtml: true
             });
-        hljs.initHighlightingOnLoad();
+        hljs.initHighlightingOnLoad()
     </script>
 </body>
 </html>

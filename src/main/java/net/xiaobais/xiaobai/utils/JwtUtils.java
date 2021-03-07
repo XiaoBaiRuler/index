@@ -19,7 +19,6 @@ import java.util.Map;
  */
 public class JwtUtils {
 
-
     private static final String ROLE_CLAIMS = "roles";
 
     private static final String SUBJECT = "xiaobai";
