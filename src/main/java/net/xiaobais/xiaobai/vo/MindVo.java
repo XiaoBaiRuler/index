@@ -15,4 +15,16 @@ public class MindVo {
     private String topic;
     private String direction;
     private boolean expanded;
+
+    public MindVo() {
+    }
+
+    public MindVo(String id, String parentid, boolean isroot, String topic, String direction, boolean expanded) {
+        this.id = id;
+        this.parentid = parentid;
+        this.isroot = isroot;
+        this.topic = topic;
+        this.direction = direction;
+        this.expanded = expanded;
+    }
 }

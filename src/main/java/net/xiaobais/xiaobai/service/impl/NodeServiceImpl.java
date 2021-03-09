@@ -2,10 +2,12 @@ package net.xiaobais.xiaobai.service.impl;
 
 import net.xiaobais.xiaobai.mapper.NodeMapper;
 import net.xiaobais.xiaobai.model.Node;
+import net.xiaobais.xiaobai.model.NodeExample;
 import net.xiaobais.xiaobai.service.NodeService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author xiaobai
@@ -26,6 +28,15 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public Node findNodeById(Integer id) {
         return nodeMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public Node findNodeByNodeIdAndNotIsPrivate(Integer id) {
+        NodeExample nodeExample = new NodeExample();
+        nodeExample.createCriteria().andNodeIdEqualTo(id)
+                .andIsPrivateEqualTo(false);
+        List<Node> nodes = nodeMapper.selectByExample(nodeExample);
+        return nodes.isEmpty() ? null : nodes.get(0);
     }
 
     @Override

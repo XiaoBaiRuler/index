@@ -23,6 +23,13 @@ public interface NodeService {
     Node findNodeById(Integer id);
 
     /**
+     * 根据节点ID查找非私有节点
+     * @param id NodeId
+     * @return Node
+     */
+    Node findNodeByNodeIdAndNotIsPrivate(Integer id);
+
+    /**
      * 添加点赞树
      * @param id id
      */

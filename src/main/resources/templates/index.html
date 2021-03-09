@@ -29,7 +29,9 @@
         }
         #jsmind_container{
             height: 1000px;
-
+        }
+        #mind_container{
+            height: 1000px;
         }
     </style>
 </head>
@@ -106,76 +108,7 @@
         </div>
         <div class="ui container" v-show="!isNode">
             <div class="ui stacked segment">
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
+                <div id="mind_container"></div>
             </div>
         </div>
         <br><br>
@@ -246,28 +179,27 @@
                     .then(response => response.data == "1" ? this.isLogin = true : this.isLogin = false)
                     .catch(error => console.log(error))
 
-                let options = {
-                    mode: 'full',
-                    container:'jsmind_container',
-                    editable:true,
-                    theme:'clouds',
-                    support_html: true,
-                    view:{
-                        engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
-                        hmargin:100,        // 思维导图距容器外框的最小水平距离
-                        vmargin:200,         // 思维导图距容器外框的最小垂直距离
-                        line_width:3,       // 思维导图线条的粗细
-                        line_color:'#555'   // 思维导图线条的颜色
-                    },
-                    layout:{
-                        hspace:100,          // 节点之间的水平间距
-                        vspace:200,          // 节点之间的垂直间距
-                        pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
-                    },
-                }
-                let jm = new jsMind(options)
                 axios.get("/getMind?nodeId=" + nodeId)
                     .then(response => {
+                        let options = {
+                            mode: 'full',
+                            container: 'jsmind_container',
+                            editable: true,
+                            theme:'orange',
+                            support_html: true,
+                            view:{
+                                engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                                hmargin:100,        // 思维导图距容器外框的最小水平距离
+                                vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                                line_width:3,       // 思维导图线条的粗细
+                                line_color:'#555'   // 思维导图线条的颜色
+                            },
+                            layout:{
+                                hspace:100,          // 节点之间的水平间距
+                                vspace:200,          // 节点之间的垂直间距
+                                pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                            },
+                        }
                         let m = response.data
                         let res = []
                         m.forEach((item) =>{
@@ -289,9 +221,59 @@
                             "format":"node_array",
                             "data": res
                         }
+                        let jm = new jsMind(options)
                         jm.show(mind)
                     })
                     .catch(error => console.log(error))
+
+                axios.get('/getNodeMind?nodeId=' + nodeId + "&level=3")
+                    .then(response => {
+                        let options = {
+                            mode: 'full',
+                            container: 'mind_container',
+                            editable: true,
+                            theme:'orange',
+                            support_html: true,
+                            view:{
+                                engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                                hmargin:100,        // 思维导图距容器外框的最小水平距离
+                                vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                                line_width:3,       // 思维导图线条的粗细
+                                line_color:'#555'   // 思维导图线条的颜色
+                            },
+                            layout:{
+                                hspace:400,          // 节点之间的水平间距
+                                vspace:200,          // 节点之间的垂直间距
+                                pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                            },
+                        }
+                        let m = response.data
+                        let res = []
+                        m.forEach((item) =>{
+                            let obj = {}
+                            obj.id = item.id
+                            obj.parentid = item.parentid
+                            obj.isroot = item.isroot
+                            obj.topic = item.topic
+                            obj.direction = item.direction
+                            obj.expanded = item.expanded
+                            res.push(obj)
+                        })
+                        console.log(res)
+                        let mind = {
+                            "meta":{
+                                "name":"测试",
+                                "author":"xiaobai",
+                                "version":"1.0",
+                            },
+                            "format":"node_array",
+                            "data": res
+                        }
+                        let jm = new jsMind(options)
+                        jm.show(mind)
+                    })
+                    .catch(error => console.log(error))
+
             },
             methods: {
                 changeSize: function() {

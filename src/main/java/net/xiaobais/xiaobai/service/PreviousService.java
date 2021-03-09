@@ -21,6 +21,13 @@ public interface PreviousService {
     List<Node> findPreviousByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize);
 
     /**
+     * 通过NodeId查找所有非私有前置节点
+     * @param nodeId nodeId
+     * @return List<Node>
+     */
+    List<Node> findPreviousByNodeId(Integer nodeId);
+
+    /**
      * 统计该前置节点有多少个
      * @param nodeId nodeId
      * @return int

@@ -51,4 +51,5 @@ public interface MyPreviousMapper {
     int countNotPrivatePreviousByNodeIdAndTitle(
             @Param("nodeId") Integer nodeId,
             @Param("title") String title);
+
 }

@@ -21,6 +21,13 @@ public interface NextService {
     List<Node> findNextByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize);
 
     /**
+     * 查找非私有的前置节点
+     * @param nodeId nodeId
+     * @return List<Node>
+     */
+    List<Node> findNextByNodeId(Integer nodeId);
+
+    /**
      * 统计非私有后置节点
      * @param nodeId nodeId
      * @return int
