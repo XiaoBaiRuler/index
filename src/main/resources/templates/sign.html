@@ -104,19 +104,19 @@
                 isCode: false
             },
             beforeMount(){
-                axios.get(`http://localhost:8080/generateCode?email=NE`)
+                axios.get(`/user/generateCode?email=NE`)
                     .then(response => (this.code = response.data))
                     .catch(error => console.log(error))
             },
             methods:{
                 refreshCode:async function() {
                     if (this.email === ''){
-                        axios.get(`http://localhost:8080/generateCode?email=NE`)
+                        axios.get(`/user/generateCode?email=NE`)
                             .then(response => (this.code = response.data))
                             .catch(error => console.log(error))
                     }
                     else{
-                        axios.get(`http://localhost:8080/generateCode?email=` + this.email)
+                        axios.get(`/user/generateCode?email=` + this.email)
                             .then(response => (this.code = response.data))
                             .catch(error => console.log(error))
                     }
@@ -126,7 +126,7 @@
                 // 已存在用户？
                 username: function(){
                     if (this.username != ''){
-                        axios.get(`http://localhost:8080/hasUser?username=` + this.username)
+                        axios.get(`/user/hasUser?username=` + this.username)
                             .then(response => {
                                 response.data == '1' ? this.hasUser = true: this.hasUser = false
                             })

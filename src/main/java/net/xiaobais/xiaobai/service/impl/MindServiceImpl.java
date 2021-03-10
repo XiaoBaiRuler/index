@@ -30,6 +30,8 @@ public class MindServiceImpl implements MindService {
     @Resource
     private NodeService nodeService;
 
+    private static final String PREFIX_URL = "/public/node/";
+
     @Override
     public List<MindVo> getMindVoByLevel(Integer level, Integer nodeId){
         Node node = nodeService.findNodeById(nodeId);
@@ -41,7 +43,7 @@ public class MindServiceImpl implements MindService {
         List<Node> previous;
         int count  = 0;
         MindVo mindVo = new MindVo("root" + nodeId, null, true,
-                "<a href='/node/" + nodeId + "'>" + node.getNodeName() + "</a>",
+                "<a href='" + PREFIX_URL + nodeId + "'>" + node.getNodeName() + "</a>",
                 null, true);
         lists.add(mindVo);
 
@@ -59,7 +61,7 @@ public class MindServiceImpl implements MindService {
                         queue.addAll(previous);
                         MindVo mv = new MindVo("left" + remove.getNodeId(),
                                 item.getKey(), false,
-                                "<a href='/node/" + remove.getNodeId() + "'>" + remove.getNodeName() + "</a>",
+                                "<a href='" + PREFIX_URL + remove.getNodeId() + "'>" + remove.getNodeName() + "</a>",
                                 "left", true);
                         lists.add(mv);
                     }
@@ -84,7 +86,7 @@ public class MindServiceImpl implements MindService {
                         nextParent.add(new Pair("right" + remove.getNodeId(), next.size()));
                         queue.addAll(next);
                         MindVo mv = new MindVo("right" + remove.getNodeId(), item.getKey(), false,
-                                "<a href='/node/" + remove.getNodeId() + "'>" + remove.getNodeName() + "</a>",
+                                "<a href='" + PREFIX_URL + remove.getNodeId() + "'>" + remove.getNodeName() + "</a>",
                                 "right", true);
                         lists.add(mv);
                     }

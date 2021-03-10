@@ -8,6 +8,7 @@ import net.xiaobais.xiaobai.service.BlogService;
 import net.xiaobais.xiaobai.service.NodeService;
 import net.xiaobais.xiaobai.utils.JwtUtils;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
+import net.xiaobais.xiaobai.vo.UserVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,56 +48,52 @@ public class IndexController {
         model.addAttribute("nodeId", index.getNodeId());
         model.addAttribute("html", blog.getBlogContent());
         model.addAttribute("flag", false);
-        model.addAttribute("mostCollect",
-                nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
-        model.addAttribute("mostStar",
-                nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
+        model.addAttribute("mostCollect", nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
+        model.addAttribute("mostStar", nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
         return "index";
     }
 
     @ApiOperation("公开节点页")
-    @GetMapping("/node/{nodeId}")
+    @GetMapping("/public/node/{nodeId}")
     public String node(@PathVariable Integer nodeId, Model model){
         Blog blog = blogService.findBlogById(nodeId);
         model.addAttribute("nodeId", nodeId);
         model.addAttribute("html", blog.getBlogContent());
         if (blog.getBlogContent() != null && blog.getBlogContent().length() > SIZE) {
             model.addAttribute("flag", false);
-        } else {
+        }
+        else {
             model.addAttribute("flag", true);
         }
-        model.addAttribute("mostCollect",
-                nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
-        model.addAttribute("mostStar",
-                nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
+        model.addAttribute("mostCollect", nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
+        model.addAttribute("mostStar", nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
         return "index";
     }
 
     @ApiOperation("是否登录")
-    @GetMapping("/generateLogin")
+    @GetMapping("/user/getUserInfo")
     @ResponseBody
-    public String generateLogin(HttpServletRequest request){
+    public UserVo generateLogin(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
         if (cookies == null){
-            return "0";
+            return null;
         }
         String token = cookies[0].getValue();
         if(JwtUtils.checkJwt(token) != null && !JwtUtils.isExpiration(token)){
-            return "1";
+            return JwtUtils.getUserVo(token);
         }
-        return "0";
+        return null;
     }
 
     private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){
         List<SimpleNodeVo> simpleNodeVos = new ArrayList<>(nodes.size());
         nodes.forEach(node -> {
                 SimpleNodeVo vo = new SimpleNodeVo();
-                vo.setUrl("/node/" + node.getNodeId());
+                vo.setUrl("/public/node/" + node.getNodeId());
                 vo.setTitle(node.getNodeName());
                 simpleNodeVos.add(vo);
             }
         );
-        System.out.println(simpleNodeVos);
         return simpleNodeVos;
     }
 

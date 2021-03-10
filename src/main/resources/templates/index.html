@@ -143,17 +143,26 @@
                 prePage: true,
                 nexPage: true,
                 preInput: "",
-                nexInput: ""
+                nexInput: "",
+                userVo: {}
             },
             mounted: function(){
                 let nodeId = document.getElementById('nodeId').value
                 this.nodeId = nodeId
                 this.preparePage(nodeId, "", "", 0, 0)
-                axios.get("/generateLogin")
-                    .then(response => response.data == "1" ? this.isLogin = true : this.isLogin = false)
+                axios.get("/user/getUserInfo")
+                    .then(response => {
+                        console.log("userInfo" + response.data)
+                        if (response.data !== ""){
+                            this.isLogin = true
+                            this.userVo = response.data
+                        }else{
+                            this.isLogin = false
+                        }
+                    })
                     .catch(error => console.log(error))
 
-                axios.get("/getMind?nodeId=" + nodeId)
+                axios.get("/public/getMind?nodeId=" + nodeId)
                     .then(response => {
                         let options = {
                             mode: 'full',
@@ -200,7 +209,7 @@
                     })
                     .catch(error => console.log(error))
 
-                axios.get('/getNodeMind?nodeId=' + nodeId + "&level=3")
+                axios.get('/public/getNodeMind?nodeId=' + nodeId + "&level=3")
                     .then(response => {
                         let options = {
                             mode: 'full',
@@ -296,7 +305,7 @@
                     }
                 },
                 countLike: function(nodeId, index, flag){
-                    axios.get("/addNodeLike?nodeId=" + nodeId)
+                    axios.get("/person/public/addNodeLike?nodeId=" + nodeId)
                         .then(response => {
                             if(response.data == "1"){
                                 flag ? this.preNodes[index].like += 1 : this.nexNodes[index].like += 1;
@@ -305,7 +314,7 @@
                         .catch(error => console.log(error))
                 },
                 countStar: function(nodeId, index, flag){
-                    axios.get("/addNodeStar?nodeId=" + nodeId)
+                    axios.get("/person/public/addNodeStar?nodeId=" + nodeId)
                         .then(response => {
                             if(response.data == "1"){
                                 flag ? this.preNodes[index].collect += 1 : this.nexNodes[index].collect += 1;
@@ -339,12 +348,12 @@
                     }
                 },
                 getPreNode: function(pageNumber, pageSize, nodeId, title){
-                    axios.get("/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
+                    axios.get("/public/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
                         .then(response => this.preNodes = response.data)
                         .catch(error => console.log(error))
                 },
                 getNexNode: function(pageNumber, pageSize, nodeId, title){
-                    axios.get("/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
+                    axios.get("/public/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
                         .then(response => this.nexNodes = response.data)
                         .catch(error => console.log(error))
                 },
@@ -356,7 +365,7 @@
                 },
                 preparePage: function(nodeId, preInput, nexInput, pageSize, pageNumber){
                     // 前置节点
-                    axios.get("/getPreCount?nodeId=" + nodeId + "&title=" + preInput)
+                    axios.get("/public/getPreCount?nodeId=" + nodeId + "&title=" + preInput)
                         .then(response => {
                             this.preSize = response.data
                             if(this.preSize > 6){
@@ -372,7 +381,7 @@
                         .catch(error => console.log(error))
 
                     // 后置节点
-                    axios.get("/getNexCount?nodeId=" + nodeId + "&title=" + nexInput)
+                    axios.get("/public/getNexCount?nodeId=" + nodeId + "&title=" + nexInput)
                         .then(response => {
                             this.nexSize = response.data
                             if(this.nexSize > 6){

@@ -29,7 +29,7 @@ public class CollectController {
     private CollectService collectService;
 
     @ApiOperation("添加收藏")
-    @GetMapping("/addNodeStar")
+    @GetMapping("/person/public/addNodeStar")
     @ResponseBody
     public String addNodeCount(@RequestParam Integer nodeId, HttpServletRequest request){
         Cookie[] cookies = request.getCookies();

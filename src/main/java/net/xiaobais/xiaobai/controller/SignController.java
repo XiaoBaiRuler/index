@@ -46,7 +46,7 @@ public class SignController {
 
     @CrossOrigin
     @ApiOperation("是否已存在用户名")
-    @GetMapping("/hasUser")
+    @GetMapping("/user/hasUser")
     @ResponseBody
     public String hasUser(@RequestParam String username){
         return userService.hasUser(username) ? "1" : "0";

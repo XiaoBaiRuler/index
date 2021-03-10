@@ -20,14 +20,14 @@ public class CodeController {
 
     @CrossOrigin
     @ApiOperation("获取验证码")
-    @GetMapping("/generateCode")
+    @GetMapping("/user/generateCode")
     @ResponseBody
     public String getCode(@RequestParam String email){
         return codeService.generateCode(email);
     }
 
     @ApiOperation("判断验证码是否正确")
-    @GetMapping("/verifyCode")
+    @GetMapping("/user/verifyCode")
     public String updatePassword(@RequestParam String email, @RequestParam String code){
         if (codeService.verifyCode(email, code)){
             return "redirect:/index";

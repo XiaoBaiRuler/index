@@ -33,7 +33,9 @@
     <div class="ui green inverted stacked right aligned segment" th:fragment="publicPreCard" v-for="node,index in preNodes">
         <div class="ui fluid card">
             <div class="content">
-                <i class="red inverted right floated paper plane icon" @click.once="edit(node.id)"></i>
+                <a :href="node.id">
+                    <img class="ui red right floated avatar image" th:src="@{/img/logo.png}">
+                </a>
                 <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
                 <div class="center aligned description">
                     <p>和下一个节点的关系: {{node.relationship}}</p>
@@ -57,7 +59,9 @@
     <div class="ui green inverted stacked right aligned segment" th:fragment="publicNexCard" v-for="node,index in nexNodes">
         <div class="ui fluid card">
             <div class="content">
-                <i class="red inverted right floated paper plane icon" @click.once="edit(node.id)"></i>
+                <a :href="node.id">
+                    <img class="ui red right floated avatar image" th:src="@{/img/logo.png}">
+                </a>
                 <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
                 <div class="center aligned description">
                     <p>和下一个节点的关系: {{node.relationship}}</p>

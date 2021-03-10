@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
         user.setAccountNonExpired(true);
         user.setCredentialsNonExpired(true);
         user.setUserEmail(email);
-        user.setUserAvatar("/images/logo.png");
+        user.setUserAvatar("/img/logo.png");
         userMapper.insert(user);
         return user.getUserId();
     }

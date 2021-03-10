@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminAuthorityController {
 
     @ApiOperation("管理员添加权限")
-    @GetMapping("/addAuthority")
+    @GetMapping("/admin/addAuthority")
     public String addAuthority(){
         return "admin/addAuthority";
     }

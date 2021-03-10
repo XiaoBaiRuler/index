@@ -76,22 +76,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         });
 
         expressionInterceptUrlRegistry
-                .antMatchers(HttpMethod.GET, "/*.html", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js",
-                        "/swagger-resources/**", "v2/api-docs/**", "/webjars/**", "/item/**", "/img/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/*.html",
+                        "/favicon.ico", "/**/*.html",
+                        "/**/*.css", "/**/*.js", "/swagger-resources/**",
+                        "v2/api-docs/**", "/webjars/**",
+                        "/item/**", "/img/**").permitAll()
                 .antMatchers("/index", "/").permitAll()
-                .antMatchers("/generateCode").permitAll()
-                .antMatchers("/hasUser").permitAll()
-                .antMatchers("/getPreNode").permitAll()
-                .antMatchers("/getNexNode").permitAll()
-                .antMatchers("/getPreCount").permitAll()
-                .antMatchers("/getNexCount").permitAll()
-                .antMatchers("/generateLogin").permitAll()
-                .antMatchers("/getMind").permitAll()
-                .antMatchers("/getNodeMind").permitAll()
-                .antMatchers("/isWrong").permitAll()
-                .antMatchers("/node/**").permitAll()
                 .antMatchers("/toLogin").permitAll()
                 .antMatchers("/toSign").permitAll()
+                .antMatchers("/sign").permitAll()
+                .antMatchers("/public/**").permitAll()
+                .antMatchers("/user/**").permitAll()
+                .antMatchers("/error/**").permitAll()
                 .antMatchers("/**").fullyAuthenticated()
                 .and()
                 .formLogin().loginPage("/toLogin").loginProcessingUrl("/login")

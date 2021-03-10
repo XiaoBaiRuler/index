@@ -22,13 +22,13 @@ public class EmailController {
     private EmailService emailService;
 
     @ApiOperation("跳转验证邮箱页面")
-    @GetMapping("/toVerifyEmail")
+    @GetMapping("/person/public/toVerifyEmail")
     public String toVerifyEmail(){
         return "verifyEmail";
     }
 
     @ApiOperation("验证邮箱")
-    @PostMapping("/verifyEmail")
+    @PostMapping("/person/public/verifyEmail")
     public void verifyEmail(String email){
         emailService.sendEmailVerifyCode(email);
     }

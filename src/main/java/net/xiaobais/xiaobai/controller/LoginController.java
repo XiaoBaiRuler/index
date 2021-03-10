@@ -1,15 +1,16 @@
 package net.xiaobais.xiaobai.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.service.UserService;
 import net.xiaobais.xiaobai.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -34,7 +35,7 @@ public class LoginController {
     }
 
     @ApiOperation("检测密码是否正确")
-    @PostMapping("/isWrong")
+    @PostMapping("/user/isWrong")
     @ResponseBody
     public String checkPassword(@RequestBody String data) throws UnsupportedEncodingException {
         String s = deleteData(data);

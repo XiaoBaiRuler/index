@@ -3,9 +3,9 @@
 <body>
     <div class="ui fixed inverted menu" th:fragment="menu">
         <div class="ui fluid container">
-            <a href="" class="header item" v-show="isLogin" th:href="@{/xiaobai/home}">
-                <img class="logo" src="./static/images/logo.png" th:src="@{/img/logo.png}">
-                xiaobai
+            <a href="" class="header item" v-show="isLogin" :href="userVo.url">
+                <img class="logo" :src="userVo.img">
+                {{userVo.username}}
             </a>
             <div class="ui left aligned simple dropdown item" v-show="!isLogin">
                 加入我们 <i class="dropdown icon"></i>

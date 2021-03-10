@@ -29,7 +29,7 @@ public class LikeController {
     private NodeService nodeService;
 
     @ApiOperation("添加点赞")
-    @GetMapping("/addNodeLike")
+    @GetMapping("/person/public/addNodeLike")
     @ResponseBody
     public String addNodeLike(@RequestParam Integer nodeId, HttpServletRequest request){
         Cookie[] cookies = request.getCookies();

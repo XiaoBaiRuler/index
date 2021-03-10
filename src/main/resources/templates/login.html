@@ -79,7 +79,7 @@
                 // 已存在用户？
                 username: function(){
                     if (this.username != ''){
-                        axios.get(`http://localhost:8080/hasUser?username=` + this.username)
+                        axios.get(`/user/hasUser?username=` + this.username)
                             .then(response => {
                                 response.data == '0' ? this.noUser = true: this.noUser = false
                             })
@@ -92,7 +92,7 @@
                             'username': this.username,
                             'password': this.password
                         }
-                        axios.post('/isWrong', JSON.stringify(data),
+                        axios.post('/user/isWrong', JSON.stringify(data),
                             {headers:{'Content-Type':'application/x-www-form-urlencoded'}}
                         )
                             .then((res) => res.data == "1" ? this.isWrong = false : this.isWrong = true)

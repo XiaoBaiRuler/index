@@ -34,7 +34,7 @@ public class NodeController {
     private NextService nextService;
 
     @ApiOperation("获取前置节点")
-    @GetMapping("/getPreNode")
+    @GetMapping("/public/getPreNode")
     @ResponseBody
     public List<NodeVo> getPreNode(@RequestParam Integer nodeId,
                                    @RequestParam Integer pageNumber,
@@ -53,7 +53,7 @@ public class NodeController {
     }
 
     @ApiOperation("获取后置节点")
-    @GetMapping("/getNexNode")
+    @GetMapping("/public/getNexNode")
     @ResponseBody
     public List<NodeVo> getNexNode(@RequestParam Integer nodeId,
                                    @RequestParam Integer pageNumber,
@@ -71,7 +71,7 @@ public class NodeController {
     }
 
     @ApiOperation("获取前置节点个数")
-    @GetMapping("/getPreCount")
+    @GetMapping("/public/getPreCount")
     @ResponseBody
     public int getPreNodeCount(@RequestParam Integer nodeId,
                                @RequestParam String title){
@@ -84,7 +84,7 @@ public class NodeController {
     }
 
     @ApiOperation("获取后置节点个数")
-    @GetMapping("/getNexCount")
+    @GetMapping("/public/getNexCount")
     @ResponseBody
     public int getNexNodeCount(@RequestParam Integer nodeId,
                                @RequestParam String title){
@@ -99,7 +99,7 @@ public class NodeController {
     private NodeVo nodeToNodeVo(Node node){
         NodeVo nodeVo = new NodeVo();
         nodeVo.setId(node.getNodeId());
-        nodeVo.setUrl("/node/" + node.getNodeId());
+        nodeVo.setUrl("/public/node/" + node.getNodeId());
         nodeVo.setTitle(node.getNodeName());
         nodeVo.setRelationship(node.getRelationship());
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");

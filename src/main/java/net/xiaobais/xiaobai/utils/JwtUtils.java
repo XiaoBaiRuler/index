@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import net.xiaobais.xiaobai.entity.UserEntity;
+import net.xiaobais.xiaobai.vo.UserVo;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Date;
@@ -40,6 +41,7 @@ public class JwtUtils {
                 .claim(ROLE_CLAIMS, user.getAuthorities())
                 .claim("id", user.getUserId())
                 .claim("username", user.getUsername())
+                .claim("avatar", user.getUserAvatar())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(SignatureAlgorithm.HS256, KEY).compact();
@@ -105,6 +107,23 @@ public class JwtUtils {
                 parseClaimsJws(token)
                 .getBody();
         return (Integer) claims.get("id");
+    }
+
+    /**
+     * 根据token查找userVo
+     * @param token token
+     * @return UserVo
+     */
+    public static UserVo getUserVo(String token){
+        Claims claims = Jwts.parser()
+                .setSigningKey(KEY)
+                .parseClaimsJws(token)
+                .getBody();
+        UserVo userVo = new UserVo();
+        userVo.setUsername((String) claims.get("username"));
+        userVo.setUrl("/public/user/" + claims.get("id"));
+        userVo.setImg((String) claims.get("avatar"));
+        return userVo;
     }
 
     /**
