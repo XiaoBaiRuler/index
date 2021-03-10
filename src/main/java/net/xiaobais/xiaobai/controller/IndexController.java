@@ -7,6 +7,7 @@ import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.BlogService;
 import net.xiaobais.xiaobai.service.NodeService;
 import net.xiaobais.xiaobai.utils.JwtUtils;
+import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author xiaobai
@@ -44,6 +47,10 @@ public class IndexController {
         model.addAttribute("nodeId", index.getNodeId());
         model.addAttribute("html", blog.getBlogContent());
         model.addAttribute("flag", false);
+        model.addAttribute("mostCollect",
+                nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
+        model.addAttribute("mostStar",
+                nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
         return "index";
     }
 
@@ -58,6 +65,10 @@ public class IndexController {
         } else {
             model.addAttribute("flag", true);
         }
+        model.addAttribute("mostCollect",
+                nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
+        model.addAttribute("mostStar",
+                nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
         return "index";
     }
 
@@ -74,6 +85,19 @@ public class IndexController {
             return "1";
         }
         return "0";
+    }
+
+    private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){
+        List<SimpleNodeVo> simpleNodeVos = new ArrayList<>(nodes.size());
+        nodes.forEach(node -> {
+                SimpleNodeVo vo = new SimpleNodeVo();
+                vo.setUrl("/node/" + node.getNodeId());
+                vo.setTitle(node.getNodeName());
+                simpleNodeVos.add(vo);
+            }
+        );
+        System.out.println(simpleNodeVos);
+        return simpleNodeVos;
     }
 
 }

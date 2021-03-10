@@ -1,5 +1,6 @@
 package net.xiaobais.xiaobai.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import net.xiaobais.xiaobai.mapper.NodeMapper;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.NodeExample;
@@ -37,6 +38,23 @@ public class NodeServiceImpl implements NodeService {
                 .andIsPrivateEqualTo(false);
         List<Node> nodes = nodeMapper.selectByExample(nodeExample);
         return nodes.isEmpty() ? null : nodes.get(0);
+    }
+
+    @Override
+    public List<Node> findNodeByTopCollect(Integer top) {
+        NodeExample nodeExample = new NodeExample();
+        nodeExample.setOrderByClause("collect desc");
+        PageHelper.startPage(1, top);
+        return nodeMapper.selectByExample(nodeExample);
+    }
+
+    @Override
+    public List<Node> findNodeByTopStar(Integer top) {
+
+        NodeExample nodeExample = new NodeExample();
+        nodeExample.setOrderByClause("star desc");
+        PageHelper.startPage(1, top);
+        return nodeMapper.selectByExample(nodeExample);
     }
 
     @Override

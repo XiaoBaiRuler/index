@@ -2,6 +2,8 @@ package net.xiaobais.xiaobai.service;
 
 import net.xiaobais.xiaobai.model.Node;
 
+import java.util.List;
+
 /**
  * @Author xiaobai
  * @Date 2021/3/3 12:57
@@ -30,6 +32,20 @@ public interface NodeService {
     Node findNodeByNodeIdAndNotIsPrivate(Integer id);
 
     /**
+     * 查找最多收藏的5个
+     * @param top top
+     * @return List<Node>
+     */
+    List<Node> findNodeByTopCollect(Integer top);
+
+    /**
+     * 查找最多点赞的5个
+     * @param top top
+     * @return List<Node>
+     */
+    List<Node> findNodeByTopStar(Integer top);
+
+    /**
      * 添加点赞树
      * @param id id
      */
@@ -40,4 +56,5 @@ public interface NodeService {
      * @param id id
      */
     void addCount(Integer id);
+
 }
