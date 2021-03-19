@@ -56,7 +56,8 @@ public class IndexController {
     @ApiOperation("公开节点页")
     @GetMapping("/public/node/{nodeId}")
     public String node(@PathVariable Integer nodeId, Model model){
-        Blog blog = blogService.findBlogById(nodeId);
+        Node node = nodeService.findNodeById(nodeId);
+        Blog blog = blogService.findBlogById(node.getBlogId());
         model.addAttribute("nodeId", nodeId);
         model.addAttribute("html", blog.getBlogContent());
         if (blog.getBlogContent() != null && blog.getBlogContent().length() > SIZE) {

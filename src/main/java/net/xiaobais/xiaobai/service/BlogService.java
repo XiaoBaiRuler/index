@@ -15,4 +15,11 @@ public interface BlogService {
      * @return Blog
      */
     Blog findBlogById(Integer id);
+
+    /**
+     * 添加博客
+     * @param blog blog
+     * @return int
+     */
+    int insertBlog(Blog blog);
 }

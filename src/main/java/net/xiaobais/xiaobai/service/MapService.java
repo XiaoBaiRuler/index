@@ -15,4 +15,11 @@ public interface MapService {
      * @return Map
      */
     Map findMapById(Integer id);
+
+    /**
+     * 添加map
+     * @param map map
+     * @return int
+     */
+    int insertMap(Map map);
 }

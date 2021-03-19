@@ -4,9 +4,18 @@
   <resultMap id="BaseResultMap" type="net.xiaobais.xiaobai.model.Suggest">
     <id column="suggest_id" jdbcType="INTEGER" property="suggestId" />
     <result column="node_id" jdbcType="INTEGER" property="nodeId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="choice" jdbcType="VARCHAR" property="choice" />
+    <result column="question" jdbcType="VARCHAR" property="question" />
+    <result column="extend" jdbcType="VARCHAR" property="extend" />
+    <result column="previous_question" jdbcType="VARCHAR" property="previousQuestion" />
+    <result column="next_question" jdbcType="VARCHAR" property="nextQuestion" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="net.xiaobais.xiaobai.model.Suggest">
-    <result column="suggest_content" jdbcType="LONGVARCHAR" property="suggestContent" />
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="net.xiaobais.xiaobai.model.SuggestWithBLOBs">
+    <result column="suggest" jdbcType="LONGVARCHAR" property="suggest" />
+    <result column="extend_suggest" jdbcType="LONGVARCHAR" property="extendSuggest" />
+    <result column="previous_suggest" jdbcType="LONGVARCHAR" property="previousSuggest" />
+    <result column="next_suggest" jdbcType="LONGVARCHAR" property="nextSuggest" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -67,10 +76,10 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    suggest_id, node_id
+    suggest_id, node_id, user_id, choice, question, extend, previous_question, next_question
   </sql>
   <sql id="Blob_Column_List">
-    suggest_content
+    suggest, extend_suggest, previous_suggest, next_suggest
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="net.xiaobais.xiaobai.model.SuggestExample" resultMap="ResultMapWithBLOBs">
     select
@@ -120,13 +129,19 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Suggest">
-    insert into suggest (suggest_id, node_id, suggest_content
-      )
-    values (#{suggestId,jdbcType=INTEGER}, #{nodeId,jdbcType=INTEGER}, #{suggestContent,jdbcType=LONGVARCHAR}
-      )
+  <insert id="insert" parameterType="net.xiaobais.xiaobai.model.SuggestWithBLOBs">
+    insert into suggest (suggest_id, node_id, user_id, 
+      choice, question, extend, 
+      previous_question, next_question, suggest, 
+      extend_suggest, previous_suggest, 
+      next_suggest)
+    values (#{suggestId,jdbcType=INTEGER}, #{nodeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{choice,jdbcType=VARCHAR}, #{question,jdbcType=VARCHAR}, #{extend,jdbcType=VARCHAR}, 
+      #{previousQuestion,jdbcType=VARCHAR}, #{nextQuestion,jdbcType=VARCHAR}, #{suggest,jdbcType=LONGVARCHAR}, 
+      #{extendSuggest,jdbcType=LONGVARCHAR}, #{previousSuggest,jdbcType=LONGVARCHAR}, 
+      #{nextSuggest,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Suggest">
+  <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.SuggestWithBLOBs">
     insert into suggest
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="suggestId != null">
@@ -135,8 +150,35 @@
       <if test="nodeId != null">
         node_id,
       </if>
-      <if test="suggestContent != null">
-        suggest_content,
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="choice != null">
+        choice,
+      </if>
+      <if test="question != null">
+        question,
+      </if>
+      <if test="extend != null">
+        extend,
+      </if>
+      <if test="previousQuestion != null">
+        previous_question,
+      </if>
+      <if test="nextQuestion != null">
+        next_question,
+      </if>
+      <if test="suggest != null">
+        suggest,
+      </if>
+      <if test="extendSuggest != null">
+        extend_suggest,
+      </if>
+      <if test="previousSuggest != null">
+        previous_suggest,
+      </if>
+      <if test="nextSuggest != null">
+        next_suggest,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -146,8 +188,35 @@
       <if test="nodeId != null">
         #{nodeId,jdbcType=INTEGER},
       </if>
-      <if test="suggestContent != null">
-        #{suggestContent,jdbcType=LONGVARCHAR},
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="choice != null">
+        #{choice,jdbcType=VARCHAR},
+      </if>
+      <if test="question != null">
+        #{question,jdbcType=VARCHAR},
+      </if>
+      <if test="extend != null">
+        #{extend,jdbcType=VARCHAR},
+      </if>
+      <if test="previousQuestion != null">
+        #{previousQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="nextQuestion != null">
+        #{nextQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="suggest != null">
+        #{suggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="extendSuggest != null">
+        #{extendSuggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="previousSuggest != null">
+        #{previousSuggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="nextSuggest != null">
+        #{nextSuggest,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -166,8 +235,35 @@
       <if test="record.nodeId != null">
         node_id = #{record.nodeId,jdbcType=INTEGER},
       </if>
-      <if test="record.suggestContent != null">
-        suggest_content = #{record.suggestContent,jdbcType=LONGVARCHAR},
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.choice != null">
+        choice = #{record.choice,jdbcType=VARCHAR},
+      </if>
+      <if test="record.question != null">
+        question = #{record.question,jdbcType=VARCHAR},
+      </if>
+      <if test="record.extend != null">
+        extend = #{record.extend,jdbcType=VARCHAR},
+      </if>
+      <if test="record.previousQuestion != null">
+        previous_question = #{record.previousQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nextQuestion != null">
+        next_question = #{record.nextQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.suggest != null">
+        suggest = #{record.suggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.extendSuggest != null">
+        extend_suggest = #{record.extendSuggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.previousSuggest != null">
+        previous_suggest = #{record.previousSuggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.nextSuggest != null">
+        next_suggest = #{record.nextSuggest,jdbcType=LONGVARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -178,7 +274,16 @@
     update suggest
     set suggest_id = #{record.suggestId,jdbcType=INTEGER},
       node_id = #{record.nodeId,jdbcType=INTEGER},
-      suggest_content = #{record.suggestContent,jdbcType=LONGVARCHAR}
+      user_id = #{record.userId,jdbcType=INTEGER},
+      choice = #{record.choice,jdbcType=VARCHAR},
+      question = #{record.question,jdbcType=VARCHAR},
+      extend = #{record.extend,jdbcType=VARCHAR},
+      previous_question = #{record.previousQuestion,jdbcType=VARCHAR},
+      next_question = #{record.nextQuestion,jdbcType=VARCHAR},
+      suggest = #{record.suggest,jdbcType=LONGVARCHAR},
+      extend_suggest = #{record.extendSuggest,jdbcType=LONGVARCHAR},
+      previous_suggest = #{record.previousSuggest,jdbcType=LONGVARCHAR},
+      next_suggest = #{record.nextSuggest,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -186,32 +291,80 @@
   <update id="updateByExample" parameterType="map">
     update suggest
     set suggest_id = #{record.suggestId,jdbcType=INTEGER},
-      node_id = #{record.nodeId,jdbcType=INTEGER}
+      node_id = #{record.nodeId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      choice = #{record.choice,jdbcType=VARCHAR},
+      question = #{record.question,jdbcType=VARCHAR},
+      extend = #{record.extend,jdbcType=VARCHAR},
+      previous_question = #{record.previousQuestion,jdbcType=VARCHAR},
+      next_question = #{record.nextQuestion,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="net.xiaobais.xiaobai.model.Suggest">
+  <update id="updateByPrimaryKeySelective" parameterType="net.xiaobais.xiaobai.model.SuggestWithBLOBs">
     update suggest
     <set>
       <if test="nodeId != null">
         node_id = #{nodeId,jdbcType=INTEGER},
       </if>
-      <if test="suggestContent != null">
-        suggest_content = #{suggestContent,jdbcType=LONGVARCHAR},
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="choice != null">
+        choice = #{choice,jdbcType=VARCHAR},
+      </if>
+      <if test="question != null">
+        question = #{question,jdbcType=VARCHAR},
+      </if>
+      <if test="extend != null">
+        extend = #{extend,jdbcType=VARCHAR},
+      </if>
+      <if test="previousQuestion != null">
+        previous_question = #{previousQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="nextQuestion != null">
+        next_question = #{nextQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="suggest != null">
+        suggest = #{suggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="extendSuggest != null">
+        extend_suggest = #{extendSuggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="previousSuggest != null">
+        previous_suggest = #{previousSuggest,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="nextSuggest != null">
+        next_suggest = #{nextSuggest,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where suggest_id = #{suggestId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="net.xiaobais.xiaobai.model.Suggest">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="net.xiaobais.xiaobai.model.SuggestWithBLOBs">
     update suggest
     set node_id = #{nodeId,jdbcType=INTEGER},
-      suggest_content = #{suggestContent,jdbcType=LONGVARCHAR}
+      user_id = #{userId,jdbcType=INTEGER},
+      choice = #{choice,jdbcType=VARCHAR},
+      question = #{question,jdbcType=VARCHAR},
+      extend = #{extend,jdbcType=VARCHAR},
+      previous_question = #{previousQuestion,jdbcType=VARCHAR},
+      next_question = #{nextQuestion,jdbcType=VARCHAR},
+      suggest = #{suggest,jdbcType=LONGVARCHAR},
+      extend_suggest = #{extendSuggest,jdbcType=LONGVARCHAR},
+      previous_suggest = #{previousSuggest,jdbcType=LONGVARCHAR},
+      next_suggest = #{nextSuggest,jdbcType=LONGVARCHAR}
     where suggest_id = #{suggestId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="net.xiaobais.xiaobai.model.Suggest">
     update suggest
-    set node_id = #{nodeId,jdbcType=INTEGER}
+    set node_id = #{nodeId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      choice = #{choice,jdbcType=VARCHAR},
+      question = #{question,jdbcType=VARCHAR},
+      extend = #{extend,jdbcType=VARCHAR},
+      previous_question = #{previousQuestion,jdbcType=VARCHAR},
+      next_question = #{nextQuestion,jdbcType=VARCHAR}
     where suggest_id = #{suggestId,jdbcType=INTEGER}
   </update>
 </mapper>

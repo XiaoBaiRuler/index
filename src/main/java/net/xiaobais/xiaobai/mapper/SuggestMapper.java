@@ -3,6 +3,7 @@ package net.xiaobais.xiaobai.mapper;
 import java.util.List;
 import net.xiaobais.xiaobai.model.Suggest;
 import net.xiaobais.xiaobai.model.SuggestExample;
+import net.xiaobais.xiaobai.model.SuggestWithBLOBs;
 import org.apache.ibatis.annotations.Param;
 
 public interface SuggestMapper {
@@ -12,25 +13,25 @@ public interface SuggestMapper {
 
     int deleteByPrimaryKey(Integer suggestId);
 
-    int insert(Suggest record);
+    int insert(SuggestWithBLOBs record);
 
-    int insertSelective(Suggest record);
+    int insertSelective(SuggestWithBLOBs record);
 
-    List<Suggest> selectByExampleWithBLOBs(SuggestExample example);
+    List<SuggestWithBLOBs> selectByExampleWithBLOBs(SuggestExample example);
 
     List<Suggest> selectByExample(SuggestExample example);
 
-    Suggest selectByPrimaryKey(Integer suggestId);
+    SuggestWithBLOBs selectByPrimaryKey(Integer suggestId);
 
-    int updateByExampleSelective(@Param("record") Suggest record, @Param("example") SuggestExample example);
+    int updateByExampleSelective(@Param("record") SuggestWithBLOBs record, @Param("example") SuggestExample example);
 
-    int updateByExampleWithBLOBs(@Param("record") Suggest record, @Param("example") SuggestExample example);
+    int updateByExampleWithBLOBs(@Param("record") SuggestWithBLOBs record, @Param("example") SuggestExample example);
 
     int updateByExample(@Param("record") Suggest record, @Param("example") SuggestExample example);
 
-    int updateByPrimaryKeySelective(Suggest record);
+    int updateByPrimaryKeySelective(SuggestWithBLOBs record);
 
-    int updateByPrimaryKeyWithBLOBs(Suggest record);
+    int updateByPrimaryKeyWithBLOBs(SuggestWithBLOBs record);
 
     int updateByPrimaryKey(Suggest record);
 }

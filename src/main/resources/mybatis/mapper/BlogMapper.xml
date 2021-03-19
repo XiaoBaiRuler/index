@@ -126,19 +126,22 @@
     </if>
   </delete>
   <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Blog">
-    insert into blog (blog_id, blog_title, blog_picture, 
-      blog_des, create_date, update_date, 
-      is_comment, blog_content)
-    values (#{blogId,jdbcType=INTEGER}, #{blogTitle,jdbcType=VARCHAR}, #{blogPicture,jdbcType=VARCHAR}, 
-      #{blogDes,jdbcType=VARCHAR}, #{createDate,jdbcType=DATE}, #{updateDate,jdbcType=DATE}, 
-      #{isComment,jdbcType=BIT}, #{blogContent,jdbcType=LONGVARCHAR})
+    <selectKey keyProperty="blogId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into blog (blog_title, blog_picture, blog_des, 
+      create_date, update_date, is_comment, 
+      blog_content)
+    values (#{blogTitle,jdbcType=VARCHAR}, #{blogPicture,jdbcType=VARCHAR}, #{blogDes,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=DATE}, #{updateDate,jdbcType=DATE}, #{isComment,jdbcType=BIT}, 
+      #{blogContent,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Blog">
+    <selectKey keyProperty="blogId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into blog
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="blogId != null">
-        blog_id,
-      </if>
       <if test="blogTitle != null">
         blog_title,
       </if>
@@ -162,9 +165,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="blogId != null">
-        #{blogId,jdbcType=INTEGER},
-      </if>
       <if test="blogTitle != null">
         #{blogTitle,jdbcType=VARCHAR},
       </if>

@@ -13,4 +13,5 @@ public class UserVo {
     private String username;
     private String url;
     private String img;
+    private Integer userId;
 }

@@ -53,6 +53,7 @@
                                 </button>
                             </div>
                         </div>
+                        <div th:replace="com/card :: iteratorCard"></div>
                         <div th:replace="com/card :: publicPreCard"></div>
                         <div class="ui stacked right aligned segment" v-show="prePage">
                             <div class="ui four bottom attached buttons">
@@ -93,6 +94,7 @@
                                 </button>
                             </div>
                         </div>
+                        <div th:replace="com/card :: suggestCard"></div>
                         <div th:replace="com/card :: publicNexCard"></div>
                         <div class="ui stacked right aligned segment" v-show="nexPage">
                             <div class="ui four bottom attached buttons">
@@ -106,7 +108,7 @@
                 </div>
             </div>
         </div>
-        <div class="ui container" v-show="!isNode">
+        <div class="ui container" v-show="!isNode" style="width: 80%;">
             <div class="ui stacked segment">
                 <div id="mind_container"></div>
             </div>
@@ -152,7 +154,6 @@
                 this.preparePage(nodeId, "", "", 0, 0)
                 axios.get("/user/getUserInfo")
                     .then(response => {
-                        console.log("userInfo" + response.data)
                         if (response.data !== ""){
                             this.isLogin = true
                             this.userVo = response.data
@@ -219,8 +220,8 @@
                             support_html: true,
                             view:{
                                 engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
-                                hmargin:100,        // 思维导图距容器外框的最小水平距离
-                                vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                                hmargin:50,        // 思维导图距容器外框的最小水平距离
+                                vmargin:50,         // 思维导图距容器外框的最小垂直距离
                                 line_width:3,       // 思维导图线条的粗细
                                 line_color:'#555'   // 思维导图线条的颜色
                             },

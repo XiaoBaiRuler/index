@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<body>
+    <div class="ui green inverted stacked segment" th:fragment="suggestForm">
+        <div class="inline fields">
+            <label class="ui red label">选择你想添加的建议模块</label>
+            <div class="ui checkbox">
+                <input type="checkbox" tabindex="0" class="hidden" value="1" v-model="choice" checked="checked">
+                <label>问题建议</label>
+            </div>
+            <div class="ui checkbox">
+                <input type="checkbox" tabindex="1" class="hidden" value="2" v-model="choice" checked="checked">
+                <label>扩展建议</label>
+            </div>
+            <div class="ui checkbox">
+                <input type="checkbox" tabindex="3" class="hidden" value="3" v-model="choice">
+                <label>前置节点建议</label>
+            </div>
+            <div class="ui checkbox">
+                <input type="checkbox" tabindex="4" class="hidden" value="4" v-model="choice">
+                <label>后置节点建议</label>
+            </div>
+        </div>
+        <div v-show="choice.indexOf('1') > -1">
+            <div class="ui form">
+                <h2 class="ui center aligned dividing header">添加建议</h2>
+                <h5 class="ui right aligned dividing header">问题建议</h5>
+                <div class="field">
+                    <input type="text" name="question1" v-model="question1"
+                           placeholder="请输入当前节点出现的问题(尽量简洁)？">
+                </div>
+            </div>
+            <div class="ui segment">
+                <div id="suggest_question"></div>
+            </div>
+        </div>
+        <div v-show="choice.indexOf('2') > -1">
+            <br>
+            <h5 class="ui right aligned dividing header">扩展建议</h5>
+            <div class="ui form">
+                <div class="field">
+                    <input type="text" name="question2" v-model="question2"
+                           placeholder="请输入需要扩展的内容(尽量简洁)？">
+                </div>
+            </div>
+            <div class="ui segment">
+                <div id="suggest_extend"></div>
+            </div>
+        </div>
+        <div v-show="choice.indexOf('3') > -1">
+            <br>
+            <h5 class="ui right aligned dividing header">前置节点建议</h5>
+            <div class="ui form">
+                <div class="field">
+                    <select multiple="" class="ui dropdown" v-model="question3">
+                        <option value="">请选择前置节点</option>
+                        <option :value="item.nodeId" v-for="item,index in preNode" :key="item.nodeId">
+                            {{item.nodeName}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div id="pre_question"></div>
+            </div>
+        </div>
+        <div v-show="choice.indexOf('4') > -1">
+            <br>
+            <h5 class="ui right aligned dividing header">后置节点建议</h5>
+            <div class="ui form">
+                <div class="field">
+                    <select multiple="" class="ui dropdown" v-model="question4">
+                        <option value="">请选择后置节点</option>
+                        <option :value="item.nodeId" v-for="item,index in nexNode" :key="item.nodeId" >
+                            {{item.nodeName}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div id="nex_question"></div>
+            </div>
+        </div>
+        <div class="ui red button" @click.once="submitSuggest">提交</div>
+    </div>
+</body>
+</html>

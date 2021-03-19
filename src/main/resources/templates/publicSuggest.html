@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>[[${username}]]的建议</title>
+    <span th:replace="com/head :: head"></span>
+    <title >index</title>
+</head>
+<body>
+<div id="app">
+    <div th:replace="com/menu :: simpleMenu"></div>
+    <br>
+    <br>
+    <div class="ui fluid container">
+        <div class="ui fluid container">
+            <div th:replace="com/show :: suggestShow"></div>
+        </div>
+    </div>
+    <br><br>
+    <div th:replace="com/foot :: foot"></div>
+</div>
+<script type="text/javascript">
+
+    let app = new Vue({
+        el: '#app',
+        data: {
+            str: '',
+            isLogin: false,
+            nodeId: 0,
+            userVo: {},
+            show: false
+        },
+        mounted: function(){
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                    }else{
+                        this.isLogin = false
+                    }
+                })
+                .catch(error => console.log(error))
+        },
+        methods: {
+            logout: function() {
+                this.isLogin = false
+            },
+            search: function() {
+                if (this.str === "") {
+                    alert("请输入搜索内容")
+                } else {
+                    console.log(this.str)
+                }
+            }
+        },
+    })
+</script>
+</body>
+</html>

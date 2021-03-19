@@ -22,4 +22,10 @@ public class MapServiceImpl implements MapService {
     public Map findMapById(Integer id) {
         return mapMapper.selectByPrimaryKey(id);
     }
+
+    @Override
+    public int insertMap(Map map) {
+        int insert = mapMapper.insert(map);
+        return insert == -1 ? -1 : map.getMapId();
+    }
 }

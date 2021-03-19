@@ -56,4 +56,11 @@ public interface UserService {
      * @return String
      */
     String checkPassword(String username, String password);
+
+    /**
+     * 根据userId查找用户
+     * @param userId userId
+     * @return User
+     */
+    User getUserById(Integer userId);
 }

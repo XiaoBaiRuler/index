@@ -53,10 +53,15 @@
         <table tableName="fans" domainObjectName="Fans"/>
         <table tableName="follow" domainObjectName="Follow"/>
 
-        <table tableName="blog" domainObjectName="Blog"/>
-        <table tableName="node" domainObjectName="Node"/>
-        <table tableName="map" domainObjectName="Map"/>
-
+        <table tableName="blog" domainObjectName="Blog">
+            <generatedKey column="blog_id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="node" domainObjectName="Node">
+            <generatedKey column="node_id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="map" domainObjectName="Map">
+            <generatedKey column="map_id" sqlStatement="Mysql" identity="true"/>
+        </table>
         <table tableName="previous" domainObjectName="Previous"/>
         <table tableName="next" domainObjectName="Next"/>
         <table tableName="collect" domainObjectName="Collect"/>

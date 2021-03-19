@@ -123,6 +123,7 @@ public class JwtUtils {
         userVo.setUsername((String) claims.get("username"));
         userVo.setUrl("/public/user/" + claims.get("id"));
         userVo.setImg((String) claims.get("avatar"));
+        userVo.setUserId((Integer) claims.get("id"));
         return userVo;
     }
 

@@ -2,9 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="net.xiaobais.xiaobai.mapper.IteratorMapper">
   <resultMap id="BaseResultMap" type="net.xiaobais.xiaobai.model.Iterator">
-    <result column="node_id" jdbcType="INTEGER" property="nodeId" />
     <result column="iterator_id" jdbcType="INTEGER" property="iteratorId" />
+    <result column="node_id" jdbcType="INTEGER" property="nodeId" />
     <result column="iterator_name" jdbcType="VARCHAR" property="iteratorName" />
+    <result column="iterator_reason" jdbcType="VARCHAR" property="iteratorReason" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -65,7 +66,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    node_id, iterator_id, iterator_name
+    iterator_id, node_id, iterator_name, iterator_reason
   </sql>
   <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.IteratorExample" resultMap="BaseResultMap">
     select
@@ -88,33 +89,39 @@
     </if>
   </delete>
   <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Iterator">
-    insert into iterator (node_id, iterator_id, iterator_name
-      )
-    values (#{nodeId,jdbcType=INTEGER}, #{iteratorId,jdbcType=INTEGER}, #{iteratorName,jdbcType=VARCHAR}
-      )
+    insert into iterator (iterator_id, node_id, iterator_name, 
+      iterator_reason)
+    values (#{iteratorId,jdbcType=INTEGER}, #{nodeId,jdbcType=INTEGER}, #{iteratorName,jdbcType=VARCHAR}, 
+      #{iteratorReason,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Iterator">
     insert into iterator
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="nodeId != null">
-        node_id,
-      </if>
       <if test="iteratorId != null">
         iterator_id,
+      </if>
+      <if test="nodeId != null">
+        node_id,
       </if>
       <if test="iteratorName != null">
         iterator_name,
       </if>
+      <if test="iteratorReason != null">
+        iterator_reason,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="nodeId != null">
-        #{nodeId,jdbcType=INTEGER},
-      </if>
       <if test="iteratorId != null">
         #{iteratorId,jdbcType=INTEGER},
       </if>
+      <if test="nodeId != null">
+        #{nodeId,jdbcType=INTEGER},
+      </if>
       <if test="iteratorName != null">
         #{iteratorName,jdbcType=VARCHAR},
+      </if>
+      <if test="iteratorReason != null">
+        #{iteratorReason,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -127,14 +134,17 @@
   <update id="updateByExampleSelective" parameterType="map">
     update iterator
     <set>
-      <if test="record.nodeId != null">
-        node_id = #{record.nodeId,jdbcType=INTEGER},
-      </if>
       <if test="record.iteratorId != null">
         iterator_id = #{record.iteratorId,jdbcType=INTEGER},
       </if>
+      <if test="record.nodeId != null">
+        node_id = #{record.nodeId,jdbcType=INTEGER},
+      </if>
       <if test="record.iteratorName != null">
         iterator_name = #{record.iteratorName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.iteratorReason != null">
+        iterator_reason = #{record.iteratorReason,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -143,9 +153,10 @@
   </update>
   <update id="updateByExample" parameterType="map">
     update iterator
-    set node_id = #{record.nodeId,jdbcType=INTEGER},
-      iterator_id = #{record.iteratorId,jdbcType=INTEGER},
-      iterator_name = #{record.iteratorName,jdbcType=VARCHAR}
+    set iterator_id = #{record.iteratorId,jdbcType=INTEGER},
+      node_id = #{record.nodeId,jdbcType=INTEGER},
+      iterator_name = #{record.iteratorName,jdbcType=VARCHAR},
+      iterator_reason = #{record.iteratorReason,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>

@@ -71,4 +71,10 @@ public class NodeServiceImpl implements NodeService {
         nodeMapper.updateByPrimaryKeySelective(node);
     }
 
+    @Override
+    public int insertNode(Node node) {
+        int insert = nodeMapper.insert(node);
+        return insert != -1 ? node.getNodeId() : -1;
+    }
+
 }

@@ -57,4 +57,11 @@ public interface NodeService {
      */
     void addCount(Integer id);
 
+    /**
+     * 添加node
+     * @param node node
+     * @return int
+     */
+    int insertNode(Node node);
+
 }

@@ -104,66 +104,6 @@ public class IteratorExample {
             criteria.add(new Criterion(condition, value1, value2));
         }
 
-        public Criteria andNodeIdIsNull() {
-            addCriterion("node_id is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdIsNotNull() {
-            addCriterion("node_id is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdEqualTo(Integer value) {
-            addCriterion("node_id =", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdNotEqualTo(Integer value) {
-            addCriterion("node_id <>", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdGreaterThan(Integer value) {
-            addCriterion("node_id >", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdGreaterThanOrEqualTo(Integer value) {
-            addCriterion("node_id >=", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdLessThan(Integer value) {
-            addCriterion("node_id <", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdLessThanOrEqualTo(Integer value) {
-            addCriterion("node_id <=", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdIn(List<Integer> values) {
-            addCriterion("node_id in", values, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdNotIn(List<Integer> values) {
-            addCriterion("node_id not in", values, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdBetween(Integer value1, Integer value2) {
-            addCriterion("node_id between", value1, value2, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdNotBetween(Integer value1, Integer value2) {
-            addCriterion("node_id not between", value1, value2, "nodeId");
-            return (Criteria) this;
-        }
-
         public Criteria andIteratorIdIsNull() {
             addCriterion("iterator_id is null");
             return (Criteria) this;
@@ -221,6 +161,66 @@ public class IteratorExample {
 
         public Criteria andIteratorIdNotBetween(Integer value1, Integer value2) {
             addCriterion("iterator_id not between", value1, value2, "iteratorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdIsNull() {
+            addCriterion("node_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdIsNotNull() {
+            addCriterion("node_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdEqualTo(Integer value) {
+            addCriterion("node_id =", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdNotEqualTo(Integer value) {
+            addCriterion("node_id <>", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdGreaterThan(Integer value) {
+            addCriterion("node_id >", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("node_id >=", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdLessThan(Integer value) {
+            addCriterion("node_id <", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdLessThanOrEqualTo(Integer value) {
+            addCriterion("node_id <=", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdIn(List<Integer> values) {
+            addCriterion("node_id in", values, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdNotIn(List<Integer> values) {
+            addCriterion("node_id not in", values, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdBetween(Integer value1, Integer value2) {
+            addCriterion("node_id between", value1, value2, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("node_id not between", value1, value2, "nodeId");
             return (Criteria) this;
         }
 
@@ -291,6 +291,76 @@ public class IteratorExample {
 
         public Criteria andIteratorNameNotBetween(String value1, String value2) {
             addCriterion("iterator_name not between", value1, value2, "iteratorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonIsNull() {
+            addCriterion("iterator_reason is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonIsNotNull() {
+            addCriterion("iterator_reason is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonEqualTo(String value) {
+            addCriterion("iterator_reason =", value, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonNotEqualTo(String value) {
+            addCriterion("iterator_reason <>", value, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonGreaterThan(String value) {
+            addCriterion("iterator_reason >", value, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonGreaterThanOrEqualTo(String value) {
+            addCriterion("iterator_reason >=", value, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonLessThan(String value) {
+            addCriterion("iterator_reason <", value, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonLessThanOrEqualTo(String value) {
+            addCriterion("iterator_reason <=", value, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonLike(String value) {
+            addCriterion("iterator_reason like", value, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonNotLike(String value) {
+            addCriterion("iterator_reason not like", value, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonIn(List<String> values) {
+            addCriterion("iterator_reason in", values, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonNotIn(List<String> values) {
+            addCriterion("iterator_reason not in", values, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonBetween(String value1, String value2) {
+            addCriterion("iterator_reason between", value1, value2, "iteratorReason");
+            return (Criteria) this;
+        }
+
+        public Criteria andIteratorReasonNotBetween(String value1, String value2) {
+            addCriterion("iterator_reason not between", value1, value2, "iteratorReason");
             return (Criteria) this;
         }
     }

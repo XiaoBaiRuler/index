@@ -123,17 +123,20 @@
     </if>
   </delete>
   <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Map">
-    insert into map (map_id, map_name, map_author, 
-      map_version, map_data)
-    values (#{mapId,jdbcType=INTEGER}, #{mapName,jdbcType=VARCHAR}, #{mapAuthor,jdbcType=VARCHAR}, 
-      #{mapVersion,jdbcType=VARCHAR}, #{mapData,jdbcType=LONGVARCHAR})
+    <selectKey keyProperty="mapId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into map (map_name, map_author, map_version, 
+      map_data)
+    values (#{mapName,jdbcType=VARCHAR}, #{mapAuthor,jdbcType=VARCHAR}, #{mapVersion,jdbcType=VARCHAR}, 
+      #{mapData,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Map">
+    <selectKey keyProperty="mapId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into map
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="mapId != null">
-        map_id,
-      </if>
       <if test="mapName != null">
         map_name,
       </if>
@@ -148,9 +151,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="mapId != null">
-        #{mapId,jdbcType=INTEGER},
-      </if>
       <if test="mapName != null">
         #{mapName,jdbcType=VARCHAR},
       </if>

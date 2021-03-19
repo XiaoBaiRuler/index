@@ -2,8 +2,97 @@
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
 <body>
 
+    <!--公共博客卡片-->
+    <div class="ui yellow inverted stacked right aligned segment" th:fragment="publicPreCard" v-for="node,index in preNodes">
+        <div class="ui fluid card">
+            <div class="content">
+                <a :href="node.userUrl">
+                    <img class="ui red right floated avatar image" :src="node.avatar">
+                </a>
+                <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
+                <div class="center aligned description">
+                    <p>和下一个节点的关系: {{node.relationship}}</p>
+                </div>
+                <div class="meta">
+                    <a>{{node.time}}</a>
+                </div>
+            </div>
+            <div class="extra content">
+                <span class="left floated like">
+                    <i class="like icon" @click.once="countLike(node.id, index, true)"></i>
+                    {{node.like}}点赞
+                </span>
+                <span class="right floated star">
+                    <i class="star icon" @click.once="countStar(node.id, index, true)"></i>
+                    {{node.collect}}收藏
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="ui yellow inverted stacked right aligned segment" th:fragment="publicNexCard" v-for="node,index in nexNodes">
+        <div class="ui fluid card">
+            <div class="content">
+                <a :href="node.userUrl">
+                    <img class="ui red right floated avatar image" :src="node.avatar">
+                </a>
+                <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
+                <div class="center aligned description">
+                    <p>和下一个节点的关系: {{node.relationship}}</p>
+                </div>
+                <div class="meta">
+                    <a>{{node.time}}</a>
+                </div>
+            </div>
+            <div class="extra content">
+                <span class="left floated like">
+                    <i class="like icon" @click.once="countLike(node.id, index, false)"></i>
+                    {{node.like}}点赞
+                </span>
+                <span class="right floated star">
+                    <i class="star icon" @click.once="countStar(node.id, index, false)"></i>
+                    {{node.collect}}收藏
+                </span>
+            </div>
+        </div>
+    </div>
+    <!--迭代节点卡片-->
+    <div class="ui red inverted stacked right aligned segment" th:fragment="iteratorCard">
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="center aligned header">迭代节点</div>
+                <div class="center aligned description">
+                    迭代节点：你所添加的新节点比当前节点优，并且想要代替它，
+                    所以放在当前的前置节点上；
+                    <br>
+                    <strong>红色：为了表达地出突出一点</strong>
+                </div>
+            </div>
+            <div class="ui bottom attached button">
+                <i class="add icon"></i>
+                <a th:href="@{'/person/public/toAddIterator/' + ${nodeId}}">添加迭代节点</a>
+            </div>
+        </div>
+    </div>
+    <!--添加建议节点卡片-->
+    <div class="ui green inverted stacked left aligned segment" th:fragment="suggestCard">
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="center aligned header">建议节点</div>
+                <div class="center aligned description">
+                    建议节点：是当前节点有一些简单问题，你想表达你的看法：最好提出你的解决方案，
+                    否则建议直接在评论区提即可。
+                    <br>
+                    <strong>绿色: 为了表达地轻松一点</strong>
+                </div>
+            </div>
+            <div class="ui bottom attached button">
+                <i class="add icon"></i>
+                <a th:href="@{'/person/public/toAddSuggest/' + ${nodeId}}">添加建议节点</a>
+            </div>
+        </div>
+    </div>
     <!--私有博客卡片-->
-    <div class="ui green inverted stacked right aligned segment" th:fragment="privateCard">
+    <div class="ui yellow inverted stacked right aligned segment" th:fragment="privateCard">
         <div class="ui fluid card">
             <div class="content">
                 <i class="red inverted left floated cut icon" @click.once="cut(1)"></i>
@@ -29,61 +118,8 @@
             </div>
         </div>
     </div>
-    <!--公共博客卡片-->
-    <div class="ui green inverted stacked right aligned segment" th:fragment="publicPreCard" v-for="node,index in preNodes">
-        <div class="ui fluid card">
-            <div class="content">
-                <a :href="node.id">
-                    <img class="ui red right floated avatar image" th:src="@{/img/logo.png}">
-                </a>
-                <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
-                <div class="center aligned description">
-                    <p>和下一个节点的关系: {{node.relationship}}</p>
-                </div>
-                <div class="meta">
-                    <a>{{node.time}}</a>
-                </div>
-            </div>
-            <div class="extra content">
-                <span class="left floated like">
-                    <i class="like icon" @click.once="countLike(node.id, index, true)"></i>
-                    {{node.like}}点赞
-                </span>
-                <span class="right floated star">
-                    <i class="star icon" @click.once="countStar(node.id, index, true)"></i>
-                    {{node.collect}}收藏
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="ui green inverted stacked right aligned segment" th:fragment="publicNexCard" v-for="node,index in nexNodes">
-        <div class="ui fluid card">
-            <div class="content">
-                <a :href="node.id">
-                    <img class="ui red right floated avatar image" th:src="@{/img/logo.png}">
-                </a>
-                <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
-                <div class="center aligned description">
-                    <p>和下一个节点的关系: {{node.relationship}}</p>
-                </div>
-                <div class="meta">
-                    <a>{{node.time}}</a>
-                </div>
-            </div>
-            <div class="extra content">
-                <span class="left floated like">
-                    <i class="like icon" @click.once="countLike(node.id, index, false)"></i>
-                    {{node.like}}点赞
-                </span>
-                <span class="right floated star">
-                    <i class="star icon" @click.once="countStar(node.id, index, false)"></i>
-                    {{node.collect}}收藏
-                </span>
-            </div>
-        </div>
-    </div>
     <!--收藏博客卡片-->
-    <div class="ui green inverted stacked right aligned segment" th:fragment="starCard">
+    <div class="ui yellow inverted stacked right aligned segment" th:fragment="starCard">
         <div class="ui fluid card">
             <div class="content">
                 <i class="red inverted right floated exchange icon" @click.once="exchange(1)"></i>
@@ -108,6 +144,5 @@
             </div>
         </div>
     </div>
-
 </body>
 </html>

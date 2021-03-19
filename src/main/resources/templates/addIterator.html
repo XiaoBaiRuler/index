@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: head"></span>
+    <title >index</title>
+    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+    <link rel="stylesheet" th:href="@{/item/editormd/css/editormd.css}">
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+    <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
+    <style type="text/css">
+        table{
+            border: 1px solid skyblue;
+            border-collapse:collapse;
+        }
+        thead{
+            color: #0C9A9A;
+        }
+        th{
+            border: 1px solid skyblue;
+        }
+        td{
+            border: 1px solid skyblue;
+        }
+        blockquote{
+            border-left: 1px solid skyblue;
+        }
+        #jsmind_container{
+            height: 1000px;
+        }
+        #mind_container{
+            height: 1000px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
+    <div th:replace="com/menu :: menu"></div>
+    <br><br><br>
+    <div class="ui fluid container" v-show="isNode">
+        <a class="ui red right ribbon label" @click.once="submitIterator">保存</a>
+        <div class="ui three column grid">
+            <div :class="left" v-show="isLeft">
+                <div class="ui fluid container">
+                    <br>
+                    <div class="ui stacked left aligned segment">
+                        <div class="ui action input" :style="{width: inputWidth}">
+                            <input type="text" placeholder="搜索..." name="preInput" v-model="preInput">
+                            <button class="ui icon button" @click.prevent="preSearch">
+                                <i class="search icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div th:replace="com/card :: publicPreCard"></div>
+                    <div class="ui stacked right aligned segment" v-show="prePage">
+                        <div class="ui four bottom attached buttons">
+                            <div class="ui teal button" @click.prevent="toPrePage(true)">上一页</div>
+                            <div class="ui button active">第{{nowPreNum}}页</div>
+                            <div class="ui button active">共{{preSize}}条</div>
+                            <div class="ui teal button" @click.prevent="toNexPage(true)">下一页</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div :class="middle">
+                <div class="ui container" :style="{width: middleWidth}">
+                    <div class="ui piled segment" v-show="isBlog" style="height: 1200px;">
+                        <div id="test-editor">
+                            <textarea style="display:none;" id="html">
+                                [[${html}]]
+                            </textarea>
+                        </div>
+                        <span th:if="${flag}">
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                        </span>
+                    </div>
+                    <div class="ui raised segment" v-show="!isBlog">
+                        <div id="jsmind_container"></div>
+                    </div>
+                </div>
+            </div>
+            <div :class="right" v-show="isRight">
+                <div class="ui fluid container">
+                    <br>
+                    <div class="ui stacked left aligned segment">
+                        <div class="ui action input" :style="{width: inputWidth}">
+                            <input type="text" placeholder="搜索..." name="nexInput" v-model="nexInput">
+                            <button class="ui icon button" @click.prevent="nexSearch">
+                                <i class="search icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div th:replace="com/card :: publicNexCard"></div>
+                    <div class="ui stacked right aligned segment" v-show="nexPage">
+                        <div class="ui four bottom attached buttons">
+                            <div class="ui teal button" @click.prevent="toPrePage(false)">上一页</div>
+                            <div class="ui button active">第{{nowNexNum}}页</div>
+                            <div class="ui button active">共{{nexSize}}条</div>
+                            <div class="ui teal button" @click.prevent="toNexPage(false)">下一页</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui container" v-show="!isNode" style="width: 80%;">
+        <div class="ui stacked segment">
+            <div id="mind_container"></div>
+        </div>
+    </div>
+    <div class="ui fluid container">
+        <div class="ui segment">
+            <div class="ui form">
+                <div class="ui field">
+                    <label>迭代理由</label>
+                    <textarea name="iterator_content" v-model="iterator_content"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div th:replace="com/foot :: foot"></div>
+</div>
+
+<script type="text/javascript">
+
+    let app = new Vue({
+        el: '#app',
+        data: {
+            isLeft: false,
+            isRight: false,
+            isBlog: true,
+            isNode: true,
+            isLogin: false,
+            left: 'five wide column',
+            middle: 'sixteen wide column',
+            right: 'five wide column',
+            middleWidth: '95%',
+            inputWidth: '75%',
+            str: '',
+            jm: {},
+            preNodes: [],
+            nexNodes: [],
+            nowPreNum: 0,
+            nowNexNum: 0,
+            preSize: 0,
+            nexSize: 0,
+            nodeId: 0,
+            prePage: true,
+            nexPage: true,
+            preInput: "",
+            nexInput: "",
+            userVo: {},
+            iterator_content: ""
+        },
+        mounted: function(){
+            $(function() {
+                let editor = editormd("test-editor", {
+                    width  : "100%",
+                    height : "100%",
+                    path   : "/item/editormd/lib/"
+                });
+            });
+
+            let nodeId = document.getElementById('nodeId').value
+            this.nodeId = nodeId
+            this.preparePage(nodeId, "", "", 0, 0)
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                    }else{
+                        this.isLogin = false
+                    }
+                })
+                .catch(error => console.log(error))
+
+            axios.get("/public/getMind?nodeId=" + nodeId)
+                .then(response => {
+                    let options = {
+                        mode: 'full',
+                        container: 'jsmind_container',
+                        editable: true,
+                        theme:'orange',
+                        support_html: true,
+                        view:{
+                            engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                            hmargin:100,        // 思维导图距容器外框的最小水平距离
+                            vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                            line_width:3,       // 思维导图线条的粗细
+                            line_color:'#555'   // 思维导图线条的颜色
+                        },
+                        layout:{
+                            hspace:100,          // 节点之间的水平间距
+                            vspace:200,          // 节点之间的垂直间距
+                            pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                        },
+                    }
+                    let m = response.data
+                    let res = []
+                    m.forEach((item) =>{
+                        let obj = {}
+                        obj.id = item.id
+                        obj.parentid = item.parentid
+                        obj.isroot = item.isroot
+                        obj.topic = item.topic
+                        obj.direction = item.direction
+                        obj.expanded = item.expanded
+                        res.push(obj)
+                    })
+                    let mind = {
+                        "meta":{
+                            "name":"测试",
+                            "author":"xiaobai",
+                            "version":"1.0",
+                        },
+                        "format":"node_array",
+                        "data": res
+                    }
+                    let jm = new jsMind(options)
+                    this.jm = jm;
+                    jm.show(mind)
+                })
+                .catch(error => console.log(error))
+
+            axios.get('/public/getNodeMind?nodeId=' + nodeId + "&level=3")
+                .then(response => {
+                    let options = {
+                        mode: 'full',
+                        container: 'mind_container',
+                        editable: true,
+                        theme:'orange',
+                        support_html: true,
+                        view:{
+                            engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                            hmargin:50,        // 思维导图距容器外框的最小水平距离
+                            vmargin:50,         // 思维导图距容器外框的最小垂直距离
+                            line_width:3,       // 思维导图线条的粗细
+                            line_color:'#555'   // 思维导图线条的颜色
+                        },
+                        layout:{
+                            hspace:400,          // 节点之间的水平间距
+                            vspace:200,          // 节点之间的垂直间距
+                            pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                        },
+                    }
+                    let m = response.data
+                    let res = []
+                    m.forEach((item) =>{
+                        let obj = {}
+                        obj.id = item.id
+                        obj.parentid = item.parentid
+                        obj.isroot = item.isroot
+                        obj.topic = item.topic
+                        obj.direction = item.direction
+                        obj.expanded = item.expanded
+                        res.push(obj)
+                    })
+                    let mind = {
+                        "meta":{
+                            "name":"测试",
+                            "author":"xiaobai",
+                            "version":"1.0",
+                        },
+                        "format":"node_array",
+                        "data": res
+                    }
+                    let jm = new jsMind(options)
+                    jm.show(mind)
+                })
+                .catch(error => console.log(error))
+
+        },
+        methods: {
+            changeSize: function() {
+                if (this.isLeft && this.isRight) {
+                    this.middleWidth = '100%'
+                    this.left = 'three wide column'
+                    this.middle = 'ten wide column'
+                    this.right = 'three wide column'
+                } else if (!this.isLeft && this.isRight) {
+                    this.middleWidth = '95%'
+                    this.middle = 'eleven wide column'
+                    this.right = 'five wide column'
+                } else if (this.isLeft && !this.isRight) {
+                    this.middleWidth = '95%'
+                    this.left = 'five wide column'
+                    this.middle = 'eleven wide column'
+                    this.right = 'three wide column'
+                } else {
+                    this.middleWidth = '80%'
+                    this.left = 'three wide column'
+                    this.middle = 'sixteen wide column'
+                    this.right = 'three wide column'
+                }
+            },
+            showPreNode: function() {
+                this.isLeft = !this.isLeft
+                this.changeSize()
+            },
+            showNextNode: function() {
+                this.isRight = !this.isRight
+                this.changeSize()
+            },
+            changeBlog: function() {
+                this.isBlog = !this.isBlog
+            },
+            changeNode: function() {
+                this.isNode = !this.isNode
+            },
+            logout: function() {
+                this.isLogin = false
+            },
+            search: function() {
+                if (this.str === "") {
+                    alert("请输入搜索内容")
+                } else {
+                    console.log(this.str)
+                }
+            },
+            countLike: function(nodeId, index, flag){
+                axios.get("/person/public/addNodeLike?nodeId=" + nodeId)
+                    .then(response => {
+                        if(response.data == "1"){
+                            flag ? this.preNodes[index].like += 1 : this.nexNodes[index].like += 1;
+                        }
+                    })
+                    .catch(error => console.log(error))
+            },
+            countStar: function(nodeId, index, flag){
+                axios.get("/person/public/addNodeStar?nodeId=" + nodeId)
+                    .then(response => {
+                        if(response.data == "1"){
+                            flag ? this.preNodes[index].collect += 1 : this.nexNodes[index].collect += 1;
+                        }
+                    })
+                    .catch(error => console.log(error))
+            },
+            toPrePage: function(flag){
+                if (flag && this.nowPreNum > 0){
+                    this.nowPreNum -= 1
+                    this.getPreNode(this.nowPreNum, 6, this.nodeId, this.preInput)
+                }
+                if (!flag && this.nowNexNum > 0){
+                    this.nowNexNum -= 1
+                    this.getNexNode(this.nowNexNum, 6, this.nodeId, this.nexInput)
+                }
+            },
+            toNexPage: function(flag){
+                let pre = this.preSize - (this.nowPreNum + 1) * 6
+                if (flag && pre > 0){
+                    this.nowPreNum += 1
+                    pre = pre > 6 ? 6 : pre
+                    this.getPreNode(this.nowPreNum, pre, this.nodeId, this.preInput)
+                }
+
+                let nex = this.nexSize - (this.nowNexNum + 1) * 6
+                if (!flag && nex > 0){
+                    this.nowNexNum += 1
+                    nex = nex > 6 ? 6 : nex
+                    this.getNexNode(this.nowNexNum, nex, this.nodeId, this.nexInput)
+                }
+            },
+            getPreNode: function(pageNumber, pageSize, nodeId, title){
+                axios.get("/public/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
+                    .then(response => this.preNodes = response.data)
+                    .catch(error => console.log(error))
+            },
+            getNexNode: function(pageNumber, pageSize, nodeId, title){
+                axios.get("/public/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
+                    .then(response => this.nexNodes = response.data)
+                    .catch(error => console.log(error))
+            },
+            preSearch: function(){
+                this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
+            },
+            nexSearch: function(){
+                this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
+            },
+            preparePage: function(nodeId, preInput, nexInput, pageSize, pageNumber){
+                // 前置节点
+                axios.get("/public/getPreCount?nodeId=" + nodeId + "&title=" + preInput)
+                    .then(response => {
+                        this.preSize = response.data
+                        if(this.preSize > 6){
+                            pageSize = 6
+                            this.prePage = true
+                        }
+                        else{
+                            pageSize = this.preSize
+                            this.prePage = false
+                        }
+                        this.getPreNode(pageNumber, pageSize, this.nodeId, preInput)
+                    })
+                    .catch(error => console.log(error))
+
+                // 后置节点
+                axios.get("/public/getNexCount?nodeId=" + nodeId + "&title=" + nexInput)
+                    .then(response => {
+                        this.nexSize = response.data
+                        if(this.nexSize > 6){
+                            pageSize = 6
+                            this.nexPage = true
+                        }
+                        else{
+                            pageSize = this.nexSize
+                            this.nexPage = false
+                        }
+                        this.getNexNode(pageNumber, pageSize, this.nodeId, nexInput)
+                    })
+                    .catch(error => console.log(error))
+
+            },
+            submitIterator: function(){
+                let iterator = new FormData()
+                iterator.append("nodeId", this.nodeId)
+                iterator.append("html", document.getElementById("html").value)
+                iterator.append("map", JSON.stringify(this.jm.get_data("node_array").data))
+                iterator.append("username", this.userVo.username)
+                iterator.append("userId", this.userVo.userId)
+                iterator.append("reason", this.iterator_content)
+                axios.post('/person/public/addIterator', iterator,
+                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                    .then(response => {window.location.href = "/public/node/" + this.nodeId})
+            }
+        },
+    })
+</script>
+</body>
+</html>

@@ -71,4 +71,9 @@ public class UserServiceImpl implements UserService {
         List<User> users = userMapper.selectByExample(userExample);
         return users != null && !users.isEmpty() ? "1" : "0";
     }
+
+    @Override
+    public User getUserById(Integer userId) {
+        return userMapper.selectByPrimaryKey(userId);
+    }
 }

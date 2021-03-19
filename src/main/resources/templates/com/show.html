@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<body>
+    <div class="ui green inverted stacked segment" th:fragment="suggestShow">
+        <h2 class="ui center aligned dividing header">[[${username}]]提出的建议</h2>
+        <div th:if="${one}">
+            <div class="ui form">
+                <h5 class="ui right aligned dividing header">问题建议</h5>
+                <div class="field">
+                    <input type="text" th:value="${question}" readonly="readonly">
+                </div>
+            </div>
+            <div class="ui stacked segment" style="height: 300px;">
+                <span th:utext="${extend}"></span>
+            </div>
+        </div>
+        <div th:if="${two}">
+            <br>
+            <h5 class="ui right aligned dividing header">扩展建议</h5>
+            <div class="ui form">
+                <div class="field">
+                    <input type="text" th:value="${extend}" readonly="readonly">
+                </div>
+            </div>
+            <div class="ui stacked segment" style="height: 300px;">
+                <span th:utext="${extend_suggest}"></span>
+            </div>
+        </div>
+        <div th:if="${three}">
+            <br>
+            <h5 class="ui right aligned dividing header">前置节点建议</h5>
+            <div class="ui stacked segment">
+                <div class="ui list" th:each="item : ${previous_question}">
+                    <div class="item">
+                        <a th:href="@{${item.url}}">[[${item.title}]]</a>
+                    </div>
+                </div>
+            </div>
+            <div class="ui stacked segment" style="height: 300px;">
+                <span th:utext="${previous_suggest}"></span>
+            </div>
+        </div>
+        <div th:if="${four}">
+            <br>
+            <h5 class="ui right aligned dividing header">后置节点建议</h5>
+            <div class="ui stacked segment">
+                <div class="ui list" th:each="item : ${next_question}">
+                    <div class="item">
+                        <a th:href="@{${item.url}}">[[${item.title}]]</a>
+                    </div>
+                </div>
+            </div>
+            <div class="ui stacked segment" style="height: 300px;">
+                <span th:utext="${next_suggest}"></span>
+            </div>
+        </div>
+        <span th:if="${add}">
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        </span>
+    </div>
+</body>
+</html>

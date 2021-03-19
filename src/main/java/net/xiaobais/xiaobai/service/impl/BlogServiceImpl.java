@@ -22,4 +22,10 @@ public class BlogServiceImpl implements BlogService {
     public Blog findBlogById(Integer id) {
         return blogMapper.selectByPrimaryKey(id);
     }
+
+    @Override
+    public int insertBlog(Blog blog) {
+        int insert = blogMapper.insert(blog);
+        return insert == -1 ? -1 : blog.getBlogId();
+    }
 }

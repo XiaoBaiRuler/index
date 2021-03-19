@@ -2,10 +2,8 @@ package net.xiaobais.xiaobai.service.impl;
 
 import javafx.util.Pair;
 import net.xiaobais.xiaobai.model.Node;
-import net.xiaobais.xiaobai.service.MindService;
-import net.xiaobais.xiaobai.service.NextService;
-import net.xiaobais.xiaobai.service.NodeService;
-import net.xiaobais.xiaobai.service.PreviousService;
+import net.xiaobais.xiaobai.model.Suggest;
+import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.MindVo;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +27,16 @@ public class MindServiceImpl implements MindService {
     private NextService nextService;
     @Resource
     private NodeService nodeService;
+    @Resource
+    private SuggestService suggestService;
+    @Resource
+    private UserService userService;
+    @Resource
+    private IteratorService iteratorService;
 
     private static final String PREFIX_URL = "/public/node/";
+
+    private static final String PREFIX_SUG = "/person/public/getSuggest/";
 
     @Override
     public List<MindVo> getMindVoByLevel(Integer level, Integer nodeId){
@@ -40,6 +46,8 @@ public class MindServiceImpl implements MindService {
         }
         List<MindVo> lists = new ArrayList<>();
         Queue<Pair<String, Integer>> parent = new LinkedList<>();
+
+        // 根节点
         List<Node> previous;
         int count  = 0;
         MindVo mindVo = new MindVo("root" + nodeId, null, true,
@@ -47,6 +55,22 @@ public class MindServiceImpl implements MindService {
                 null, true);
         lists.add(mindVo);
 
+        // 迭代节点
+        MindVo iterator = new MindVo("iterator" + nodeId,
+                "root" + nodeId, false,
+                "迭代节点",
+                "left", true);
+        lists.add(iterator);
+        List<Node> iterators = iteratorService.getIteratorByNodeId(nodeId);
+        iterators.forEach(it -> {
+            MindVo mv = new MindVo("left" + it.getNodeId(),
+                    "iterator" + nodeId,false,
+                    "<a href='" + PREFIX_URL + it.getNodeId() + "'>" + it.getNodeName() + "</a>",
+                    "left", true);
+            lists.add(mv);
+        });
+
+        // 前置节点
         previous = previousService.findPreviousByNodeId(nodeId);
         Queue<Node> queue = new LinkedList<>(previous);
         parent.add(new Pair("root" + nodeId, previous.size()));
@@ -70,6 +94,23 @@ public class MindServiceImpl implements MindService {
             count ++;
         }
 
+        // 建议节点
+        MindVo suggest = new MindVo("suggest" + nodeId,
+                "root" + nodeId, false,
+                "建议节点",
+                "right", true);
+        lists.add(suggest);
+        List<Suggest> suggests = suggestService.getSuggestsByNodeId(nodeId);
+        suggests.forEach(s -> {
+            MindVo mv = new MindVo("suggestNode" + s.getSuggestId(),
+                    "suggest" + nodeId, false,
+                    "<a href='" + PREFIX_SUG + s.getSuggestId() + "'>" +
+                            userService.getUserById(s.getUserId()).getUsername() + "的建议" + "</a>",
+                    "right", true);
+            lists.add(mv);
+        });
+
+        // 后置节点
         List<Node> next;
         count = 0;
         next = nextService.findNextByNodeId(nodeId);

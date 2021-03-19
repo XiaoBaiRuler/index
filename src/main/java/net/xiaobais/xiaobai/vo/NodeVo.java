@@ -16,4 +16,6 @@ public class NodeVo {
     private String time;
     private Integer like;
     private Integer collect;
+    private String userUrl;
+    private String avatar;
 }
