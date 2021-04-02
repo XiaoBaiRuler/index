@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="net.xiaobais.xiaobai.mapper.MyPreviousMapper">
-    <select id="findNotPrivatePreviousByNodeId" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Node">
+    <select id="findPreviousByNodeId" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Node">
         select node.*
         from node
         where node.node_id in (
@@ -9,11 +9,11 @@
             from previous
             where previous.node_id = #{nodeId}
             )
-        and node.is_private = 0
+        and node.is_private = #{isPrivate}
         limit #{pageNumber}, #{pageSize}
     </select>
 
-    <select id="countNotPrivatePreviousByNodeId" parameterType="integer" resultType="int">
+    <select id="countPreviousByNodeId" parameterType="integer" resultType="int">
         select count(*)
         from node
         where node.node_id in (
@@ -21,9 +21,9 @@
             from previous
             where previous.node_id = #{nodeId}
         )
-          and node.is_private = 0
+          and node.is_private = #{isPrivate}
     </select>
-    <select id="findNotPrivatePreviousByNodeIdAndTitle" resultType="net.xiaobais.xiaobai.model.Node">
+    <select id="findPreviousByNodeIdAndTitle" resultType="net.xiaobais.xiaobai.model.Node">
         select node.*
         from node
         where node.node_id in (
@@ -31,12 +31,12 @@
             from previous
             where previous.node_id = #{nodeId}
         )
-          and node.is_private = 0
+          and node.is_private = #{isPrivate}
           and node.node_name like #{title}
             limit #{pageNumber}, #{pageSize}
     </select>
 
-    <select id="countNotPrivatePreviousByNodeIdAndTitle" resultType="int">
+    <select id="countPreviousByNodeIdAndTitle" resultType="int">
         select count(*)
         from node
         where node.node_id in (
@@ -44,7 +44,7 @@
             from previous
             where previous.node_id = #{nodeId}
         )
-          and node.is_private = 0
+          and node.is_private = #{isPrivate}
           and node.node_name like #{title}
     </select>
 </mapper>

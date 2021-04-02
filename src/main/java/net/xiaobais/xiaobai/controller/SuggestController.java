@@ -6,7 +6,7 @@ import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.SuggestWithBLOBs;
 import net.xiaobais.xiaobai.service.BlogService;
-import net.xiaobais.xiaobai.service.NodeService;
+import net.xiaobais.xiaobai.service.PublicNodeService;
 import net.xiaobais.xiaobai.service.SuggestService;
 import net.xiaobais.xiaobai.service.UserService;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
@@ -32,7 +32,7 @@ import java.util.List;
 public class SuggestController {
 
     @Resource
-    private NodeService nodeService;
+    private PublicNodeService nodeService;
     @Resource
     private BlogService blogService;
     @Resource

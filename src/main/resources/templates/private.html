@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: head"></span>
+    <title >index</title>
+    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+    <link rel="stylesheet" th:href="@{/item/editormd/css/editormd.css}">
+    <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
+    <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
+    <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+    <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
+    <style type="text/css">
+        table{
+            border: 1px solid skyblue;
+            border-collapse:collapse;
+        }
+        thead{
+            color: #0C9A9A;
+        }
+        th{
+            border: 1px solid skyblue;
+        }
+        td{
+            border: 1px solid skyblue;
+        }
+        blockquote{
+            border-left: 1px solid skyblue;
+        }
+        #jsmind_container{
+            height: 1000px;
+        }
+        #mind_container{
+            height: 1200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
+        <div th:replace="com/menu :: menu"></div>
+        <br><br><br>
+        <div class="ui fluid container" v-show="isNode">
+            <div class="ui three column grid">
+                <div :class="left" v-show="isLeft">
+                    <div class="ui fluid container">
+                        <br>
+                        <div class="ui stacked left aligned segment">
+                            <div class="ui action input" :style="{width: inputWidth}">
+                                <input type="text" placeholder="搜索..." name="preInput" v-model="preInput">
+                                <button class="ui icon button" @click.prevent="preSearch">
+                                    <i class="search icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div th:replace="com/card :: addPreCard"></div>
+                        <div th:replace="com/card :: privatePreCard"></div>
+                        <div class="ui stacked right aligned segment" v-show="prePage">
+                            <div class="ui four bottom attached buttons">
+                                <div class="ui teal button" @click.prevent="toPrePage(true)">上一页</div>
+                                <div class="ui button active">第{{nowPreNum}}页</div>
+                                <div class="ui button active">共{{preSize}}条</div>
+                                <div class="ui teal button" @click.prevent="toNexPage(true)">下一页</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div :class="middle">
+                    <!--展示-->
+                    <div class="ui container" :style="{width: middleWidth}" v-show="!isEditor">
+                        <a class="ui red ribbon label" @click="changeEditor">编辑</a>
+                        <div class="ui piled segment" v-show="isBlog">
+                            <textarea hidden="hidden" th:text="${html}" id="html" style="white-space: pre-line"></textarea>
+                            <div id="content"></div>
+                            <span th:if="${flag}">
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                            </span>
+                        </div>
+                        <div class="ui raised segment" v-show="!isBlog">
+                            <div id="jsmind_container"></div>
+                        </div>
+                    </div>
+                    <!--编辑-->
+                    <div class="ui container" :style="{width: middleWidth}" v-show="isEditor">
+                        <a class="ui red ribbon label" @click.once="changeEditor">保存</a>
+                        <div class="ui stacked segment" v-show="isBlog">
+                            <textarea hidden="hidden" th:text="${html}" id="editor_html" style="white-space: pre-line"></textarea>
+                            <div id="test-editor">
+                                <textarea style="display:none;">{{editorHtml}}</textarea>
+                            </div>
+                            <span th:if="${flag}">
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                                <br><br><br><br><br><br><br><br><br><br>
+                            </span>
+                        </div>
+                        <div class="ui raised segment" v-show="!isBlog">
+                            <div id="editor_jsmind_container"></div>
+                        </div>
+                    </div>
+                </div>
+                <div :class="right" v-show="isRight">
+                    <div class="ui fluid container">
+                        <br>
+                        <div class="ui stacked left aligned segment">
+                            <div class="ui action input" :style="{width: inputWidth}">
+                                <input type="text" placeholder="搜索..." name="nexInput" v-model="nexInput">
+                                <button class="ui icon button" @click.prevent="nexSearch">
+                                    <i class="search icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div th:replace="com/card :: addNexCard"></div>
+                        <div th:replace="com/card :: privateNexCard"></div>
+                        <div class="ui stacked right aligned segment" v-show="nexPage">
+                            <div class="ui four bottom attached buttons">
+                                <div class="ui teal button" @click.prevent="toPrePage(false)">上一页</div>
+                                <div class="ui button active">第{{nowNexNum}}页</div>
+                                <div class="ui button active">共{{nexSize}}条</div>
+                                <div class="ui teal button" @click.prevent="toNexPage(false)">下一页</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui container" v-show="!isNode" style="width: 80%;">
+            <div class="ui stacked segment">
+                <div id="mind_container"></div>
+            </div>
+        </div>
+        <br><br>
+        <div th:replace="com/foot :: foot"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        let app = new Vue({
+            el: '#app',
+            data: {
+                isLeft: false,
+                isRight: false,
+                isBlog: true,
+                isNode: true,
+                isLogin: false,
+                isEditor: false,
+                left: 'five wide column',
+                middle: 'sixteen wide column',
+                right: 'five wide column',
+                middleWidth: '95%',
+                inputWidth: '75%',
+                str: '',
+                html: '',
+                mind: [],
+                preNodes: [],
+                nexNodes: [],
+                nowPreNum: 0,
+                nowNexNum: 0,
+                preSize: 0,
+                nexSize: 0,
+                nodeId: 0,
+                prePage: true,
+                nexPage: true,
+                preInput: "",
+                nexInput: "",
+                userVo: {},
+                editorHtml: ''
+            },
+            mounted: function(){
+                this.editorHtml = document.getElementById('editor_html').value
+                let nodeId = document.getElementById('nodeId').value
+                this.nodeId = nodeId
+                this.preparePage(nodeId, "", "", 0, 0)
+                axios.get("/user/getUserInfo")
+                    .then(response => {
+                        if (response.data !== ""){
+                            this.isLogin = true
+                            this.userVo = response.data
+                            this.prepareMind()
+                        }else{
+                            this.isLogin = false
+                        }
+                    })
+                    .catch(error => console.log(error))
+            },
+            methods: {
+                changeSize: function() {
+                    if (this.isLeft && this.isRight) {
+                        this.middleWidth = '100%'
+                        this.left = 'three wide column'
+                        this.middle = 'ten wide column'
+                        this.right = 'three wide column'
+                    } else if (!this.isLeft && this.isRight) {
+                        this.middleWidth = '95%'
+                        this.middle = 'eleven wide column'
+                        this.right = 'five wide column'
+                    } else if (this.isLeft && !this.isRight) {
+                        this.middleWidth = '95%'
+                        this.left = 'five wide column'
+                        this.middle = 'eleven wide column'
+                        this.right = 'three wide column'
+                    } else {
+                        this.middleWidth = '80%'
+                        this.left = 'three wide column'
+                        this.middle = 'sixteen wide column'
+                        this.right = 'three wide column'
+                    }
+                },
+                showPreNode: function() {
+                    this.isLeft = !this.isLeft
+                    this.changeSize()
+                },
+                showNextNode: function() {
+                    this.isRight = !this.isRight
+                    this.changeSize()
+                },
+                changeBlog: function() {
+                    this.isBlog = !this.isBlog
+                },
+                changeNode: function() {
+                    this.isNode = !this.isNode
+                },
+                changeEditor: function(){
+                    this.isEditor = !this.isEditor
+                    if (this.isEditor) {
+                        $(function() {
+                            let editor = editormd("test-editor", {
+                                width  : "100%",
+                                height : "100%",
+                                watch : false,
+                                toolbarIcons : function() {
+                                    return ["undo","redo","|",
+                                        "bold","del","italic","quote","ucwords","uppercase","lowercase","|",
+                                        // "h1","h2","h3","h4","h5","h6","|",
+                                        "list-ul","list-ol","hr","|",
+                                        "link","reference-link","image","code","preformatted-text",
+                                        "code-block","table","datetime","emoji","html-entities","pagebreak","|",
+                                        "goto-line","watch","clear","search","|",
+                                        //"help","info",
+                                        "releaseIcon", "index"]
+                                },
+                                path   : "/item/editormd/lib/"
+                            });
+                        });
+                    }
+                },
+                logout: function() {
+                    this.isLogin = false
+                },
+                search: function() {
+                    if (this.str === "") {
+                        alert("请输入搜索内容")
+                    } else {
+                        console.log(this.str)
+                    }
+                },
+                toPrePage: function(flag){
+                    if (flag && this.nowPreNum > 0){
+                        this.nowPreNum -= 1
+                        this.getPreNode(this.nowPreNum, 6, this.nodeId, this.preInput)
+                    }
+                    if (!flag && this.nowNexNum > 0){
+                        this.nowNexNum -= 1
+                        this.getNexNode(this.nowNexNum, 6, this.nodeId, this.nexInput)
+                    }
+                },
+                toNexPage: function(flag){
+                    let pre = this.preSize - (this.nowPreNum + 1) * 6
+                    if (flag && pre > 0){
+                        this.nowPreNum += 1
+                        pre = pre > 6 ? 6 : pre
+                        this.getPreNode(this.nowPreNum, pre, this.nodeId, this.preInput)
+                    }
+
+                    let nex = this.nexSize - (this.nowNexNum + 1) * 6
+                    if (!flag && nex > 0){
+                        this.nowNexNum += 1
+                        nex = nex > 6 ? 6 : nex
+                        this.getNexNode(this.nowNexNum, nex, this.nodeId, this.nexInput)
+                    }
+                },
+                getPreNode: function(pageNumber, pageSize, nodeId, title){
+                    axios.get("/private/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
+                        .then(response => this.preNodes = response.data)
+                        .catch(error => console.log(error))
+                },
+                getNexNode: function(pageNumber, pageSize, nodeId, title){
+                    axios.get("/private/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
+                        .then(response => this.nexNodes = response.data)
+                        .catch(error => console.log(error))
+                },
+                preSearch: function(){
+                    this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
+                },
+                nexSearch: function(){
+                    this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
+                },
+                preparePage: function(nodeId, preInput, nexInput, pageSize, pageNumber){
+                    // 前置节点
+                    axios.get("/private/getPreCount?nodeId=" + nodeId + "&title=" + preInput)
+                        .then(response => {
+                            this.preSize = response.data
+                            if(this.preSize > 6){
+                                pageSize = 6
+                                this.prePage = true
+                            }
+                            else{
+                                pageSize = this.preSize
+                                this.prePage = false
+                            }
+                            this.getPreNode(pageNumber, pageSize, this.nodeId, preInput)
+                        })
+                        .catch(error => console.log(error))
+
+                    // 后置节点
+                    axios.get("/private/getNexCount?nodeId=" + nodeId + "&title=" + nexInput)
+                        .then(response => {
+                            this.nexSize = response.data
+                            if(this.nexSize > 6){
+                                pageSize = 6
+                                this.nexPage = true
+                            }
+                            else{
+                                pageSize = this.nexSize
+                                this.nexPage = false
+                            }
+                            this.getNexNode(pageNumber, pageSize, this.nodeId, nexInput)
+                        })
+                        .catch(error => console.log(error))
+
+                },
+                prepareMind: function(){
+                    axios.get("/private/getMind?nodeId=" + this.nodeId + "&userId=" + this.userVo.userId.toString())
+                        .then(response => {
+                            let options = {
+                                mode: 'full',
+                                container: 'jsmind_container',
+                                editable: false,
+                                theme:'orange',
+                                support_html: true,
+                                view:{
+                                    engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                                    hmargin:100,        // 思维导图距容器外框的最小水平距离
+                                    vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                                    line_width:3,       // 思维导图线条的粗细
+                                    line_color:'#555'   // 思维导图线条的颜色
+                                },
+                                layout:{
+                                    hspace:100,          // 节点之间的水平间距
+                                    vspace:200,          // 节点之间的垂直间距
+                                    pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                                },
+                            }
+                            let m = response.data
+                            let res = []
+                            m.forEach((item) =>{
+                                let obj = {}
+                                obj.id = item.id
+                                obj.parentid = item.parentid
+                                obj.isroot = item.isroot
+                                obj.topic = item.topic
+                                obj.direction = item.direction
+                                obj.expanded = item.expanded
+                                res.push(obj)
+                            })
+                            let mind = {
+                                "meta":{
+                                    "name":"测试",
+                                    "author":"xiaobai",
+                                    "version":"1.0",
+                                },
+                                "format":"node_array",
+                                "data": res
+                            }
+                            let jm = new jsMind(options)
+                            jm.show(mind)
+                        })
+                        .catch(error => console.log(error))
+
+                    axios.get('/private/getNodeMind?nodeId=' + this.nodeId + "&userId=" + this.userVo.userId.toString() + "&level=3")
+                        .then(response => {
+                            let options = {
+                                mode: 'full',
+                                container: 'mind_container',
+                                editable: false,
+                                theme:'orange',
+                                support_html: true,
+                                view:{
+                                    engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                                    hmargin:50,        // 思维导图距容器外框的最小水平距离
+                                    vmargin:50,         // 思维导图距容器外框的最小垂直距离
+                                    line_width:3,       // 思维导图线条的粗细
+                                    line_color:'#555'   // 思维导图线条的颜色
+                                },
+                                layout:{
+                                    hspace:400,          // 节点之间的水平间距
+                                    vspace:200,          // 节点之间的垂直间距
+                                    pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                                },
+                            }
+                            let m = response.data
+                            console.log("???")
+                            console.log(m)
+                            let res = []
+                            m.forEach((item) =>{
+                                let obj = {}
+                                obj.id = item.id
+                                obj.parentid = item.parentid
+                                obj.isroot = item.isroot
+                                obj.topic = item.topic
+                                obj.direction = item.direction
+                                obj.expanded = item.expanded
+                                res.push(obj)
+                            })
+                            let mind = {
+                                "meta":{
+                                    "name":"测试",
+                                    "author":"xiaobai",
+                                    "version":"1.0",
+                                },
+                                "format":"node_array",
+                                "data": res
+                            }
+                            let jm = new jsMind(options)
+                            jm.show(mind)
+                        })
+                        .catch(error => console.log(error))
+                },
+                cut: function(nodeId){
+
+                },
+                edit: function(nodeId){
+
+                }
+            },
+        })
+
+        let html = document.getElementById('html').value;
+        app.html = html;
+        document.getElementById('content').innerHTML = marked(html
+            , {
+                baseUrl: null,
+                breaks: true,
+                gfm: true,
+                headerIds: true,
+                headerPrefix: '',
+                highlight: function(code, language){
+                    const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+                    return hljs.highlight(validLanguage, code).value;
+                },
+                langPrefix: 'language-',
+                mangle: true,
+                pedantic: false,
+                renderer: new marked.Renderer(),
+                silent: false,
+                smartLists: true,
+                smartypants: true,
+                xhtml: true
+            });
+        hljs.initHighlightingOnLoad()
+    </script>
+</body>
+</html>

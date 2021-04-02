@@ -5,9 +5,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.model.Map;
 import net.xiaobais.xiaobai.model.Node;
-import net.xiaobais.xiaobai.service.MapService;
-import net.xiaobais.xiaobai.service.MindService;
-import net.xiaobais.xiaobai.service.NodeService;
+import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.MindVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,20 +28,25 @@ public class MindController {
     @Resource
     private MapService mapService;
     @Resource
-    private MindService mindService;
+    private PublicMindService publicMindService;
     @Resource
-    private NodeService nodeService;
+    private PrivateMindService privateMindService;
+    @Resource
+    private PublicNodeService publicNodeService;
+    @Resource
+    private PrivateNodeService privateNodeService;
 
     private static final String NOTHING = "[]";
     private static final String PREFIX_URL = "/public/node/";
+    private static final String PRIVATE_URL = "/private/node/";
 
-    @ApiOperation("通过nodeId获取Mind数据")
+    @ApiOperation("通过nodeId获取Mind数据(public)")
     @GetMapping("/public/getMind")
     @ResponseBody
     public List<MindVo> findMindByNodeId(@RequestParam Integer nodeId){
 
         Map map = mapService.findMapById(nodeId);
-        Node node = nodeService.findNodeById(nodeId);
+        Node node = publicNodeService.findNodeById(nodeId);
         if (NOTHING.equals(map.getMapData())){
             List<MindVo> list = new ArrayList<>();
             MindVo mindVo = new MindVo("root" + nodeId, null, true,
@@ -55,12 +58,57 @@ public class MindController {
         return JSONObject.parseArray(map.getMapData(), MindVo.class);
     }
 
-    @ApiOperation("通过nodeId和层级获取Mind数据")
+    @ApiOperation("通过公开的nodeId和层级获取Mind数据")
     @GetMapping("/public/getNodeMind")
     @ResponseBody
     public List<MindVo> findMindByNodeIdAndLevel(@RequestParam Integer nodeId,
                                                  @RequestParam Integer level){
-        return mindService.getMindVoByLevel(level, nodeId);
+        return publicMindService.getMindVoByLevel(level, nodeId);
     }
+
+    @ApiOperation("通过nodeId获取所有迭代节点")
+    @GetMapping("/person/public/getIteratorMind")
+    @ResponseBody
+    public List<MindVo> findIteratorMindByNodeId(@RequestParam Integer nodeId){
+        return publicMindService.getIteratorMindVoByNodeId(nodeId);
+    }
+
+
+    @ApiOperation("通过nodeId和userId获取Mind数据(private)")
+    @GetMapping("/private/getMind")
+    @ResponseBody
+    public List<MindVo> findPrivateMindByNodeId(@RequestParam Integer nodeId,
+                                                @RequestParam Integer userId){
+        Map map = mapService.findMapById(nodeId);
+        Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
+        if (NOTHING.equals(map.getMapData())){
+            List<MindVo> list = new ArrayList<>();
+            MindVo mindVo = new MindVo("root" + nodeId, null, true,
+                    "<a href='" + PRIVATE_URL + nodeId + "/" + userId + "'>"
+                            + node.getNodeName() + "</a>",
+                    null, true);
+            list.add(mindVo);
+            return list;
+        }
+        return JSONObject.parseArray(map.getMapData(), MindVo.class);
+    }
+
+    @ApiOperation("通过私有的nodeId和userId和层级获取Mind数据")
+    @GetMapping("/private/getNodeMind")
+    @ResponseBody
+    public List<MindVo> findPrivateMindByNodeIdAndUserIdAndLevel(@RequestParam Integer nodeId,
+                                                                 @RequestParam Integer userId,
+                                                                 @RequestParam Integer level){
+        return privateMindService.getPrivateMindVoByLevel(level, nodeId, userId);
+    }
+
+    @ApiOperation("通过nodeId获取所有迭代节点")
+    @GetMapping("/private/getIteratorMind")
+    @ResponseBody
+    public List<MindVo> findPrivateIteratorMindByNodeId(@RequestParam Integer nodeId,
+                                                 @RequestParam Integer userId){
+        return privateMindService.getIteratorMindVoByNodeId(nodeId, userId);
+    }
+
 
 }

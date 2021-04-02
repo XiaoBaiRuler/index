@@ -12,43 +12,64 @@ import java.util.List;
 public interface NextService {
 
     /**
-     * 查找非私有后置节点
+     * 查找所有后置节点
      * @param nodeId nodeId
      * @param pageNumber pageNumber
      * @param pageSize pageSize
+     * @param isPrivate 0:非私有 1:私有
      * @return List<Node>
      */
-    List<Node> findNextByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize);
+    List<Node> findNextByNodeId(Integer nodeId,
+                                Integer pageNumber,
+                                Integer pageSize,
+                                Integer isPrivate);
 
     /**
-     * 查找非私有的前置节点
+     * 查找非私有后置节点
      * @param nodeId nodeId
      * @return List<Node>
      */
     List<Node> findNextByNodeId(Integer nodeId);
 
     /**
-     * 统计非私有后置节点
+     * 通过用户id查找私有后置节点
      * @param nodeId nodeId
-     * @return int
+     * @param userId userId
+     * @return List<Node>
      */
-    int countNextNode(Integer nodeId);
+    List<Node> findPrivateNextByNodeIdAndUserId(Integer nodeId, Integer userId);
 
     /**
-     * 查找非私有后置节点
+     * 通过title查找非私有后置节点
      * @param nodeId nodeId
      * @param pageNumber pageNumber
      * @param pageSize pageSize
      * @param title title
+     * @param isPrivate 0:非私有 1:私有
      * @return List<Node>
      */
-    List<Node> findNextByNodeIdAndTitle(Integer nodeId, Integer pageNumber, Integer pageSize, String title);
+    List<Node> findNextByNodeIdAndTitle(Integer nodeId,
+                                        Integer pageNumber,
+                                        Integer pageSize,
+                                        String title,
+                                        Integer isPrivate);
+
+
+    /**
+     * 统计非私有后置节点
+     * @param nodeId nodeId
+     * @param isPrivate 0:非私有 1:私有
+     * @return int
+     */
+    int countNextNode(Integer nodeId, Integer isPrivate);
+
 
     /**
      * 根据title统计非私有后置节点
      * @param nodeId nodeId
      * @param title title
+     * @param isPrivate 0:非私有 1:私有
      * @return int
      */
-    int countNextNode(Integer nodeId, String title);
+    int countNextNode(Integer nodeId, String title, Integer isPrivate);
 }

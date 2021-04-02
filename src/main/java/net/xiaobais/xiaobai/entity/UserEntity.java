@@ -28,6 +28,7 @@ public class UserEntity implements UserDetails {
     private String userPhone;
     private String userEmail;
     private String userAvatar;
+    private Integer indexId;
 
     private List<GrantedAuthority> authorities = new ArrayList<>();
 

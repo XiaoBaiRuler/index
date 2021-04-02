@@ -13,6 +13,7 @@
     <result column="user_phone" jdbcType="VARCHAR" property="userPhone" />
     <result column="user_email" jdbcType="VARCHAR" property="userEmail" />
     <result column="user_avatar" jdbcType="VARCHAR" property="userAvatar" />
+    <result column="index_id" jdbcType="INTEGER" property="indexId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -74,7 +75,7 @@
   </sql>
   <sql id="Base_Column_List">
     user_id, username, password, create_date, last_login_time, enabled, account_non_expired, 
-    credentials_non_expired, user_phone, user_email, user_avatar
+    credentials_non_expired, user_phone, user_email, user_avatar, index_id
   </sql>
   <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.UserExample" resultMap="BaseResultMap">
     select
@@ -113,11 +114,11 @@
     insert into user (username, password, create_date, 
       last_login_time, enabled, account_non_expired, 
       credentials_non_expired, user_phone, user_email, 
-      user_avatar)
+      user_avatar, index_id)
     values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{createDate,jdbcType=DATE}, 
       #{lastLoginTime,jdbcType=DATE}, #{enabled,jdbcType=BIT}, #{accountNonExpired,jdbcType=BIT}, 
       #{credentialsNonExpired,jdbcType=BIT}, #{userPhone,jdbcType=VARCHAR}, #{userEmail,jdbcType=VARCHAR}, 
-      #{userAvatar,jdbcType=VARCHAR})
+      #{userAvatar,jdbcType=VARCHAR}, #{indexId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.User">
     <selectKey keyProperty="userId" order="AFTER" resultType="java.lang.Integer">
@@ -155,6 +156,9 @@
       <if test="userAvatar != null">
         user_avatar,
       </if>
+      <if test="indexId != null">
+        index_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="username != null">
@@ -186,6 +190,9 @@
       </if>
       <if test="userAvatar != null">
         #{userAvatar,jdbcType=VARCHAR},
+      </if>
+      <if test="indexId != null">
+        #{indexId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -231,6 +238,9 @@
       <if test="record.userAvatar != null">
         user_avatar = #{record.userAvatar,jdbcType=VARCHAR},
       </if>
+      <if test="record.indexId != null">
+        index_id = #{record.indexId,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -248,7 +258,8 @@
       credentials_non_expired = #{record.credentialsNonExpired,jdbcType=BIT},
       user_phone = #{record.userPhone,jdbcType=VARCHAR},
       user_email = #{record.userEmail,jdbcType=VARCHAR},
-      user_avatar = #{record.userAvatar,jdbcType=VARCHAR}
+      user_avatar = #{record.userAvatar,jdbcType=VARCHAR},
+      index_id = #{record.indexId,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -286,6 +297,9 @@
       <if test="userAvatar != null">
         user_avatar = #{userAvatar,jdbcType=VARCHAR},
       </if>
+      <if test="indexId != null">
+        index_id = #{indexId,jdbcType=INTEGER},
+      </if>
     </set>
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
@@ -300,7 +314,8 @@
       credentials_non_expired = #{credentialsNonExpired,jdbcType=BIT},
       user_phone = #{userPhone,jdbcType=VARCHAR},
       user_email = #{userEmail,jdbcType=VARCHAR},
-      user_avatar = #{userAvatar,jdbcType=VARCHAR}
+      user_avatar = #{userAvatar,jdbcType=VARCHAR},
+      index_id = #{indexId,jdbcType=INTEGER}
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
 </mapper>

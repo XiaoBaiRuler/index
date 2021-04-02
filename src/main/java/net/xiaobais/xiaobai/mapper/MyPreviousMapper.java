@@ -17,16 +17,19 @@ public interface MyPreviousMapper {
      * @param nodeId nodeId
      * @param pageNumber 第几页
      * @param pageSize 页大小
+     * @param isPrivate 是否私有
      * @return List<node>
      */
-    List<Node> findNotPrivatePreviousByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize);
+    List<Node> findPreviousByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize,
+                                              Integer isPrivate);
 
     /**
      * 统计nodeId的非私有前置Id的个数
      * @param nodeId nodeId
+     * @param isPrivate 是否私有
      * @return int
      */
-    int countNotPrivatePreviousByNodeId(Integer nodeId);
+    int countPreviousByNodeId(Integer nodeId, Integer isPrivate);
 
     /**
      * 根据nodeId和nodeName来查找所有非私有前置节点
@@ -34,22 +37,26 @@ public interface MyPreviousMapper {
      * @param pageNumber pageNumber
      * @param pageSize pageSize
      * @param title title
+     * @param isPrivate 是否私有
      * @return List<node>
      */
-    List<Node> findNotPrivatePreviousByNodeIdAndTitle(
+    List<Node> findPreviousByNodeIdAndTitle(
             @Param("nodeId") Integer nodeId,
             @Param("pageNumber") Integer pageNumber,
             @Param("pageSize") Integer pageSize,
-            @Param("title") String title);
+            @Param("title") String title,
+            @Param("isPrivate") Integer isPrivate);
 
     /**
      * 统计nodeId的非私有前置Id的个数
      * @param nodeId nodeId
      * @param title title
+     * @param isPrivate 是否私有
      * @return int
      */
-    int countNotPrivatePreviousByNodeIdAndTitle(
+    int countPreviousByNodeIdAndTitle(
             @Param("nodeId") Integer nodeId,
-            @Param("title") String title);
+            @Param("title") String title,
+            @Param("isPrivate") Integer isPrivate);
 
 }

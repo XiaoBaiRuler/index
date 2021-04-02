@@ -24,4 +24,11 @@ public interface IteratorService {
      * @param iterator iterator
      */
     void insertIterator(Iterator iterator);
+
+    /**
+     * 通过迭代节点Id查找被迭代的节点
+     * @param iteratorId iteratorId
+     * @return Node
+     */
+    Node getNodeByIteratorId(Integer iteratorId);
 }

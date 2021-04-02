@@ -9,7 +9,7 @@ import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.BlogService;
 import net.xiaobais.xiaobai.service.IteratorService;
 import net.xiaobais.xiaobai.service.MapService;
-import net.xiaobais.xiaobai.service.NodeService;
+import net.xiaobais.xiaobai.service.PublicNodeService;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,7 +30,7 @@ import java.util.List;
 public class IteratorController {
 
     @Resource
-    private NodeService nodeService;
+    private PublicNodeService nodeService;
     @Resource
     private BlogService blogService;
     @Resource
@@ -43,8 +43,8 @@ public class IteratorController {
     @ApiOperation("跳转添加迭代节点页面")
     @GetMapping("/toAddIterator/{nodeId}")
     public String toAddIterator(@PathVariable Integer nodeId, Model model){
-
-        Blog blog = blogService.findBlogById(nodeId);
+        Node node = nodeService.findNodeById(nodeId);
+        Blog blog = blogService.findBlogById(node.getBlogId());
         model.addAttribute("nodeId", nodeId);
         model.addAttribute("html", blog.getBlogContent());
         if (blog.getBlogContent() != null && blog.getBlogContent().length() > SIZE) {
@@ -80,7 +80,7 @@ public class IteratorController {
         int k = -1;
         if (i != -1 && j != -1){
             node.setUserId(userId);
-            node.setNodeName("Iterator:" + node.getNodeName());
+            node.setNodeName(username + " => " + node.getNodeName());
             node.setBlogId(i);
             node.setMapId(j);
             k = nodeService.insertNode(node);
@@ -89,11 +89,29 @@ public class IteratorController {
         if (k != -1){
             Iterator iterator = new Iterator();
             iterator.setIteratorId(k);
-            iterator.setIteratorName(username + "iterative" + node.getNodeName());
+            iterator.setIteratorName(username + " => " + node.getNodeName());
             iterator.setNodeId(nodeId);
             iterator.setIteratorReason(reason);
             iteratorService.insertIterator(iterator);
         }
+    }
+
+    @ApiOperation("展示迭代节点")
+    @GetMapping("/iterator/{nodeId}")
+    public String getIterator(@PathVariable Integer nodeId, Model model){
+        Node node = nodeService.findNodeById(nodeId);
+        Blog blog = blogService.findBlogById(node.getBlogId());
+        model.addAttribute("nodeId", nodeId);
+        model.addAttribute("html", blog.getBlogContent());
+        if (blog.getBlogContent() != null && blog.getBlogContent().length() > SIZE) {
+            model.addAttribute("flag", false);
+        }
+        else {
+            model.addAttribute("flag", true);
+        }
+        model.addAttribute("mostCollect", nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
+        model.addAttribute("mostStar", nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
+        return "publicIterator";
     }
 
     private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){

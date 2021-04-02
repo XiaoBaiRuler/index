@@ -42,6 +42,7 @@ public class JwtUtils {
                 .claim("id", user.getUserId())
                 .claim("username", user.getUsername())
                 .claim("avatar", user.getUserAvatar())
+                .claim("indexId", user.getIndexId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(SignatureAlgorithm.HS256, KEY).compact();
@@ -121,9 +122,10 @@ public class JwtUtils {
                 .getBody();
         UserVo userVo = new UserVo();
         userVo.setUsername((String) claims.get("username"));
-        userVo.setUrl("/public/user/" + claims.get("id"));
+        userVo.setUrl("/private/node/" + claims.get("indexId") + "/" + claims.get("id"));
         userVo.setImg((String) claims.get("avatar"));
         userVo.setUserId((Integer) claims.get("id"));
+        userVo.setIndexId((Integer) claims.get("indexId"));
         return userVo;
     }
 

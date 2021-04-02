@@ -4,7 +4,7 @@ import com.github.pagehelper.PageHelper;
 import net.xiaobais.xiaobai.mapper.NodeMapper;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.NodeExample;
-import net.xiaobais.xiaobai.service.NodeService;
+import net.xiaobais.xiaobai.service.PublicNodeService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,7 +16,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Service
-public class NodeServiceImpl implements NodeService {
+public class PublicNodeServiceImpl implements PublicNodeService {
 
     @Resource
     private NodeMapper nodeMapper;
@@ -29,32 +29,6 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public Node findNodeById(Integer id) {
         return nodeMapper.selectByPrimaryKey(id);
-    }
-
-    @Override
-    public Node findNodeByNodeIdAndNotIsPrivate(Integer id) {
-        NodeExample nodeExample = new NodeExample();
-        nodeExample.createCriteria().andNodeIdEqualTo(id)
-                .andIsPrivateEqualTo(false);
-        List<Node> nodes = nodeMapper.selectByExample(nodeExample);
-        return nodes.isEmpty() ? null : nodes.get(0);
-    }
-
-    @Override
-    public List<Node> findNodeByTopCollect(Integer top) {
-        NodeExample nodeExample = new NodeExample();
-        nodeExample.setOrderByClause("collect desc");
-        PageHelper.startPage(1, top);
-        return nodeMapper.selectByExample(nodeExample);
-    }
-
-    @Override
-    public List<Node> findNodeByTopStar(Integer top) {
-
-        NodeExample nodeExample = new NodeExample();
-        nodeExample.setOrderByClause("star desc");
-        PageHelper.startPage(1, top);
-        return nodeMapper.selectByExample(nodeExample);
     }
 
     @Override
@@ -75,6 +49,33 @@ public class NodeServiceImpl implements NodeService {
     public int insertNode(Node node) {
         int insert = nodeMapper.insert(node);
         return insert != -1 ? node.getNodeId() : -1;
+    }
+
+    @Override
+    public Node findNodeByNodeIdAndNotIsPrivate(Integer id) {
+        NodeExample nodeExample = new NodeExample();
+        nodeExample.createCriteria().andNodeIdEqualTo(id)
+                .andIsPrivateEqualTo(false);
+        List<Node> nodes = nodeMapper.selectByExample(nodeExample);
+        return nodes.isEmpty() ? null : nodes.get(0);
+    }
+
+    @Override
+    public List<Node> findNodeByTopCollect(Integer top) {
+        NodeExample nodeExample = new NodeExample();
+        nodeExample.createCriteria().andIsPrivateEqualTo(false);
+        nodeExample.setOrderByClause("collect desc");
+        PageHelper.startPage(1, top);
+        return nodeMapper.selectByExample(nodeExample);
+    }
+
+    @Override
+    public List<Node> findNodeByTopStar(Integer top) {
+        NodeExample nodeExample = new NodeExample();
+        nodeExample.createCriteria().andIsPrivateEqualTo(false);
+        nodeExample.setOrderByClause("star desc");
+        PageHelper.startPage(1, top);
+        return nodeMapper.selectByExample(nodeExample);
     }
 
 }

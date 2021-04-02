@@ -841,6 +841,66 @@ public class UserExample {
             addCriterion("user_avatar not between", value1, value2, "userAvatar");
             return (Criteria) this;
         }
+
+        public Criteria andIndexIdIsNull() {
+            addCriterion("index_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdIsNotNull() {
+            addCriterion("index_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdEqualTo(Integer value) {
+            addCriterion("index_id =", value, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdNotEqualTo(Integer value) {
+            addCriterion("index_id <>", value, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdGreaterThan(Integer value) {
+            addCriterion("index_id >", value, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("index_id >=", value, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdLessThan(Integer value) {
+            addCriterion("index_id <", value, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdLessThanOrEqualTo(Integer value) {
+            addCriterion("index_id <=", value, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdIn(List<Integer> values) {
+            addCriterion("index_id in", values, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdNotIn(List<Integer> values) {
+            addCriterion("index_id not in", values, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdBetween(Integer value1, Integer value2) {
+            addCriterion("index_id between", value1, value2, "indexId");
+            return (Criteria) this;
+        }
+
+        public Criteria andIndexIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("index_id not between", value1, value2, "indexId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

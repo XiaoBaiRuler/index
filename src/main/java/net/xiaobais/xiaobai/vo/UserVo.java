@@ -14,4 +14,5 @@ public class UserVo {
     private String url;
     private String img;
     private Integer userId;
+    private Integer indexId;
 }

@@ -3,7 +3,7 @@ package net.xiaobais.xiaobai.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.service.LikeService;
-import net.xiaobais.xiaobai.service.NodeService;
+import net.xiaobais.xiaobai.service.PublicNodeService;
 import net.xiaobais.xiaobai.utils.JwtUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +26,7 @@ public class LikeController {
     @Resource
     private LikeService likeService;
     @Resource
-    private NodeService nodeService;
+    private PublicNodeService nodeService;
 
     @ApiOperation("添加点赞")
     @GetMapping("/person/public/addNodeLike")

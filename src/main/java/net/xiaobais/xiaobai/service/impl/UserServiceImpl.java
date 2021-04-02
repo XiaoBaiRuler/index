@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
         user.setCredentialsNonExpired(true);
         user.setUserEmail(email);
         user.setUserAvatar("/img/logo.png");
+        user.setIndexId(-1);
         userMapper.insert(user);
         return user.getUserId();
     }
@@ -75,5 +76,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Integer userId) {
         return userMapper.selectByPrimaryKey(userId);
+    }
+
+    @Override
+    public void insertIndexId(Integer nodeId, Integer userId) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setIndexId(nodeId);
+        userMapper.updateByPrimaryKeySelective(user);
     }
 }

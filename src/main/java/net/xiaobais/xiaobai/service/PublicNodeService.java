@@ -9,7 +9,9 @@ import java.util.List;
  * @Date 2021/3/3 12:57
  * @Version 1.0
  */
-public interface NodeService {
+public interface PublicNodeService {
+
+    /* all */
 
     /**
      * 获取网站根节点
@@ -23,27 +25,6 @@ public interface NodeService {
      * @return Node
      */
     Node findNodeById(Integer id);
-
-    /**
-     * 根据节点ID查找非私有节点
-     * @param id NodeId
-     * @return Node
-     */
-    Node findNodeByNodeIdAndNotIsPrivate(Integer id);
-
-    /**
-     * 查找最多收藏的5个
-     * @param top top
-     * @return List<Node>
-     */
-    List<Node> findNodeByTopCollect(Integer top);
-
-    /**
-     * 查找最多点赞的5个
-     * @param top top
-     * @return List<Node>
-     */
-    List<Node> findNodeByTopStar(Integer top);
 
     /**
      * 添加点赞树
@@ -63,5 +44,28 @@ public interface NodeService {
      * @return int
      */
     int insertNode(Node node);
+
+    /* public */
+
+    /**
+     * 根据节点ID查找非私有节点
+     * @param id NodeId
+     * @return Node
+     */
+    Node findNodeByNodeIdAndNotIsPrivate(Integer id);
+
+    /**
+     * 查找公开的最多收藏的5个
+     * @param top top
+     * @return List<Node>
+     */
+    List<Node> findNodeByTopCollect(Integer top);
+
+    /**
+     * 查找公开的最多点赞的5个
+     * @param top top
+     * @return List<Node>
+     */
+    List<Node> findNodeByTopStar(Integer top);
 
 }

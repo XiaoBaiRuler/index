@@ -44,6 +44,9 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
      * @return UsernamePasswordAuthenticationToken
      */
     private UsernamePasswordAuthenticationToken getAuthentication(String token){
+        if (token == null || token.length() == 0){
+            return null;
+        }
         String username = JwtUtils.getUsername(token);
         if (username != null){
             List<SimpleGrantedAuthority> userRoles = JwtUtils.getUserRole(token);

@@ -3,7 +3,7 @@ package net.xiaobais.xiaobai.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.service.CollectService;
-import net.xiaobais.xiaobai.service.NodeService;
+import net.xiaobais.xiaobai.service.PublicNodeService;
 import net.xiaobais.xiaobai.utils.JwtUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 public class CollectController {
 
     @Resource
-    private NodeService nodeService;
+    private PublicNodeService nodeService;
     @Resource
     private CollectService collectService;
 

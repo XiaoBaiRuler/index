@@ -6,7 +6,8 @@ import net.xiaobais.xiaobai.model.Next;
 import net.xiaobais.xiaobai.model.NextExample;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.NextService;
-import net.xiaobais.xiaobai.service.NodeService;
+import net.xiaobais.xiaobai.service.PrivateNodeService;
+import net.xiaobais.xiaobai.service.PublicNodeService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,13 +27,16 @@ public class NextServiceImpl implements NextService {
     @Resource
     private NextMapper nextMapper;
     @Resource
-    private NodeService nodeService;
+    private PublicNodeService publicNodeService;
+    @Resource
+    private PrivateNodeService privateNodeService;
 
     @Override
-    public List<Node> findNextByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize) {
+    public List<Node> findNextByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize,
+                                       Integer isPrivate) {
         pageNumber = pageNumber == 0 ? pageNumber : pageNumber * pageSize + 1;
-        return myNextMapper.findNotPrivateNextByNodeId(
-                nodeId, pageNumber, pageSize);
+        return myNextMapper.findNextByNodeId(
+                nodeId, pageNumber, pageSize, isPrivate);
     }
 
     @Override
@@ -41,27 +45,39 @@ public class NextServiceImpl implements NextService {
         nextExample.createCriteria().andNodeIdEqualTo(nodeId);
         List<Next> next = nextMapper.selectByExample(nextExample);
         List<Node> lists = new ArrayList<>();
-        next.forEach(n -> lists.add(nodeService.findNodeByNodeIdAndNotIsPrivate(n.getNextId())) );
+        next.forEach(n -> lists.add(publicNodeService.findNodeByNodeIdAndNotIsPrivate(n.getNextId())));
         return lists;
     }
 
     @Override
-    public int countNextNode(Integer nodeId) {
-        return myNextMapper.countNotPrivateNextByNodeId(nodeId);
+    public List<Node> findPrivateNextByNodeIdAndUserId(Integer nodeId, Integer userId) {
+        NextExample nextExample = new NextExample();
+        nextExample.createCriteria().andNodeIdEqualTo(nodeId);
+        List<Next> next = nextMapper.selectByExample(nextExample);
+        List<Node> lists = new ArrayList<>();
+        next.forEach(n -> lists.add(privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(n.getNextId(), userId)));
+        return lists;
     }
 
     @Override
     public List<Node> findNextByNodeIdAndTitle(Integer nodeId, Integer pageNumber,
-                                       Integer pageSize, String title) {
+                                               Integer pageSize, String title, Integer isPrivate) {
         pageNumber = pageNumber == 0 ? pageNumber : pageNumber * pageSize + 1;
         title = "%" + title + "%";
-        return myNextMapper.findNotPrivateNextByNodeIdAndTitle(nodeId, pageNumber, pageSize, title);
+        return myNextMapper.findNextByNodeIdAndTitle(nodeId, pageNumber, pageSize, title, isPrivate);
     }
 
+
     @Override
-    public int countNextNode(Integer nodeId, String title) {
+    public int countNextNode(Integer nodeId, Integer isPrivate) {
+        return myNextMapper.countNextByNodeId(nodeId, isPrivate);
+    }
+
+
+    @Override
+    public int countNextNode(Integer nodeId, String title, Integer isPrivate) {
         title = "%" + title + "%";
-        return myNextMapper.countNotPrivateNextByNodeIdAndTitle(nodeId, title);
+        return myNextMapper.countNextByNodeIdAndTitle(nodeId, title, isPrivate);
     }
 
 

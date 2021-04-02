@@ -17,16 +17,19 @@ public interface MyNextMapper {
      * @param nodeId nodeId
      * @param pageNumber pageNumber
      * @param pageSize pageSize
+     * @param isPrivate isPrivate
      * @return List<Node>
      */
-    List<Node> findNotPrivateNextByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize);
+    List<Node> findNextByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize,
+                                          Integer isPrivate);
 
     /**
      * 获取非私有后置节点的个数
      * @param nodeId nodeId
+     * @param isPrivate isPrivate
      * @return int
      */
-    int countNotPrivateNextByNodeId(Integer nodeId);
+    int countNextByNodeId(Integer nodeId, Integer isPrivate);
 
     /**
      * 根据标题获取非私有后置节点
@@ -34,21 +37,25 @@ public interface MyNextMapper {
      * @param pageNumber pageNumber
      * @param pageSize pageSize
      * @param title title
+     * @Param isPrivate isPrivate
      * @return List<Node>
      */
-    List<Node> findNotPrivateNextByNodeIdAndTitle(
+    List<Node> findNextByNodeIdAndTitle(
             @Param("nodeId") Integer nodeId,
             @Param("pageNumber") Integer pageNumber,
             @Param("pageSize") Integer pageSize,
-            @Param("title") String title);
+            @Param("title") String title,
+            @Param("isPrivate") Integer isPrivate);
 
     /**
      * 获取非私有后置节点的个数
      * @param nodeId nodeId
      * @param title title
+     * @param isPrivate isPrivate
      * @return int
      */
-    int countNotPrivateNextByNodeIdAndTitle(
+    int countNextByNodeIdAndTitle(
             @Param("nodeId") Integer nodeId,
-            @Param("title") String title);
+            @Param("title") String title,
+            @Param("isPrivate") Integer isPrivate);
 }

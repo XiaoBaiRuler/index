@@ -1,7 +1,8 @@
 package net.xiaobais.xiaobai;
 
-import net.xiaobais.xiaobai.service.MindService;
-import net.xiaobais.xiaobai.service.NodeService;
+import net.xiaobais.xiaobai.service.PrivateMindService;
+import net.xiaobais.xiaobai.service.PublicMindService;
+import net.xiaobais.xiaobai.service.PublicNodeService;
 import net.xiaobais.xiaobai.service.PreviousService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,15 +16,18 @@ class XiaobaiApplicationTests {
     private PreviousService previousService;
 
     @Resource
-    private MindService mindService;
+    private PublicMindService mindService;
 
     @Resource
-    private NodeService nodeService;
+    private PublicNodeService nodeService;
+
+    @Resource
+    private PrivateMindService privateMindService;
 
     @Test
     void contextLoads() {
 
-        System.out.println(nodeService.findNodeByTopCollect(5));
+        System.out.println(privateMindService.getPrivateMindVoByLevel(3, 1, 1));
     }
 
 }
