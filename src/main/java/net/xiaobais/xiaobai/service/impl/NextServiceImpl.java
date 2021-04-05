@@ -31,10 +31,12 @@ public class NextServiceImpl implements NextService {
     @Resource
     private PrivateNodeService privateNodeService;
 
+    private static final Integer SIZE = 6;
+
     @Override
     public List<Node> findNextByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize,
                                        Integer isPrivate) {
-        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * pageSize + 1;
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * SIZE;
         return myNextMapper.findNextByNodeId(
                 nodeId, pageNumber, pageSize, isPrivate);
     }
@@ -62,7 +64,7 @@ public class NextServiceImpl implements NextService {
     @Override
     public List<Node> findNextByNodeIdAndTitle(Integer nodeId, Integer pageNumber,
                                                Integer pageSize, String title, Integer isPrivate) {
-        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * pageSize + 1;
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * SIZE;
         title = "%" + title + "%";
         return myNextMapper.findNextByNodeIdAndTitle(nodeId, pageNumber, pageSize, title, isPrivate);
     }
@@ -78,6 +80,14 @@ public class NextServiceImpl implements NextService {
     public int countNextNode(Integer nodeId, String title, Integer isPrivate) {
         title = "%" + title + "%";
         return myNextMapper.countNextByNodeIdAndTitle(nodeId, title, isPrivate);
+    }
+
+    @Override
+    public int addNext(Integer nodeId, Integer nextId) {
+        Next next = new Next();
+        next.setNodeId(nodeId);
+        next.setNextId(nextId);
+        return nextMapper.insert(next);
     }
 
 

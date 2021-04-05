@@ -12,6 +12,7 @@ import net.xiaobais.xiaobai.service.MapService;
 import net.xiaobais.xiaobai.service.PublicNodeService;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,40 +60,48 @@ public class IteratorController {
     }
 
     @ApiOperation("添加迭代节点和迭代关系")
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/addIterator")
     @ResponseBody
     public void addIterator(Integer nodeId, String html,
                             String map, String username,
-                            String reason, Integer userId){
+                            String reason, Integer userId) throws Exception {
         Node node = nodeService.findNodeById(nodeId);
         // 新建一个blog
         Blog blog = blogService.findBlogById(node.getBlogId());
         blog.setBlogId(null);
         blog.setBlogContent(html);
         int i = blogService.insertBlog(blog);
+        if (i == -1){
+            throw new Exception("添加博客失败");
+        }
         // 新建一个map
         Map m = mapService.findMapById(node.getMapId());
         m.setMapName(username);
         m.setMapId(null);
         m.setMapData(map);
         int j = mapService.insertMap(m);
+        if (j == -1){
+            throw new Exception("添加思维导图内容失败");
+        }
         // 新建一个node
-        int k = -1;
-        if (i != -1 && j != -1){
-            node.setUserId(userId);
-            node.setNodeName(username + " => " + node.getNodeName());
-            node.setBlogId(i);
-            node.setMapId(j);
-            k = nodeService.insertNode(node);
+        node.setUserId(userId);
+        node.setNodeName(username + " => " + node.getNodeName());
+        node.setBlogId(i);
+        node.setMapId(j);
+        int k = nodeService.insertNode(node);
+        if (k == -1){
+            throw new Exception("添加节点失败");
         }
         // 添加迭代关系
-        if (k != -1){
-            Iterator iterator = new Iterator();
-            iterator.setIteratorId(k);
-            iterator.setIteratorName(username + " => " + node.getNodeName());
-            iterator.setNodeId(nodeId);
-            iterator.setIteratorReason(reason);
-            iteratorService.insertIterator(iterator);
+        Iterator iterator = new Iterator();
+        iterator.setIteratorId(k);
+        iterator.setIteratorName(username + " => " + node.getNodeName());
+        iterator.setNodeId(nodeId);
+        iterator.setIteratorReason(reason);
+        int l = iteratorService.insertIterator(iterator);
+        if (l == -1){
+            throw new Exception("添加迭代关系失败");
         }
     }
 

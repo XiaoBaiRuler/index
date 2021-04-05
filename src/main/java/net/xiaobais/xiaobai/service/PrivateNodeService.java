@@ -18,4 +18,10 @@ public interface PrivateNodeService {
     Node findNodeByNodeIdAndIsPrivateAndUserId(Integer nodeId, Integer userId);
 
 
+    /**
+     * 添加node
+     * @param node node
+     * @return int
+     */
+    int insertNode(Node node);
 }

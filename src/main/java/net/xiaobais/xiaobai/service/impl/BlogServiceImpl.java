@@ -6,6 +6,7 @@ import net.xiaobais.xiaobai.service.BlogService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @Author xiaobai
@@ -28,4 +29,19 @@ public class BlogServiceImpl implements BlogService {
         int insert = blogMapper.insert(blog);
         return insert == -1 ? -1 : blog.getBlogId();
     }
+
+    @Override
+    public int insertBlogByTitleAndContent(String blogTitle, String blogContent, String blogDes) {
+        Blog blog = new Blog();
+        blog.setBlogTitle(blogTitle);
+        blog.setBlogContent(blogContent);
+        blog.setBlogDes(blogDes);
+        blog.setCreateDate(new Date());
+        blog.setUpdateDate(new Date());
+        blog.setIsComment(false);
+        int insert = blogMapper.insert(blog);
+        return insert == -1 ? -1 : blog.getBlogId();
+    }
+
+
 }

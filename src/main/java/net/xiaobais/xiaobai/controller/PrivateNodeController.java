@@ -4,16 +4,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.User;
-import net.xiaobais.xiaobai.service.NextService;
-import net.xiaobais.xiaobai.service.PreviousService;
-import net.xiaobais.xiaobai.service.UserService;
+import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.utils.JwtUtils;
+import net.xiaobais.xiaobai.vo.AddNodeVo;
 import net.xiaobais.xiaobai.vo.NodeVo;
+import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -23,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +41,14 @@ public class PrivateNodeController {
     private NextService nextService;
     @Resource
     private UserService userService;
+    @Resource
+    private BlogService blogService;
+    @Resource
+    private MapService mapService;
+    @Resource
+    private PrivateNodeService nodeService;
+    @Resource
+    private PublicNodeService publicNodeService;
 
     @ApiOperation("获取私有前置节点")
     @GetMapping("/getPreNode")
@@ -93,8 +101,7 @@ public class PrivateNodeController {
         if (title == null || "".equals(title)) {
             nextNodes = nextService.findNextByNodeId(nodeId, pageNumber, pageSize, userId != 1 ? 1 : 0);
         } else {
-            nextNodes = nextService.findNextByNodeIdAndTitle(nodeId, pageNumber, pageSize, title,
-                    userId == 1 ? 1 : 0);
+            nextNodes = nextService.findNextByNodeIdAndTitle(nodeId, pageNumber, pageSize, title, userId != 1 ? 1 : 0);
         }
         List<NodeVo> nextNodesVo = new ArrayList<>();
         nextNodes.forEach(node -> nextNodesVo.add(nodeToNodeVo(node)));
@@ -148,6 +155,114 @@ public class PrivateNodeController {
         }
     }
 
+    @ApiOperation("跳转添加前置节点")
+    @GetMapping("/toAddPrevious/{nodeId}")
+    public String toAddPreNode(@PathVariable Integer nodeId, Model model){
+        model.addAttribute("title", "前置");
+        model.addAttribute("rel", "下");
+        model.addAttribute("nodeId", nodeId);
+        model.addAttribute("isPre", "1");
+        model.addAttribute("mostCollect", nodeToSimpleNodeVo(publicNodeService.findNodeByTopCollect(5)));
+        model.addAttribute("mostStar", nodeToSimpleNodeVo(publicNodeService.findNodeByTopStar(5)));
+        return "addNode";
+    }
+
+    @ApiOperation("添加前置节点")
+    @Transactional(rollbackFor = Exception.class)
+    @PostMapping("/addPrevious/{nodeId}")
+    @ResponseBody
+    public void addPreNode(@PathVariable Integer nodeId, AddNodeVo nodeVo) throws Exception {
+        User user = userService.getUserById(nodeVo.getUserId());
+        int blogId = blogService.insertBlogByTitleAndContent(nodeVo.getBlogTitle(),
+                nodeVo.getContent(), nodeVo.getDesc());
+        if (blogId == -1){
+            throw new Exception("博客内容添加失败");
+        }
+
+        int mapId = mapService.insertMapByMapNameAndMapAuthorAndMapData(nodeVo.getBlogTitle(),
+                user.getUsername(), nodeVo.getMapData());
+        if (mapId == -1){
+            throw new Exception("思维导图内容添加失败");
+        }
+        Node node = new Node();
+        node.setUserId(user.getUserId());
+        node.setNodeName(nodeVo.getBlogTitle());
+        node.setRelationship(nodeVo.getRelationShip());
+        node.setBlogId(blogId);
+        node.setMapId(mapId);
+        node.setCollect(0);
+        node.setIsPrivate(nodeVo.getUserId() != 1);
+        node.setStar(0);
+        node.setCreateDate(new Date());
+        node.setUpdateDate(new Date());
+        int preId = nodeService.insertNode(node);
+        if (preId == -1){
+            throw new Exception("节点内容添加失败");
+        }
+        int i = previousService.addPrevious(nodeId, preId);
+        if (i == -1){
+            throw new Exception("前置关系添加失败");
+        }
+        int j = nextService.addNext(preId, nodeId);
+        if (j == -1){
+            throw new Exception("后置关系添加失败");
+        }
+    }
+
+    @ApiOperation("跳转添加后置节点页面")
+    @GetMapping("/toAddNext/{nodeId}")
+    public String toAddNexNode(@PathVariable Integer nodeId, Model model){
+        model.addAttribute("title", "后置");
+        model.addAttribute("rel", "上");
+        model.addAttribute("nodeId", nodeId);
+        model.addAttribute("isPre", "0");
+        model.addAttribute("mostCollect", nodeToSimpleNodeVo(publicNodeService.findNodeByTopCollect(5)));
+        model.addAttribute("mostStar", nodeToSimpleNodeVo(publicNodeService.findNodeByTopStar(5)));
+        return "addNode";
+    }
+
+    @ApiOperation("添加后置节点")
+    @Transactional(rollbackFor = Exception.class)
+    @PostMapping("/addNext/{nodeId}")
+    @ResponseBody
+    public void addNexNode(@PathVariable Integer nodeId, AddNodeVo nodeVo) throws Exception {
+        User user = userService.getUserById(nodeVo.getUserId());
+        int blogId = blogService.insertBlogByTitleAndContent(nodeVo.getBlogTitle(),
+                nodeVo.getContent(), nodeVo.getDesc());
+        if (blogId == -1){
+            throw new Exception("博客内容添加失败");
+        }
+
+        int mapId = mapService.insertMapByMapNameAndMapAuthorAndMapData(nodeVo.getBlogTitle(),
+                user.getUsername(), nodeVo.getMapData());
+        if (mapId == -1){
+            throw new Exception("思维导图内容添加失败");
+        }
+        Node node = new Node();
+        node.setUserId(user.getUserId());
+        node.setNodeName(nodeVo.getBlogTitle());
+        node.setRelationship(nodeVo.getRelationShip());
+        node.setBlogId(blogId);
+        node.setMapId(mapId);
+        node.setCollect(0);
+        node.setIsPrivate(nodeVo.getUserId() != 1);
+        node.setStar(0);
+        node.setCreateDate(new Date());
+        node.setUpdateDate(new Date());
+        int nexId = nodeService.insertNode(node);
+        if (nexId == -1){
+            throw new Exception("节点内容添加失败");
+        }
+        int i = nextService.addNext(nodeId, nexId);
+        if (i == -1){
+            throw new Exception("前置关系添加失败");
+        }
+        int j = previousService.addPrevious(nexId, nodeId);
+        if (j == -1){
+            throw new Exception("后置关系添加失败");
+        }
+    }
+
     private NodeVo nodeToNodeVo(Node node){
         NodeVo nodeVo = new NodeVo();
         nodeVo.setId(node.getNodeId());
@@ -186,5 +301,18 @@ public class PrivateNodeController {
         nodeVo.setAvatar(user.getUserAvatar());
         return nodeVo;
     }
+
+    private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){
+        List<SimpleNodeVo> simpleNodeVos = new ArrayList<>(nodes.size());
+        nodes.forEach(node -> {
+                    SimpleNodeVo vo = new SimpleNodeVo();
+                    vo.setUrl("/public/node/" + node.getNodeId());
+                    vo.setTitle(node.getNodeName());
+                    simpleNodeVos.add(vo);
+                }
+        );
+        return simpleNodeVos;
+    }
+
 
 }

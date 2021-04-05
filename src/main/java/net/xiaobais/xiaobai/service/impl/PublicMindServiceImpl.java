@@ -79,17 +79,19 @@ public class PublicMindServiceImpl implements PublicMindService {
         while (count < level){
             while (!queue.isEmpty()){
                 for (int i = 0; i < parent.size(); i++) {
-                    Pair<String, Integer> item = parent.remove();
+                    Pair<String, Integer> item = parent.poll();
                     for (int j = 0; j < item.getValue(); j++) {
-                        Node remove = queue.remove();
-                        previous = previousService.findPreviousByNodeId(remove.getNodeId());
-                        parent.add(new Pair("left" + remove.getNodeId(), previous.size()));
-                        queue.addAll(previous);
-                        MindVo mv = new MindVo("left" + remove.getNodeId(),
-                                item.getKey(), false,
-                                "<a href='" + PREFIX_URL + remove.getNodeId() + "'>" + remove.getNodeName() + "</a>",
-                                "left", true);
-                        lists.add(mv);
+                        Node remove = queue.poll();
+                        if (remove != null){
+                            previous = previousService.findPreviousByNodeId(remove.getNodeId());
+                            parent.add(new Pair("left" + remove.getNodeId(), previous.size()));
+                            queue.addAll(previous);
+                            MindVo mv = new MindVo("left" + remove.getNodeId(),
+                                    item.getKey(), false,
+                                    "<a href='" + PREFIX_URL + remove.getNodeId() + "'>" + remove.getNodeName() + "</a>",
+                                    "left", true);
+                            lists.add(mv);
+                        }
                     }
                 }
             }
@@ -122,16 +124,18 @@ public class PublicMindServiceImpl implements PublicMindService {
         while (count < level){
             while (!queue.isEmpty()){
                 for (int i = 0; i < nextParent.size(); i++) {
-                    Pair<String, Integer> item = nextParent.remove();
+                    Pair<String, Integer> item = nextParent.poll();
                     for (int j = 0; j < item.getValue(); j++) {
-                        Node remove = queue.remove();
-                        next = nextService.findNextByNodeId(remove.getNodeId());
-                        nextParent.add(new Pair("right" + remove.getNodeId(), next.size()));
-                        queue.addAll(next);
-                        MindVo mv = new MindVo("right" + remove.getNodeId(), item.getKey(), false,
-                                "<a href='" + PREFIX_URL + remove.getNodeId() + "'>" + remove.getNodeName() + "</a>",
-                                "right", true);
-                        lists.add(mv);
+                        Node remove = queue.poll();
+                        if (remove != null){
+                            next = nextService.findNextByNodeId(remove.getNodeId());
+                            nextParent.add(new Pair("right" + remove.getNodeId(), next.size()));
+                            queue.addAll(next);
+                            MindVo mv = new MindVo("right" + remove.getNodeId(), item.getKey(), false,
+                                    "<a href='" + PREFIX_URL + remove.getNodeId() + "'>" + remove.getNodeName() + "</a>",
+                                    "right", true);
+                            lists.add(mv);
+                        }
                     }
                 }
             }

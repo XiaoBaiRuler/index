@@ -31,9 +31,11 @@ public class PreviousServiceImpl implements PreviousService {
     @Resource
     private PrivateNodeService privateNodeService;
 
+    private static final Integer SIZE = 6;
+
     @Override
     public List<Node> findPreviousByNodeId(Integer nodeId, Integer pageNumber, Integer pageSize, Integer isPrivate) {
-        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * pageSize + 1;
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * SIZE;
         return myPreviousMapper.findPreviousByNodeId(
                 nodeId, pageNumber, pageSize, isPrivate);
     }
@@ -63,7 +65,7 @@ public class PreviousServiceImpl implements PreviousService {
     public List<Node> findPreviousByNodeIdAndTitle(Integer nodeId, Integer pageNumber,
                                                    Integer pageSize, String title,
                                                    Integer isPrivate) {
-        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * pageSize + 1;
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * SIZE;
         title = "%" + title + "%";
         return myPreviousMapper.findPreviousByNodeIdAndTitle(
                 nodeId, pageNumber, pageSize, title, isPrivate);
@@ -79,4 +81,14 @@ public class PreviousServiceImpl implements PreviousService {
         title = "%" + title + "%";
         return myPreviousMapper.countPreviousByNodeIdAndTitle(nodeId, title, isPrivate);
     }
+
+    @Override
+    public int addPrevious(Integer nodeId, Integer previousId) {
+        Previous previous = new Previous();
+        previous.setNodeId(nodeId);
+        previous.setPreviousId(previousId);
+        return previousMapper.insert(previous);
+    }
+
+
 }

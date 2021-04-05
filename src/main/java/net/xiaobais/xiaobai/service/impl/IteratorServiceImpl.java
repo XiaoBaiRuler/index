@@ -36,8 +36,8 @@ public class IteratorServiceImpl implements IteratorService {
     }
 
     @Override
-    public void insertIterator(Iterator iterator) {
-        iteratorMapper.insert(iterator);
+    public int insertIterator(Iterator iterator) {
+        return iteratorMapper.insert(iterator);
     }
 
     @Override

@@ -22,4 +22,13 @@ public interface MapService {
      * @return int
      */
     int insertMap(Map map);
+
+    /**
+     * 根据思维导图名和作者名和思维导图内容添加Map
+     * @param mapName 思维导图名
+     * @param mapAuthor 作者名
+     * @param mapData 思维导图内容
+     * @return int
+     */
+    int insertMapByMapNameAndMapAuthorAndMapData(String mapName, String mapAuthor, String mapData);
 }

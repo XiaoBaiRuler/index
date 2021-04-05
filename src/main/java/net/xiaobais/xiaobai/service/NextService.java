@@ -72,4 +72,13 @@ public interface NextService {
      * @return int
      */
     int countNextNode(Integer nodeId, String title, Integer isPrivate);
+
+    /**
+     * 添加后置节点关系
+     * @param nodeId nodeId
+     * @param nextId nextId
+     * @return int
+     */
+    int addNext(Integer nodeId, Integer nextId);
+
 }

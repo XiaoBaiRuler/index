@@ -70,4 +70,12 @@ public interface PreviousService {
      * @return int
      */
     int countPreviousNode(Integer nodeId, String title, Integer isPrivate);
+
+    /**
+     * 添加前置关系
+     * @param nodeId nodeId
+     * @param previousId previousId
+     * @return int
+     */
+    int addPrevious(Integer nodeId, Integer previousId);
 }

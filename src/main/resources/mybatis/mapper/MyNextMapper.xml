@@ -10,6 +10,7 @@
             where next.node_id = #{nodeId}
         )
           and node.is_private = #{isPrivate}
+          order by node.update_date desc
         limit #{pageNumber}, #{pageSize}
     </select>
 
@@ -34,6 +35,7 @@
         )
           and node.is_private = #{isPrivate}
           and node.node_name like #{title}
+          order by node.update_date desc
             limit #{pageNumber}, #{pageSize}
     </select>
 

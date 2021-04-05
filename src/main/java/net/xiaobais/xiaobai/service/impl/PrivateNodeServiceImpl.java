@@ -32,4 +32,10 @@ public class PrivateNodeServiceImpl implements PrivateNodeService {
         return !nodes.isEmpty() ? nodes.get(0) : null;
     }
 
+    @Override
+    public int insertNode(Node node) {
+        int insert = nodeMapper.insert(node);
+        return insert != -1 ? node.getNodeId() : -1;
+    }
+
 }

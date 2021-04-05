@@ -22,4 +22,13 @@ public interface BlogService {
      * @return int
      */
     int insertBlog(Blog blog);
+
+    /**
+     * 根据标题和内容添加博客
+     * @param blogTitle 标题
+     * @param blogContent 内容
+     * @param blogDes 博客描述
+     * @return int
+     */
+    int insertBlogByTitleAndContent(String blogTitle, String blogContent, String blogDes);
 }

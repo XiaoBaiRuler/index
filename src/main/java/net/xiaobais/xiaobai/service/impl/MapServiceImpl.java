@@ -28,4 +28,15 @@ public class MapServiceImpl implements MapService {
         int insert = mapMapper.insert(map);
         return insert == -1 ? -1 : map.getMapId();
     }
+
+    @Override
+    public int insertMapByMapNameAndMapAuthorAndMapData(String mapName, String mapAuthor, String mapData) {
+        Map map = new Map();
+        map.setMapName(mapName);
+        map.setMapVersion("1.0");
+        map.setMapAuthor(mapAuthor);
+        map.setMapData(mapData);
+        int insert = mapMapper.insert(map);
+        return insert == -1 ? -1 : map.getMapId();
+    }
 }

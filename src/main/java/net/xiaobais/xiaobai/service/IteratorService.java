@@ -23,7 +23,7 @@ public interface IteratorService {
      * 添加迭代关系
      * @param iterator iterator
      */
-    void insertIterator(Iterator iterator);
+    int insertIterator(Iterator iterator);
 
     /**
      * 通过迭代节点Id查找被迭代的节点

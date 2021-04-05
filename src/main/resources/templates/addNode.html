@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: head"></span>
+    <title>添加[[${title}]]节点</title>
+    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+    <link rel="stylesheet" th:href="@{/item/editormd/css/editormd.css}">
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+    <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
+</head>
+<body>
+    <div id="app">
+        <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
+        <input type="text" hidden="hidden" id="isPre" th:value="${isPre}">
+        <div th:replace="com/menu :: addMenu"></div>
+        <br><br><br>
+        <div class="ui container" style="width: 90%;">
+            <a class="ui red right ribbon label" @click.once="submit">保存</a>
+            <div class="ui form">
+                <div class="field">
+                    <label>博客标题</label>
+                    <input type="text" name="blogTitle" id="blogTitle" placeholder="请输入标题" v-model="blogTitle">
+                </div>
+                <div class="field">
+                    <label>简单描述</label>
+                    <input type="text" name="blogDes" id="blogDes" placeholder="请输入简单描述" v-model="blogDes">
+                </div>
+                <div class="field">
+                    <label>与[[${rel}]]一个节点的关系</label>
+                    <input type="text" name="relationShip" id="relationShip" placeholder="请输入关系" v-model="relationShip">
+                </div>
+            </div>
+            <div class="ui piled segment" v-show="isBlog" style="height: 1000px;">
+                <div id="test-editor">
+                    <textarea style="display:none;" id="html"></textarea>
+                </div>
+            </div>
+            <div class="ui raised segment" v-show="!isBlog" style="height: 1000px;">
+                <div id="jsmind_container"></div>
+            </div>
+        </div>
+        <br><br>
+        <div th:replace="com/foot :: foot"></div>
+    </div>
+</body>
+<script type="text/javascript">
+
+    let app = new Vue({
+        el: '#app',
+        data: {
+            isBlog: true,
+            isLogin: false,
+            str: '',
+            jm: {},
+            nodeId: 0,
+            userVo: {},
+            blogTitle: "",
+            blogDes: "",
+            relationShip: ""
+        },
+        mounted: function(){
+            $(function() {
+                let editor = editormd("test-editor", {
+                    width  : "100%",
+                    height : "100%",
+                    path   : "/item/editormd/lib/"
+                });
+            });
+
+            this.nodeId = document.getElementById('nodeId').value
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                        let options = {
+                            mode: 'full',
+                            container: 'jsmind_container',
+                            editable: true,
+                            theme:'orange',
+                            support_html: true,
+                            view:{
+                                engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                                hmargin:100,        // 思维导图距容器外框的最小水平距离
+                                vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                                line_width:3,       // 思维导图线条的粗细
+                                line_color:'#555'   // 思维导图线条的颜色
+                            },
+                            layout:{
+                                hspace:100,          // 节点之间的水平间距
+                                vspace:200,          // 节点之间的垂直间距
+                                pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                            },
+                        }
+                        let mind = {
+                            "meta":{
+                                "name": "测试",
+                                "author": this.userVo.username,
+                                "version": "1.0",
+                            },
+                            "format":"node_array",
+                            "data": [{"id":"root", "isroot":true, "topic":"根节点"}]
+                        }
+                        let jm = new jsMind(options)
+                        this.jm = jm;
+                        jm.show(mind)
+                    }else{
+                        this.isLogin = false
+                    }
+                })
+                .catch(error => console.log(error))
+
+        },
+        methods: {
+            changeBlog: function() {
+                this.isBlog = !this.isBlog
+            },
+            logout: function() {
+                this.isLogin = false
+            },
+            search: function() {
+                if (this.str === "") {
+                    alert("请输入搜索内容")
+                } else {
+                    console.log(this.str)
+                }
+            },
+            submit: function(){
+                let addNodeVo = new FormData()
+                addNodeVo.append("blogTitle", this.blogTitle)
+                addNodeVo.append("content", document.getElementById("html").value)
+                addNodeVo.append("desc", this.blogDes)
+                addNodeVo.append("mapData", JSON.stringify(this.jm.get_data("node_array").data))
+                addNodeVo.append("userId", this.userVo.userId)
+                addNodeVo.append("relationShip", this.relationShip)
+                if (document.getElementById('isPre').value === "1"){
+                    alert("添加pre")
+                    axios.post('/private/addPrevious/' + this.nodeId, addNodeVo,
+                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                        .then(response => {
+                            alert("添加前置节点成功")
+                            window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId
+                        })
+                        .catch(error => console.log(error))
+                }
+                else{
+                    alert("添加nex")
+                    axios.post('/private/addNext/' + this.nodeId, addNodeVo,
+                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                        .then(response => {
+                                alert("添加后置节点成功")
+                                window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId
+                        })
+                        .catch(error => console.log(error))
+                }
+            }
+        },
+    })
+</script>
+</body>
+</html>
