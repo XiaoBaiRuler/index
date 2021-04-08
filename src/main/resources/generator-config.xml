@@ -68,7 +68,9 @@
         <table tableName="iterator" domainObjectName="Iterator"/>
 
         <table tableName="suggest" domainObjectName="Suggest"/>
-        <table tableName="comment" domainObjectName="Comment"/>
+        <table tableName="comment" domainObjectName="Comment">
+            <generatedKey column="comment_id" sqlStatement="Mysql" identity="true"/>
+        </table>
         <table tableName="type" domainObjectName="Type"/>
 
         <table tableName="record" domainObjectName="Record"/>

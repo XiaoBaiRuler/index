@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<body>
+    <div class="ui container" style="width: 85%;">
+        <div class="ui sky blue stacked segment" th:fragment="comment">
+            <div class="ui raised segment" id="comment">
+                <h3 class="ui dividing header">评论区</h3>
+                <h6 class="ui right aligned teal dividing header">
+                    <button class="ui teal icon button" @click="replyOne(userVo.username, 0, -1, -1)">
+                        回复<i class="reply icon"></i>
+                    </button>
+                </h6>
+                <div class="ui threaded comments">
+                    <div class="comment" v-for="comment,index in comments" :key="'one' + index">
+                        <a class="avatar">
+                            <img :src="comment.avatar" style="width: 40px; height: 40px;">
+                        </a>
+                        <div class="content">
+                            <a class="author" :href="comment.userUrl">{{comment.username}}</a>
+                            <div class="metadata">
+                                <span class="date">{{comment.time}}</span>
+                            </div>
+                            <div class="text">{{comment.comment}}</div>
+                            <div class="actions">
+                                <a class="reply" @click="replyOne(comment.username, comment.commentId, index, -1)">回复</a>
+                            </div>
+                        </div>
+                        <div class="comments" v-if="comment.flag">
+                            <div class="comment" v-for="c, i in comment.children" :key="'two' + i">
+                                <a class="avatar">
+                                    <img :src="c.avatar">
+                                </a>
+                                <div class="content">
+                                    <a class="author" :href="c.userUrl">{{c.username}}</a>
+                                    <div class="metadata">
+                                        <span class="date">{{c.time}}</span>
+                                    </div>
+                                    <div class="text">{{c.comment}}</div>
+                                    <div class="actions">
+                                        <a class="reply" @click="replyOne(c.username, c.commentId, index, i)">回复</a>
+                                    </div>
+                                </div>
+                                <div class="comments" v-if="c.flag">
+                                    <div class="comment" v-for="m, j in c.children" :key="'three' + j">
+                                        <a class="avatar">
+                                            <img :src="m.avatar">
+                                        </a>
+                                        <div class="content">
+                                            <a class="author" :href="m.userUrl">{{m.username}}</a>
+                                            <div class="metadata">
+                                                <span class="date">{{m.time}}</span>
+                                            </div>
+                                            <div class="text">{{m.comment}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui raised segment" id="reply">
+                <div class="ui form">
+                    <div class="field">
+                        <label>回复：{{username}}</label>
+                        <textarea v-model="commentContent" rows="3"></textarea>
+                    </div>
+                    <div class="ui right floated red submit button" @click="submitReply">回复</div>
+                    <br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

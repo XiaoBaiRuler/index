@@ -6,6 +6,7 @@ import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.BlogService;
 import net.xiaobais.xiaobai.service.PublicNodeService;
+import net.xiaobais.xiaobai.service.UserService;
 import net.xiaobais.xiaobai.utils.JwtUtils;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import net.xiaobais.xiaobai.vo.UserVo;
@@ -35,6 +36,8 @@ public class PrivateController {
     private PublicNodeService nodeService;
     @Resource
     private BlogService blogService;
+    @Resource
+    private UserService userService;
 
     @ApiOperation("用户个人根节点")
     @GetMapping("/node/{indexId}/{userId}")
@@ -55,7 +58,6 @@ public class PrivateController {
         model.addAttribute("nodeId", indexId);
         model.addAttribute("html", blog.getBlogContent());
         model.addAttribute("flag", false);
-
         model.addAttribute("mostCollect", nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
         model.addAttribute("mostStar", nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
         return "private";

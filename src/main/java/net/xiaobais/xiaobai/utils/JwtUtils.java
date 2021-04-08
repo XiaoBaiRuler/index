@@ -43,6 +43,7 @@ public class JwtUtils {
                 .claim("username", user.getUsername())
                 .claim("avatar", user.getUserAvatar())
                 .claim("indexId", user.getIndexId())
+                .claim("email", user.getUserEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(SignatureAlgorithm.HS256, KEY).compact();
@@ -126,6 +127,7 @@ public class JwtUtils {
         userVo.setImg((String) claims.get("avatar"));
         userVo.setUserId((Integer) claims.get("id"));
         userVo.setIndexId((Integer) claims.get("indexId"));
+        userVo.setEmail((String) claims.get("email"));
         return userVo;
     }
 

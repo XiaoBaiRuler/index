@@ -14,5 +14,4 @@ public class XiaobaiApplication {
     public static void main(String[] args) {
         SpringApplication.run(XiaobaiApplication.class, args);
     }
-
 }

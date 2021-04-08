@@ -2,12 +2,12 @@ package net.xiaobais.xiaobai.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.User;
-import net.xiaobais.xiaobai.service.NextService;
-import net.xiaobais.xiaobai.service.PreviousService;
-import net.xiaobais.xiaobai.service.UserService;
+import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.NodeVo;
+import net.xiaobais.xiaobai.vo.PublicNodeVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +36,10 @@ public class PublicNodeController {
     private NextService nextService;
     @Resource
     private UserService userService;
+    @Resource
+    private PublicNodeService publicNodeService;
+    @Resource
+    private BlogService blogService;
 
     @ApiOperation("获取非私有前置节点")
     @GetMapping("/public/getPreNode")
@@ -117,6 +121,20 @@ public class PublicNodeController {
         }
     }
 
+    @ApiOperation("获取公开节点的简要信息")
+    @GetMapping("/public/getNode")
+    @ResponseBody
+    public PublicNodeVo getNodeByNodeId(@RequestParam Integer nodeId){
+        Node node = publicNodeService.findNodeById(nodeId);
+        Blog blog = blogService.findBlogById(node.getBlogId());
+        return nodeToPublicNodeVo(node, blog);
+    }
+
+    /**
+     * 前后置节点的卡片信息
+     * @param node node
+     * @return NodeVo
+     */
     private NodeVo nodeToNodeVo(Node node){
         NodeVo nodeVo = new NodeVo();
         nodeVo.setId(node.getNodeId());
@@ -153,6 +171,52 @@ public class PublicNodeController {
         User user = userService.getUserById(node.getUserId());
         nodeVo.setUserUrl("/public/user/" + node.getUserId());
         nodeVo.setAvatar(user.getUserAvatar());
+        return nodeVo;
+    }
+
+    /**
+     * 公开的卡片信息
+     * @param node node
+     * @param blog blog
+     * @return PublicNodeVo
+     */
+    private PublicNodeVo nodeToPublicNodeVo(Node node, Blog blog){
+        PublicNodeVo nodeVo = new PublicNodeVo();
+        nodeVo.setId(node.getNodeId());
+        nodeVo.setTitle(node.getNodeName());
+        nodeVo.setDesc(blog.getBlogDes());
+        nodeVo.setCollect(node.getCollect());
+        nodeVo.setLike(node.getStar());
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Period p = Period.between(
+                LocalDate.parse(df.format(node.getUpdateDate())), LocalDate.now());
+        StringBuilder sb = new StringBuilder();
+        boolean flag = false;
+        if (p.getYears() != 0) {
+            flag = true;
+            sb.append(p.getYears()).append("年");
+        }
+        if (p.getMonths() != 0){
+            flag = true;
+            sb.append(p.getMonths()).append("月");
+        }
+        if (p.getDays() != 0){
+            flag = true;
+            sb.append(p.getDays()).append("日");
+        }
+        if (!flag){
+            sb.append("今天");
+        }
+        else{
+            sb.append("前");
+        }
+        nodeVo.setTime(sb.toString());
+        // 所属用户信息
+        User user = userService.getUserById(node.getUserId());
+        nodeVo.setUsername(user.getUsername());
+        nodeVo.setUserUrl("/private/user/" + node.getUserId());
+        nodeVo.setAvatar(user.getUserAvatar());
+        nodeVo.setEmail(user.getUserEmail());
         return nodeVo;
     }
 }

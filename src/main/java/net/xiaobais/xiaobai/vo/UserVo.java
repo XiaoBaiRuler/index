@@ -15,4 +15,5 @@ public class UserVo {
     private String img;
     private Integer userId;
     private Integer indexId;
+    private String email;
 }

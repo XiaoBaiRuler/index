@@ -252,66 +252,6 @@ public class CommentExample {
             return (Criteria) this;
         }
 
-        public Criteria andNodeIdIsNull() {
-            addCriterion("node_id is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdIsNotNull() {
-            addCriterion("node_id is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdEqualTo(Integer value) {
-            addCriterion("node_id =", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdNotEqualTo(Integer value) {
-            addCriterion("node_id <>", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdGreaterThan(Integer value) {
-            addCriterion("node_id >", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdGreaterThanOrEqualTo(Integer value) {
-            addCriterion("node_id >=", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdLessThan(Integer value) {
-            addCriterion("node_id <", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdLessThanOrEqualTo(Integer value) {
-            addCriterion("node_id <=", value, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdIn(List<Integer> values) {
-            addCriterion("node_id in", values, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdNotIn(List<Integer> values) {
-            addCriterion("node_id not in", values, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdBetween(Integer value1, Integer value2) {
-            addCriterion("node_id between", value1, value2, "nodeId");
-            return (Criteria) this;
-        }
-
-        public Criteria andNodeIdNotBetween(Integer value1, Integer value2) {
-            addCriterion("node_id not between", value1, value2, "nodeId");
-            return (Criteria) this;
-        }
-
         public Criteria andContentIsNull() {
             addCriterion("content is null");
             return (Criteria) this;
@@ -379,6 +319,66 @@ public class CommentExample {
 
         public Criteria andContentNotBetween(String value1, String value2) {
             addCriterion("content not between", value1, value2, "content");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdIsNull() {
+            addCriterion("node_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdIsNotNull() {
+            addCriterion("node_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdEqualTo(Integer value) {
+            addCriterion("node_id =", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdNotEqualTo(Integer value) {
+            addCriterion("node_id <>", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdGreaterThan(Integer value) {
+            addCriterion("node_id >", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("node_id >=", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdLessThan(Integer value) {
+            addCriterion("node_id <", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdLessThanOrEqualTo(Integer value) {
+            addCriterion("node_id <=", value, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdIn(List<Integer> values) {
+            addCriterion("node_id in", values, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdNotIn(List<Integer> values) {
+            addCriterion("node_id not in", values, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdBetween(Integer value1, Integer value2) {
+            addCriterion("node_id between", value1, value2, "nodeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andNodeIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("node_id not between", value1, value2, "nodeId");
             return (Criteria) this;
         }
 
@@ -572,53 +572,53 @@ public class CommentExample {
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateEqualTo(Byte value) {
-            addCriterion("update_date =", value, "updateDate");
+        public Criteria andUpdateDateEqualTo(Date value) {
+            addCriterionForJDBCDate("update_date =", value, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateNotEqualTo(Byte value) {
-            addCriterion("update_date <>", value, "updateDate");
+        public Criteria andUpdateDateNotEqualTo(Date value) {
+            addCriterionForJDBCDate("update_date <>", value, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateGreaterThan(Byte value) {
-            addCriterion("update_date >", value, "updateDate");
+        public Criteria andUpdateDateGreaterThan(Date value) {
+            addCriterionForJDBCDate("update_date >", value, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateGreaterThanOrEqualTo(Byte value) {
-            addCriterion("update_date >=", value, "updateDate");
+        public Criteria andUpdateDateGreaterThanOrEqualTo(Date value) {
+            addCriterionForJDBCDate("update_date >=", value, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateLessThan(Byte value) {
-            addCriterion("update_date <", value, "updateDate");
+        public Criteria andUpdateDateLessThan(Date value) {
+            addCriterionForJDBCDate("update_date <", value, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateLessThanOrEqualTo(Byte value) {
-            addCriterion("update_date <=", value, "updateDate");
+        public Criteria andUpdateDateLessThanOrEqualTo(Date value) {
+            addCriterionForJDBCDate("update_date <=", value, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateIn(List<Byte> values) {
-            addCriterion("update_date in", values, "updateDate");
+        public Criteria andUpdateDateIn(List<Date> values) {
+            addCriterionForJDBCDate("update_date in", values, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateNotIn(List<Byte> values) {
-            addCriterion("update_date not in", values, "updateDate");
+        public Criteria andUpdateDateNotIn(List<Date> values) {
+            addCriterionForJDBCDate("update_date not in", values, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateBetween(Byte value1, Byte value2) {
-            addCriterion("update_date between", value1, value2, "updateDate");
+        public Criteria andUpdateDateBetween(Date value1, Date value2) {
+            addCriterionForJDBCDate("update_date between", value1, value2, "updateDate");
             return (Criteria) this;
         }
 
-        public Criteria andUpdateDateNotBetween(Byte value1, Byte value2) {
-            addCriterion("update_date not between", value1, value2, "updateDate");
+        public Criteria andUpdateDateNotBetween(Date value1, Date value2) {
+            addCriterionForJDBCDate("update_date not between", value1, value2, "updateDate");
             return (Criteria) this;
         }
     }

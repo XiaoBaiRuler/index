@@ -28,10 +28,10 @@
             border-left: 1px solid skyblue;
         }
         #jsmind_container{
-            height: 1000px;
+            height: 1200px;
         }
         #mind_container{
-            height: 1000px;
+            height: 1200px;
         }
     </style>
 </head>
@@ -67,6 +67,7 @@
                 </div>
                 <div :class="middle">
                     <div class="ui container" :style="{width: middleWidth}">
+                        <div th:replace="com/card :: showPublicCard"></div>
                         <div class="ui piled segment" v-show="isBlog">
                             <textarea hidden="hidden" th:text="${html}" id="html" style="white-space: pre-line"></textarea>
                             <div id="content"></div>
@@ -113,6 +114,7 @@
                 <div id="mind_container"></div>
             </div>
         </div>
+        <div th:replace="com/comment :: comment"></div>
         <br><br>
         <div th:replace="com/foot :: foot"></div>
     </div>
@@ -146,7 +148,14 @@
                 nexPage: true,
                 preInput: "",
                 nexInput: "",
-                userVo: {}
+                userVo: {},
+                node: {},
+                comments: {},
+                commentContent: "",
+                username: "",
+                commentId: 0,
+                i: -1,
+                j: -1
             },
             mounted: function(){
                 let nodeId = document.getElementById('nodeId').value
@@ -157,9 +166,17 @@
                         if (response.data !== ""){
                             this.isLogin = true
                             this.userVo = response.data
+                            this.username = this.userVo.username
                         }else{
                             this.isLogin = false
                         }
+                    })
+                    .catch(error => console.log(error))
+
+                axios.get("/public/getNode?nodeId=" + nodeId)
+                    .then(response => {
+                        this.node = response.data
+                        this.reply = this.node.email
                     })
                     .catch(error => console.log(error))
 
@@ -257,6 +274,10 @@
                     })
                     .catch(error => console.log(error))
 
+                axios.get("/public/getAllComments?nodeId=" + nodeId)
+                    .then(response =>{ this.comments = response.data})
+                    .catch(error => console.log(error))
+
             },
             methods: {
                 changeSize: function() {
@@ -309,7 +330,14 @@
                     axios.get("/person/public/addNodeLike?nodeId=" + nodeId)
                         .then(response => {
                             if(response.data == "1"){
-                                flag ? this.preNodes[index].like += 1 : this.nexNodes[index].like += 1;
+                                if (index === -1){
+                                    this.node.like += 1
+                                }
+                                else{
+                                    flag
+                                        ? this.preNodes[index].like += 1
+                                        : this.nexNodes[index].like += 1
+                                }
                             }
                         })
                         .catch(error => console.log(error))
@@ -318,7 +346,14 @@
                     axios.get("/person/public/addNodeStar?nodeId=" + nodeId)
                         .then(response => {
                             if(response.data == "1"){
-                                flag ? this.preNodes[index].collect += 1 : this.nexNodes[index].collect += 1;
+                                if(index === -1){
+                                    this.node.collect += 1
+                                }
+                                else{
+                                    flag
+                                        ? this.preNodes[index].collect += 1
+                                        : this.nexNodes[index].collect += 1
+                                }
                             }
                         })
                         .catch(error => console.log(error))
@@ -397,6 +432,54 @@
                         })
                         .catch(error => console.log(error))
 
+                },
+                replyOne: function(username, commentId, i, j) {
+                    window.location.href = '#reply'
+                    this.username = username
+                    this.commentId = commentId
+                    console.log(this.commentId)
+                    this.i = i;
+                    this.j = j;
+                },
+                submitReply: function(){
+                    let item = {
+                        commentId: this.commentId,
+                        userId: this.userVo.userId,
+                        nodeId: this.nodeId,
+                        avatar: this.userVo.img,
+                        userUrl: "/public/user/" + this.userVo.userId,
+                        username: this.userVo.username,
+                        time: "今天",
+                        comment: this.commentContent,
+                        userEmail: this.userVo.email,
+                        flag: false,
+                        children: []
+                    }
+                    let comment = new FormData()
+                    comment.append("parentId", this.commentId)
+                    comment.append("userId", this.userVo.userId)
+                    comment.append("nodeId", this.nodeId)
+                    comment.append("content", this.commentContent)
+
+                    axios.post('/person/public/addComment', comment,
+                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                        .then(response => {
+                            item.commentId = response.data
+                            if (this.commentId === 0){
+                                this.comments.push(item)
+                            }
+                            else{
+                                if (this.i !== -1 && this.j === -1){
+                                    this.comments[this.i].flag = true
+                                    this.comments[this.i].children.push(item)
+                                }
+                                if (this.i !== -1 && this.j !== -1){
+                                    this.comments[this.i].children[this.j].flag = true
+                                    this.comments[this.i].children[this.j].children.push(item)
+                                }
+                            }
+                        })
+                        .catch(error => console.log(error))
                 }
             },
         })

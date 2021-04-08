@@ -4,12 +4,12 @@
   <resultMap id="BaseResultMap" type="net.xiaobais.xiaobai.model.Comment">
     <id column="comment_id" jdbcType="INTEGER" property="commentId" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="node_id" jdbcType="INTEGER" property="nodeId" />
     <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="node_id" jdbcType="INTEGER" property="nodeId" />
     <result column="parent_id" jdbcType="INTEGER" property="parentId" />
     <result column="create_date" jdbcType="DATE" property="createDate" />
     <result column="is_delete" jdbcType="BIT" property="isDelete" />
-    <result column="update_date" jdbcType="TINYINT" property="updateDate" />
+    <result column="update_date" jdbcType="DATE" property="updateDate" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    comment_id, user_id, node_id, content, parent_id, create_date, is_delete, update_date
+    comment_id, user_id, content, node_id, parent_id, create_date, is_delete, update_date
   </sql>
   <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.CommentExample" resultMap="BaseResultMap">
     select
@@ -103,27 +103,30 @@
     </if>
   </delete>
   <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Comment">
-    insert into comment (comment_id, user_id, node_id, 
-      content, parent_id, create_date, 
-      is_delete, update_date)
-    values (#{commentId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{nodeId,jdbcType=INTEGER}, 
-      #{content,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, #{createDate,jdbcType=DATE}, 
-      #{isDelete,jdbcType=BIT}, #{updateDate,jdbcType=TINYINT})
+    <selectKey keyProperty="commentId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into comment (user_id, content, node_id, 
+      parent_id, create_date, is_delete, 
+      update_date)
+    values (#{userId,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR}, #{nodeId,jdbcType=INTEGER}, 
+      #{parentId,jdbcType=INTEGER}, #{createDate,jdbcType=DATE}, #{isDelete,jdbcType=BIT}, 
+      #{updateDate,jdbcType=DATE})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Comment">
+    <selectKey keyProperty="commentId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into comment
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="commentId != null">
-        comment_id,
-      </if>
       <if test="userId != null">
         user_id,
       </if>
-      <if test="nodeId != null">
-        node_id,
-      </if>
       <if test="content != null">
         content,
+      </if>
+      <if test="nodeId != null">
+        node_id,
       </if>
       <if test="parentId != null">
         parent_id,
@@ -139,17 +142,14 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="commentId != null">
-        #{commentId,jdbcType=INTEGER},
-      </if>
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
       </if>
-      <if test="nodeId != null">
-        #{nodeId,jdbcType=INTEGER},
-      </if>
       <if test="content != null">
         #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeId != null">
+        #{nodeId,jdbcType=INTEGER},
       </if>
       <if test="parentId != null">
         #{parentId,jdbcType=INTEGER},
@@ -161,7 +161,7 @@
         #{isDelete,jdbcType=BIT},
       </if>
       <if test="updateDate != null">
-        #{updateDate,jdbcType=TINYINT},
+        #{updateDate,jdbcType=DATE},
       </if>
     </trim>
   </insert>
@@ -180,11 +180,11 @@
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=INTEGER},
       </if>
-      <if test="record.nodeId != null">
-        node_id = #{record.nodeId,jdbcType=INTEGER},
-      </if>
       <if test="record.content != null">
         content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nodeId != null">
+        node_id = #{record.nodeId,jdbcType=INTEGER},
       </if>
       <if test="record.parentId != null">
         parent_id = #{record.parentId,jdbcType=INTEGER},
@@ -196,7 +196,7 @@
         is_delete = #{record.isDelete,jdbcType=BIT},
       </if>
       <if test="record.updateDate != null">
-        update_date = #{record.updateDate,jdbcType=TINYINT},
+        update_date = #{record.updateDate,jdbcType=DATE},
       </if>
     </set>
     <if test="_parameter != null">
@@ -207,12 +207,12 @@
     update comment
     set comment_id = #{record.commentId,jdbcType=INTEGER},
       user_id = #{record.userId,jdbcType=INTEGER},
-      node_id = #{record.nodeId,jdbcType=INTEGER},
       content = #{record.content,jdbcType=VARCHAR},
+      node_id = #{record.nodeId,jdbcType=INTEGER},
       parent_id = #{record.parentId,jdbcType=INTEGER},
       create_date = #{record.createDate,jdbcType=DATE},
       is_delete = #{record.isDelete,jdbcType=BIT},
-      update_date = #{record.updateDate,jdbcType=TINYINT}
+      update_date = #{record.updateDate,jdbcType=DATE}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -223,11 +223,11 @@
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
       </if>
-      <if test="nodeId != null">
-        node_id = #{nodeId,jdbcType=INTEGER},
-      </if>
       <if test="content != null">
         content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeId != null">
+        node_id = #{nodeId,jdbcType=INTEGER},
       </if>
       <if test="parentId != null">
         parent_id = #{parentId,jdbcType=INTEGER},
@@ -239,7 +239,7 @@
         is_delete = #{isDelete,jdbcType=BIT},
       </if>
       <if test="updateDate != null">
-        update_date = #{updateDate,jdbcType=TINYINT},
+        update_date = #{updateDate,jdbcType=DATE},
       </if>
     </set>
     where comment_id = #{commentId,jdbcType=INTEGER}
@@ -247,12 +247,12 @@
   <update id="updateByPrimaryKey" parameterType="net.xiaobais.xiaobai.model.Comment">
     update comment
     set user_id = #{userId,jdbcType=INTEGER},
-      node_id = #{nodeId,jdbcType=INTEGER},
       content = #{content,jdbcType=VARCHAR},
+      node_id = #{nodeId,jdbcType=INTEGER},
       parent_id = #{parentId,jdbcType=INTEGER},
       create_date = #{createDate,jdbcType=DATE},
       is_delete = #{isDelete,jdbcType=BIT},
-      update_date = #{updateDate,jdbcType=TINYINT}
+      update_date = #{updateDate,jdbcType=DATE}
     where comment_id = #{commentId,jdbcType=INTEGER}
   </update>
 </mapper>

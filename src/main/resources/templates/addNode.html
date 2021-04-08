@@ -136,7 +136,6 @@
                 addNodeVo.append("userId", this.userVo.userId)
                 addNodeVo.append("relationShip", this.relationShip)
                 if (document.getElementById('isPre').value === "1"){
-                    alert("添加pre")
                     axios.post('/private/addPrevious/' + this.nodeId, addNodeVo,
                         {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
                         .then(response => {
@@ -146,7 +145,6 @@
                         .catch(error => console.log(error))
                 }
                 else{
-                    alert("添加nex")
                     axios.post('/private/addNext/' + this.nodeId, addNodeVo,
                         {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
                         .then(response => {

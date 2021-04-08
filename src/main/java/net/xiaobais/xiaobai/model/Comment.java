@@ -12,11 +12,11 @@ public class Comment {
     @ApiModelProperty(value="userId评论人ID")
     private Integer userId;
 
-    @ApiModelProperty(value="nodeId评论节点ID")
-    private Integer nodeId;
-
     @ApiModelProperty(value="content评论内容")
     private String content;
+
+    @ApiModelProperty(value="nodeId评论节点ID")
+    private Integer nodeId;
 
     @ApiModelProperty(value="parentId回复人ID(0为node)")
     private Integer parentId;
@@ -28,7 +28,7 @@ public class Comment {
     private Boolean isDelete;
 
     @ApiModelProperty(value="updateDate更新日期")
-    private Byte updateDate;
+    private Date updateDate;
 
     public Integer getCommentId() {
         return commentId;
@@ -46,20 +46,20 @@ public class Comment {
         this.userId = userId;
     }
 
-    public Integer getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(Integer nodeId) {
-        this.nodeId = nodeId;
-    }
-
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
+    }
+
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
     }
 
     public Integer getParentId() {
@@ -86,11 +86,11 @@ public class Comment {
         this.isDelete = isDelete;
     }
 
-    public Byte getUpdateDate() {
+    public Date getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Byte updateDate) {
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
 }

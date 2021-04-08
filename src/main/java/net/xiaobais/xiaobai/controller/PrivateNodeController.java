@@ -2,13 +2,12 @@ package net.xiaobais.xiaobai.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.User;
 import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.utils.JwtUtils;
-import net.xiaobais.xiaobai.vo.AddNodeVo;
-import net.xiaobais.xiaobai.vo.NodeVo;
-import net.xiaobais.xiaobai.vo.SimpleNodeVo;
+import net.xiaobais.xiaobai.vo.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -46,7 +45,7 @@ public class PrivateNodeController {
     @Resource
     private MapService mapService;
     @Resource
-    private PrivateNodeService nodeService;
+    private PrivateNodeService privateNodeService;
     @Resource
     private PublicNodeService publicNodeService;
 
@@ -195,7 +194,7 @@ public class PrivateNodeController {
         node.setStar(0);
         node.setCreateDate(new Date());
         node.setUpdateDate(new Date());
-        int preId = nodeService.insertNode(node);
+        int preId = privateNodeService.insertNode(node);
         if (preId == -1){
             throw new Exception("节点内容添加失败");
         }
@@ -249,7 +248,7 @@ public class PrivateNodeController {
         node.setStar(0);
         node.setCreateDate(new Date());
         node.setUpdateDate(new Date());
-        int nexId = nodeService.insertNode(node);
+        int nexId = privateNodeService.insertNode(node);
         if (nexId == -1){
             throw new Exception("节点内容添加失败");
         }
@@ -261,6 +260,24 @@ public class PrivateNodeController {
         if (j == -1){
             throw new Exception("后置关系添加失败");
         }
+    }
+    
+    @ApiOperation("获取节点内容")
+    @GetMapping("/getNode")
+    @ResponseBody
+    public PrivateNodeVo getNode(@RequestParam Integer nodeId, @RequestParam Integer userId,
+                                HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        Integer id = JwtUtils.getUserId(cookies[0].getValue());
+        if (id.equals(userId)){
+            Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,userId);
+            Blog blog = blogService.findBlogById(node.getBlogId());
+            return nodeToPublicNodeVo(node,blog);
+        }
+        return null;
     }
 
     private NodeVo nodeToNodeVo(Node node){
@@ -312,6 +329,50 @@ public class PrivateNodeController {
                 }
         );
         return simpleNodeVos;
+    }
+
+    /**
+     * 私有的卡片信息
+     * @param node node
+     * @param blog blog
+     * @return PublicNodeVo
+     */
+    private PrivateNodeVo nodeToPublicNodeVo(Node node, Blog blog){
+        PrivateNodeVo nodeVo = new PrivateNodeVo();
+        nodeVo.setTitle(node.getNodeName());
+        nodeVo.setDesc(blog.getBlogDes());
+        nodeVo.setStar(node.getCollect());
+        nodeVo.setLike(node.getStar());
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Period p = Period.between(
+                LocalDate.parse(df.format(node.getUpdateDate())), LocalDate.now());
+        StringBuilder sb = new StringBuilder();
+        boolean flag = false;
+        if (p.getYears() != 0) {
+            flag = true;
+            sb.append(p.getYears()).append("年");
+        }
+        if (p.getMonths() != 0){
+            flag = true;
+            sb.append(p.getMonths()).append("月");
+        }
+        if (p.getDays() != 0){
+            flag = true;
+            sb.append(p.getDays()).append("日");
+        }
+        if (!flag){
+            sb.append("今天");
+        }
+        else{
+            sb.append("前");
+        }
+        nodeVo.setTime(sb.toString());
+        // 所属用户信息
+        User user = userService.getUserById(node.getUserId());
+        nodeVo.setUsername(user.getUsername());
+        nodeVo.setUserUrl("/private/user/" + node.getUserId());
+        nodeVo.setAvatar(user.getUserAvatar());
+        return nodeVo;
     }
 
 
