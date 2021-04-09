@@ -24,4 +24,19 @@ public interface PrivateNodeService {
      * @return int
      */
     int insertNode(Node node);
+
+    /**
+     * 更新博客内容
+     * @param nodeId nodeId
+     * @param nodeName nodeName
+     * @return int
+     */
+    int updateNodeByNodeId(Integer nodeId, String nodeName);
+
+    /**
+     * 根据nodeId删除节点
+     * @param nodeId nodeId
+     * @return int
+     */
+    int deleteNodeByNodeId(Integer nodeId);
 }

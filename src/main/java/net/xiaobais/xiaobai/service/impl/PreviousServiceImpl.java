@@ -5,9 +5,9 @@ import net.xiaobais.xiaobai.mapper.PreviousMapper;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.Previous;
 import net.xiaobais.xiaobai.model.PreviousExample;
+import net.xiaobais.xiaobai.service.PreviousService;
 import net.xiaobais.xiaobai.service.PrivateNodeService;
 import net.xiaobais.xiaobai.service.PublicNodeService;
-import net.xiaobais.xiaobai.service.PreviousService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -39,14 +39,18 @@ public class PreviousServiceImpl implements PreviousService {
         return myPreviousMapper.findPreviousByNodeId(
                 nodeId, pageNumber, pageSize, isPrivate);
     }
-
     @Override
     public List<Node> findPreviousByNodeId(Integer nodeId) {
         PreviousExample previousExample = new PreviousExample();
         previousExample.createCriteria().andNodeIdEqualTo(nodeId);
         List<Previous> previous = previousMapper.selectByExample(previousExample);
         List<Node> nodes = new ArrayList<>();
-        previous.forEach(p -> nodes.add(publicNodeService.findNodeByNodeIdAndNotIsPrivate(p.getPreviousId())));
+        previous.forEach(p -> {
+            Node node = publicNodeService.findNodeByNodeIdAndNotIsPrivate(p.getPreviousId());
+            if (node != null){
+                nodes.add(node);
+            }
+        });
         return nodes;
     }
 
@@ -88,6 +92,20 @@ public class PreviousServiceImpl implements PreviousService {
         previous.setNodeId(nodeId);
         previous.setPreviousId(previousId);
         return previousMapper.insert(previous);
+    }
+
+    @Override
+    public boolean deletePrevious(Integer nodeId) {
+        PreviousExample example1 = new PreviousExample();
+        example1.createCriteria().andNodeIdEqualTo(nodeId);
+        int i = previousMapper.deleteByExample(example1);
+        PreviousExample example2 = new PreviousExample();
+        example2.createCriteria().andPreviousIdEqualTo(nodeId);
+        int j = previousMapper.deleteByExample(example2);
+        if (i != -1){
+            return true;
+        }
+        return j != -1;
     }
 
 

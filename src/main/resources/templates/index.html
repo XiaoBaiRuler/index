@@ -33,6 +33,13 @@
         #mind_container{
             height: 1200px;
         }
+        .right_bar{
+            position: fixed !important;
+            z-index: 10 !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            padding: 0.8em !important;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +47,7 @@
         <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
         <div th:replace="com/menu :: menu"></div>
         <br><br><br>
+        <div id="top"></div>
         <div class="ui fluid container" v-show="isNode">
             <div class="ui three column grid">
                 <div :class="left" v-show="isLeft">
@@ -117,6 +125,12 @@
         <div th:replace="com/comment :: comment"></div>
         <br><br>
         <div th:replace="com/foot :: foot"></div>
+        <div id="toolbar" class="right_bar">
+            <div class="ui vertical icon buttons">
+                <a class="ui teal button" @click="toComment">评论</a>
+                <div class="ui teal icon button" @click="toTop"><i class="chevron up icon"></i></div>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript">
@@ -478,8 +492,16 @@
                                     this.comments[this.i].children[this.j].children.push(item)
                                 }
                             }
+                            window.location.href = '#comment'
+                            this.commentContent = ""
                         })
                         .catch(error => console.log(error))
+                },
+                toComment: function(){
+                    window.location.href = '#comment'
+                },
+                toTop: function(){
+                    window.location.href = '#top'
                 }
             },
         })

@@ -39,4 +39,18 @@ public class MapServiceImpl implements MapService {
         int insert = mapMapper.insert(map);
         return insert == -1 ? -1 : map.getMapId();
     }
+
+    @Override
+    public int updateMapByMapId(Integer mapId, String mapData) {
+        Map map = new Map();
+        map.setMapData(mapData);
+        map.setMapId(mapId);
+        return mapMapper.updateByPrimaryKeySelective(map);
+    }
+
+    @Override
+    public int deleteMapByMapId(Integer mapId) {
+        return mapMapper.deleteByPrimaryKey(mapId);
+    }
+
 }

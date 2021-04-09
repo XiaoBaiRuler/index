@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -42,7 +43,8 @@ public class PrivateController {
     @ApiOperation("用户个人根节点")
     @GetMapping("/node/{indexId}/{userId}")
     public String toPrivateIndex(@PathVariable Integer indexId, @PathVariable Integer userId,
-                                 HttpServletRequest request, Model model){
+                                 @RequestParam Integer isUpdate, HttpServletRequest request,
+                                 Model model){
         // 检测是否是当前用户
         Cookie[] cookies = request.getCookies();
         if (cookies == null){
@@ -55,13 +57,16 @@ public class PrivateController {
         // 获取根节点
         Node node = nodeService.findNodeById(indexId);
         Blog blog = blogService.findBlogById(node.getBlogId());
+
+        model.addAttribute("isUpdate", isUpdate);
         model.addAttribute("nodeId", indexId);
         model.addAttribute("html", blog.getBlogContent());
-        model.addAttribute("flag", false);
         model.addAttribute("mostCollect", nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
         model.addAttribute("mostStar", nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
         return "private";
     }
+
+
 
     private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){
         List<SimpleNodeVo> simpleNodeVos = new ArrayList<>(nodes.size());

@@ -78,4 +78,11 @@ public interface PreviousService {
      * @return int
      */
     int addPrevious(Integer nodeId, Integer previousId);
+
+    /**
+     * 删除前置关系
+     * @param nodeId nodeId
+     * @return boolean
+     */
+    boolean deletePrevious(Integer nodeId);
 }

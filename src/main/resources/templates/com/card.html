@@ -63,8 +63,10 @@
          v-for="node,index in preNodes">
         <div class="ui fluid card">
             <div class="content">
-                <i class="red inverted left floated cut icon" @click.once="cut(node.nodeId)"></i>
-                <i class="red inverted right floated edit icon" @click.once="edit(node.nodeId)"></i>
+                <i class="red left floated cut icon"></i>
+                <a class="left floated" @click="cut(node.id, index, true)">删除</a>
+                <i class="red inverted right floated edit icon"></i>
+                <a :href="node.updateUrl">更新</a>
                 <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
                 <div class="center aligned description">
                     <p>和下一个节点的关系: {{node.relationship}}</p>
@@ -89,8 +91,10 @@
          v-for="node,index in nexNodes">
         <div class="ui fluid card">
             <div class="content">
-                <i class="red inverted left floated cut icon" @click.once="cut(1)"></i>
-                <i class="red inverted right floated edit icon" @click.once="edit(1)"></i>
+                <i class="red inverted left floated cut icon"></i>
+                <a class="left floated" @click="cut(node.id, index, false)">删除</a>
+                <i class="red inverted right floated edit icon"></i>
+                <a :href="node.updateUrl">更新</a>
                 <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
                 <div class="center aligned description">
                     <p>和下一个节点的关系: {{node.relationship}}</p>

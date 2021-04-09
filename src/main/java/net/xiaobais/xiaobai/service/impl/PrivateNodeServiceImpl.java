@@ -7,6 +7,7 @@ import net.xiaobais.xiaobai.service.PrivateNodeService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +37,20 @@ public class PrivateNodeServiceImpl implements PrivateNodeService {
     public int insertNode(Node node) {
         int insert = nodeMapper.insert(node);
         return insert != -1 ? node.getNodeId() : -1;
+    }
+
+    @Override
+    public int updateNodeByNodeId(Integer nodeId, String nodeName) {
+        Node node = new Node();
+        node.setNodeId(nodeId);
+        node.setNodeName(nodeName);
+        node.setUpdateDate(new Date());
+        return nodeMapper.updateByPrimaryKeySelective(node);
+    }
+
+    @Override
+    public int deleteNodeByNodeId(Integer nodeId) {
+        return nodeMapper.deleteByPrimaryKey(nodeId);
     }
 
 }

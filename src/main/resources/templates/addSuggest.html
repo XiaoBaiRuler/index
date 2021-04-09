@@ -32,268 +32,285 @@
         #jsmind_container{
             height: 1000px;
         }
+        .right_bar{
+            position: fixed !important;
+            z-index: 10 !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            padding: 0.8em !important;
+        }
     </style>
 </head>
 <body>
-    <div id="app">
-        <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
-        <div th:replace="com/menu :: simpleMenu"></div>
-        <br>
-        <br>
-        <div class="ui fluid container">
-            <div class="ui container" v-show="hasContent">
-                <div class="column" v-show="isBlog">
-                    <div class="ui stacked segment">
-                        <textarea hidden="hidden" th:text="${html}" id="html" style="white-space: pre-line"></textarea>
-                        <div id="content"></div>
-                        <span th:if="${flag}">
+<div id="app">
+    <input type="number" hidden="hidden" id="nodeIds" th:value="${nodeId}">
+    <div th:replace="com/menu :: suggestMenu"></div>
+    <div id="top"></div>
+    <br>
+    <br>
+    <div class="ui fluid container">
+        <div class="ui container" v-show="hasContent" style="width: 90%;">
+            <div class="column" v-show="isBlog">
+                <div class="ui stacked segment">
+                    <textarea hidden="hidden" th:text="${html}" id="html" style="white-space: pre-line"></textarea>
+                    <div id="content"></div>
+                    <span th:if="${flag}">
                             <br><br><br><br><br><br><br><br><br><br>
                             <br><br><br><br><br><br><br><br><br><br>
                             <br><br><br><br><br><br><br><br><br><br>
                             <br><br><br><br><br><br><br><br><br><br>
                             <br><br><br><br><br><br><br><br><br><br>
                     </span>
-                    </div>
-                </div>
-                <div class="column" v-show="!isBlog">
-                    <div id="jsmind_container"></div>
                 </div>
             </div>
-            <div class="ui fluid container" v-show="!hasContent">
-                <div th:replace="com/form :: suggestForm"></div>
+            <div class="column" v-show="!isBlog">
+                <div id="jsmind_container"></div>
             </div>
         </div>
-        <br><br>
-        <div th:replace="com/foot :: foot"></div>
+        <div class="ui fluid container" v-show="!hasContent">
+            <div th:replace="com/form :: suggestForm"></div>
+        </div>
     </div>
-    <script type="text/javascript">
+    <br><br>
+    <div th:replace="com/foot :: foot"></div>
+    <div th:replace="com/Bar :: right_bar"></div>
+</div>
+<script type="text/javascript">
 
-        let app = new Vue({
-            el: '#app',
-            data: {
-                str: '',
-                html: '',
-                mind: [],
-                isBlog: true,
-                isLogin: false,
-                contentCss: "ui one column stackable grid",
-                hasContent: false,
-                nodeId: 0,
-                userVo: {},
-                choice: ["1", "2"],
-                question1: "",
-                question2: "",
-                question3: [],
-                question4: [],
-                preNode: [],
-                nexNode: [],
-                editor1: {},
-                editor2: {},
-                editor3: {},
-                editor4: {},
-                show: true
-            },
-            mounted: function(){
+    let app = new Vue({
+        el: '#app',
+        data: {
+            str: '',
+            html: '',
+            mind: [],
+            isBlog: true,
+            isLogin: false,
+            contentCss: "ui one column stackable grid",
+            hasContent: false,
+            nodeIds: 0,
+            userVo: {},
+            choice: ["1", "2"],
+            question1: "",
+            question2: "",
+            question3: [],
+            question4: [],
+            preNode: [],
+            nexNode: [],
+            editor1: {},
+            editor2: {},
+            editor3: {},
+            editor4: {},
+            show: true
+        },
+        beforeMount: function(){
+            this.nodeIds = document.getElementById('nodeIds').value
+            axios.get('/public/getAllPreNode?nodeId=' + this.nodeIds)
+                .then(response => {
+                    this.preNode = response.data
+                    console.log(this.preNode)
+                })
+                .catch(error => console.log(error))
 
-                this.prepareEditor()
+            axios.get('/public/getAllNexNode?nodeId=' + this.nodeIds)
+                .then(response => {
+                    this.nexNode = response.data
+                    console.log(this.nexNode)
+                })
+                .catch(error => console.log(error))
+        },
+        mounted: function(){
 
-                let nodeId = document.getElementById('nodeId').value
-                this.nodeId = nodeId
-                axios.get("/user/getUserInfo")
-                    .then(response => {
-                        if (response.data !== ""){
-                            this.isLogin = true
-                            this.userVo = response.data
-                        }else{
-                            this.isLogin = false
-                        }
-                    })
-                    .catch(error => console.log(error))
-
-                axios.get("/public/getMind?nodeId=" + nodeId)
-                    .then(response => {
-                        let options = {
-                            mode: 'full',
-                            container: 'jsmind_container',
-                            editable: true,
-                            theme:'orange',
-                            support_html: true,
-                            view:{
-                                engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
-                                hmargin:100,        // 思维导图距容器外框的最小水平距离
-                                vmargin:200,         // 思维导图距容器外框的最小垂直距离
-                                line_width:3,       // 思维导图线条的粗细
-                                line_color:'#555'   // 思维导图线条的颜色
-                            },
-                            layout:{
-                                hspace:100,          // 节点之间的水平间距
-                                vspace:200,          // 节点之间的垂直间距
-                                pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
-                            },
-                        }
-                        let m = response.data
-                        let res = []
-                        m.forEach((item) =>{
-                            let obj = {}
-                            obj.id = item.id
-                            obj.parentid = item.parentid
-                            obj.isroot = item.isroot
-                            obj.topic = item.topic
-                            obj.direction = item.direction
-                            obj.expanded = item.expanded
-                            res.push(obj)
-                        })
-                        let mind = {
-                            "meta":{
-                                "name":"测试",
-                                "author":"xiaobai",
-                                "version":"1.0",
-                            },
-                            "format":"node_array",
-                            "data": res
-                        }
-                        let jm = new jsMind(options)
-                        jm.show(mind)
-                    })
-                    .catch(error => console.log(error))
-
-                axios.get('/public/getAllPreNode?nodeId=' + nodeId)
-                    .then(response => this.preNode = response.data)
-                    .catch(error => console.log(error))
-
-                axios.get('/public/getAllNexNode?nodeId=' + nodeId)
-                    .then(response => this.nexNode = response.data)
-                    .catch(error => console.log(error))
-
-            },
-            watch: {
-                choice: function(){
-                    if(this.choice.length === 0){
-                        alert("不能为空")
-                        location.reload()
+            this.prepareEditor()
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                    }else{
+                        this.isLogin = false
                     }
+                })
+                .catch(error => console.log(error))
+
+            axios.get("/public/getMind?nodeId=" + this.nodeIds)
+                .then(response => {
+                    let options = {
+                        mode: 'full',
+                        container: 'jsmind_container',
+                        editable: true,
+                        theme:'orange',
+                        support_html: true,
+                        view:{
+                            engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                            hmargin:100,        // 思维导图距容器外框的最小水平距离
+                            vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                            line_width:3,       // 思维导图线条的粗细
+                            line_color:'#555'   // 思维导图线条的颜色
+                        },
+                        layout:{
+                            hspace:100,          // 节点之间的水平间距
+                            vspace:200,          // 节点之间的垂直间距
+                            pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                        },
+                    }
+                    let m = response.data
+                    let res = []
+                    m.forEach((item) =>{
+                        let obj = {}
+                        obj.id = item.id
+                        obj.parentid = item.parentid
+                        obj.isroot = item.isroot
+                        obj.topic = item.topic
+                        obj.direction = item.direction
+                        obj.expanded = item.expanded
+                        res.push(obj)
+                    })
+                    let mind = {
+                        "meta":{
+                            "name":"测试",
+                            "author":"xiaobai",
+                            "version":"1.0",
+                        },
+                        "format":"node_array",
+                        "data": res
+                    }
+                    let jm = new jsMind(options)
+                    jm.show(mind)
+                })
+                .catch(error => console.log(error))
+
+        },
+        watch: {
+            choice: function(){
+                if(this.choice.length === 0){
+                    alert("不能为空")
+                    location.reload()
+                }
+            }
+        },
+        methods: {
+            changeBlog: function() {
+                this.isBlog = !this.isBlog
+            },
+            closeContent: function(){
+                this.hasContent = !this.hasContent
+                if(!this.hasContent){
+                    location.reload()
                 }
             },
-            methods: {
-                changeBlog: function() {
-                    this.isBlog = !this.isBlog
-                },
-                closeContent: function(){
-                    this.hasContent = !this.hasContent
-                    if(!this.hasContent){
-                        location.reload()
-                    }
-                },
-                logout: function() {
-                    this.isLogin = false
-                },
-                search: function() {
-                    if (this.str === "") {
-                        alert("请输入搜索内容")
-                    } else {
-                        console.log(this.str)
-                    }
-                },
-                submitSuggest: function(){
-                    let flag = true;
-                    if (this.choice.indexOf('1') > -1){
-                        if (this.question1 === "" || this.editor1.txt.html() === ""){
-                            flag = false;
-                            alert("问题建议不能为空")
-                        }
-                    }
-                    if (this.choice.indexOf('2') > -1){
-                        if (this.question2 === "" || this.editor2.txt.html() === ""){
-                            flag = false;
-                            alert("扩展建议不能为空")
-                        }
-                    }
-                    if (this.choice.indexOf('3') > -1){
-                        if (this.question3.length === 0 || this.editor3.txt.html() === ""){
-                            flag = false;
-                            alert("前置节点建议不能为空")
-                        }
-                    }
-                    if (this.choice.indexOf('4') > -1){
-                        if (this.question4 === "" || this.editor4.txt.html() === ""){
-                            flag = false;
-                            alert("后置节点建议不能为空")
-                        }
-                    }
-                    if (flag){
-                        let  suggestWb = new FormData()
-                        suggestWb.append('nodeId', this.nodeId)
-                        suggestWb.append('userId', this.userVo.userId)
-                        suggestWb.append("choice", this.choice.join("#"))
-                        suggestWb.append("question", this.question1)
-                        suggestWb.append('suggest', this.editor1.txt.html())
-                        suggestWb.append('extend', this.question2)
-                        suggestWb.append('extendSuggest', this.editor2.txt.html())
-                        suggestWb.append('previousQuestion', this.question3.join("#"))
-                        suggestWb.append('previousSuggest', this.editor3.txt.html())
-                        suggestWb.append('nextQuestion', this.question4.join("#"))
-                        suggestWb.append('nextSuggest', this.editor4.txt.html())
-                        axios.post('/person/public/addSuggest', suggestWb,
-                            {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
-                            .then(response => {window.location.href = "/public/node/" + this.nodeId})
-                    }
-                },
-                prepareEditor: function(){
-
-                    $('select.dropdown').dropdown();
-                    $('.ui.checkbox').checkbox();
-                    const E = window.wangEditor;
-                    const editor1 = new E("#suggest_question");
-                    editor1.config.placeholder = '请输入你的解决方案(尽量分点且简洁)'
-                    editor1.config.zIndex = 0
-                    editor1.create();
-
-                    const editor2 = new E('#suggest_extend')
-                    editor2.config.placeholder = '请输入你希望扩展内容(尽量分点且简洁)'
-                    editor2.config.zIndex = 0
-                    editor2.create()
-
-                    const editor3 = new E('#pre_question')
-                    editor3.config.placeholder = '请表明你对前置节点的建议(尽量分点且简洁)'
-                    editor3.config.zIndex = 0
-                    editor3.create()
-
-                    const editor4 = new E('#nex_question')
-                    editor4.config.placeholder = '请表明你对前置节点的建议(尽量分点且简洁)'
-                    editor4.config.zIndex = 0
-                    editor4.create()
-
-                    this.editor1 = editor1
-                    this.editor2 = editor2
-                    this.editor3 = editor3
-                    this.editor4 = editor4
+            logout: function() {
+                this.isLogin = false
+            },
+            search: function() {
+                if (this.str === "") {
+                    alert("请输入搜索内容")
+                } else {
+                    console.log(this.str)
                 }
             },
-        })
+            submitSuggest: function(){
+                let flag = true;
+                if (this.choice.indexOf('1') > -1){
+                    if (this.question1 === "" || this.editor1.txt.html() === ""){
+                        flag = false;
+                        alert("问题建议不能为空")
+                    }
+                }
+                if (this.choice.indexOf('2') > -1){
+                    if (this.question2 === "" || this.editor2.txt.html() === ""){
+                        flag = false;
+                        alert("扩展建议不能为空")
+                    }
+                }
+                if (this.choice.indexOf('3') > -1){
+                    if (this.question3.length === 0 || this.editor3.txt.html() === ""){
+                        flag = false;
+                        alert("前置节点建议不能为空")
+                    }
+                }
+                if (this.choice.indexOf('4') > -1){
+                    if (this.question4 === "" || this.editor4.txt.html() === ""){
+                        flag = false;
+                        alert("后置节点建议不能为空")
+                    }
+                }
+                if (flag){
+                    let  suggestWb = new FormData()
+                    suggestWb.append('nodeId', this.nodeIds)
+                    suggestWb.append('userId', this.userVo.userId)
+                    suggestWb.append("choice", this.choice.join("#"))
+                    suggestWb.append("question", this.question1)
+                    suggestWb.append('suggest', this.editor1.txt.html())
+                    suggestWb.append('extend', this.question2)
+                    suggestWb.append('extendSuggest', this.editor2.txt.html())
+                    suggestWb.append('previousQuestion', this.question3.join("#"))
+                    suggestWb.append('previousSuggest', this.editor3.txt.html())
+                    suggestWb.append('nextQuestion', this.question4.join("#"))
+                    suggestWb.append('nextSuggest', this.editor4.txt.html())
+                    axios.post('/person/public/addSuggest', suggestWb,
+                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                        .then(response => {window.location.href = "/public/node/" + this.nodeIds})
+                }
+            },
+            prepareEditor: function(){
 
-        let html = document.getElementById('html').value;
-        app.html = html;
-        document.getElementById('content').innerHTML = marked(html
-            , {
-                baseUrl: null,
-                breaks: true,
-                gfm: true,
-                headerIds: true,
-                headerPrefix: '',
-                highlight: function(code, language){
-                    const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-                    return hljs.highlight(validLanguage, code).value;
-                },
-                langPrefix: 'language-',
-                mangle: true,
-                pedantic: false,
-                renderer: new marked.Renderer(),
-                silent: false,
-                smartLists: true,
-                smartypants: true,
-                xhtml: true
-            });
-        hljs.initHighlightingOnLoad()
-    </script>
+                $('select.dropdown').dropdown();
+                $('.ui.checkbox').checkbox();
+                const E = window.wangEditor;
+                const editor1 = new E("#suggest_question");
+                editor1.config.placeholder = '请输入你的解决方案(尽量分点且简洁)'
+                editor1.config.zIndex = 0
+                editor1.create();
+
+                const editor2 = new E('#suggest_extend')
+                editor2.config.placeholder = '请输入你希望扩展内容(尽量分点且简洁)'
+                editor2.config.zIndex = 0
+                editor2.create()
+
+                const editor3 = new E('#pre_question')
+                editor3.config.placeholder = '请表明你对前置节点的建议(尽量分点且简洁)'
+                editor3.config.zIndex = 0
+                editor3.create()
+
+                const editor4 = new E('#nex_question')
+                editor4.config.placeholder = '请表明你对前置节点的建议(尽量分点且简洁)'
+                editor4.config.zIndex = 0
+                editor4.create()
+
+                this.editor1 = editor1
+                this.editor2 = editor2
+                this.editor3 = editor3
+                this.editor4 = editor4
+            },
+            toTop: function(){
+                window.location.href = '#top'
+            }
+        },
+    })
+
+    let html = document.getElementById('html').value;
+    app.html = html;
+    document.getElementById('content').innerHTML = marked(html
+        , {
+            baseUrl: null,
+            breaks: true,
+            gfm: true,
+            headerIds: true,
+            headerPrefix: '',
+            highlight: function(code, language){
+                const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+                return hljs.highlight(validLanguage, code).value;
+            },
+            langPrefix: 'language-',
+            mangle: true,
+            pedantic: false,
+            renderer: new marked.Renderer(),
+            silent: false,
+            smartLists: true,
+            smartypants: true,
+            xhtml: true
+        });
+    hljs.initHighlightingOnLoad()
+</script>
 </body>
 </html>

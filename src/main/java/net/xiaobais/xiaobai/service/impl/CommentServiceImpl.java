@@ -85,6 +85,13 @@ public class CommentServiceImpl implements CommentService {
         return comment.getCommentId();
     }
 
+    @Override
+    public int deleteCommentByNodeId(Integer nodeId) {
+        CommentExample example = new CommentExample();
+        example.createCriteria().andNodeIdEqualTo(nodeId);
+        return commentMapper.deleteByExample(example);
+    }
+
     private CommentVo commentToCommentVo(Comment comment, boolean f, List<CommentVo> children){
         CommentVo commentVo = new CommentVo();
         User user = userService.getUserById(comment.getUserId());

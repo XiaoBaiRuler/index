@@ -47,7 +47,12 @@ public class NextServiceImpl implements NextService {
         nextExample.createCriteria().andNodeIdEqualTo(nodeId);
         List<Next> next = nextMapper.selectByExample(nextExample);
         List<Node> lists = new ArrayList<>();
-        next.forEach(n -> lists.add(publicNodeService.findNodeByNodeIdAndNotIsPrivate(n.getNextId())));
+        next.forEach(n -> {
+            Node node = publicNodeService.findNodeByNodeIdAndNotIsPrivate(n.getNextId());
+            if (node != null){
+                lists.add(node);
+            }
+        });
         return lists;
     }
 
@@ -88,6 +93,20 @@ public class NextServiceImpl implements NextService {
         next.setNodeId(nodeId);
         next.setNextId(nextId);
         return nextMapper.insert(next);
+    }
+
+    @Override
+    public boolean deleteNext(Integer nodeId) {
+        NextExample example1 = new NextExample();
+        example1.createCriteria().andNodeIdEqualTo(nodeId);
+        int i = nextMapper.deleteByExample(example1);
+        NextExample example2 = new NextExample();
+        example2.createCriteria().andNextIdEqualTo(nodeId);
+        int j = nextMapper.deleteByExample(example2);
+        if (i != -1){
+            return true;
+        }
+        return j != -1;
     }
 
 

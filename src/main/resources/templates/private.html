@@ -38,12 +38,21 @@
         #editor_jsmind_container{
             height: 1200px;
         }
+        .right_bar{
+            position: fixed !important;
+            z-index: 10 !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            padding: 0.8em !important;
+        }
     </style>
 </head>
 <body>
     <div id="app">
+        <input type="number" hidden="hidden" id="isUpdate" th:value="${isUpdate}">
         <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
         <div th:replace="com/menu :: menu"></div>
+        <div id="top"></div>
         <br><br><br>
         <div class="ui fluid container">
             <div class="ui fluid container" v-show="isNode">
@@ -51,6 +60,7 @@
                     <div :class="left" v-show="isLeft">
                         <div class="ui fluid container">
                             <br>
+                            <div th:replace="com/model :: deletePreModel"></div>
                             <div class="ui stacked left aligned segment">
                                 <div class="ui action input" :style="{width: inputWidth}">
                                     <input type="text" placeholder="搜索..." name="preInput" v-model="preInput">
@@ -80,13 +90,6 @@
                             <div class="ui piled segment" v-show="isBlog">
                                 <textarea hidden="hidden" th:text="${html}" id="html" style="white-space: pre-line"></textarea>
                                 <div id="content"></div>
-                                <span th:if="${flag}">
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                </span>
                             </div>
                             <div class="ui raised segment" v-show="!isBlog">
                                 <div id="jsmind_container"></div>
@@ -108,24 +111,19 @@
                             <div class="ui stacked segment" v-show="isBlog">
                                 <textarea hidden="hidden" th:text="${html}" id="editor_html" style="white-space: pre-line"></textarea>
                                 <div id="test-editor">
-                                    <textarea style="display:none;">{{editorHtml}}</textarea>
+                                    <textarea style="display:none;" id="update_html">{{editorHtml}}</textarea>
                                 </div>
-                                <span th:if="${flag}">
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                    <br><br><br><br><br><br><br><br><br><br>
-                                </span>
                             </div>
                             <div class="ui raised segment" v-show="!isBlog">
                                 <div id="editor_jsmind_container"></div>
                             </div>
+                            <div th:replace="com/form :: editForm"></div>
                         </div>
                     </div>
                     <div :class="right" v-show="isRight">
                         <div class="ui fluid container">
                             <br>
+                            <div th:replace="com/model :: deleteNexModel"></div>
                             <div class="ui stacked left aligned segment">
                                 <div class="ui action input" :style="{width: inputWidth}">
                                     <input type="text" placeholder="搜索..." name="nexInput" v-model="nexInput">
@@ -156,6 +154,7 @@
         </div>
         <br><br>
         <div th:replace="com/foot :: foot"></div>
+        <div th:replace="com/Bar :: right_bar"></div>
     </div>
 
     <script type="text/javascript">
@@ -195,12 +194,18 @@
                 node: {},
                 blogTitle: "",
                 blogDes: "",
-                userId: ""
+                userId: "",
+                select: [],
+                deleteId: 0,
+                index: -1
             },
             mounted: function(){
+                $('.ui.checkbox').checkbox();
+                let isUpdate = document.getElementById("isUpdate").value
                 this.editorHtml = document.getElementById('editor_html').value
                 let nodeId = document.getElementById('nodeId').value
                 this.nodeId = nodeId
+                this.isUpdate = isUpdate
                 axios.get("/user/getUserInfo")
                     .then(response => {
                         if (response.data !== ""){
@@ -211,6 +216,9 @@
                                     this.node = response.data
                                     this.blogDes = this.node.desc
                                     this.blogTitle = this.node.title
+                                    if (isUpdate == 1){
+                                        this.changeEditor()
+                                    }
                                 })
                                 .catch(error => console.log(error))
                             this.prepareMind()
@@ -262,10 +270,10 @@
                     this.isEditor = !this.isEditor
                     if (this.isEditor) {
                         if(!this.isPrepare){
+                            this.isPrepare = true
                             this.prepareEditor()
-                            this.isPrepare = true;
+                            this.prepareEditorMind(true,'editor_jsmind_container')
                         }
-                        this.prepareEditorMind(true,'editor_jsmind_container')
                     }
                 },
                 logout: function() {
@@ -476,13 +484,40 @@
                         });
                     });
                 },
-                cut: function(nodeId){
-
+                cut: function(nodeId, index, flag){
+                    this.deleteId = nodeId
+                    this.index = index
+                    if (flag){
+                        $('.ui.pre.modal').modal('show');
+                    }
+                    else{
+                        $('.ui.nex.modal').modal('show');
+                    }
                 },
                 edit: function(nodeId){
-
+                    let addNodeVo = new FormData()
+                    addNodeVo.append("title", this.blogTitle)
+                    addNodeVo.append("desc", this.blogDes)
+                    addNodeVo.append("blogContent", document.getElementById('update_html').value)
+                    addNodeVo.append("mapData", this.jm !== {}
+                        ? JSON.stringify(this.jm.get_data("node_array").data)
+                        : "{}")
+                    addNodeVo.append("select", this.select)
+                    axios.post('/private/updateNode/' + nodeId, addNodeVo,
+                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                        .then(response => {
+                            alert("更新节点成功")
+                            window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId + "?isUpdate=0"
+                        })
+                        .catch(error => {alert("更新节点失败");console.log(error)})
+                },
+                reBack: function(){
+                    window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId + "?isUpdate=0"
+                },
+                toTop: function(){
+                    window.location.href = '#top'
                 }
-            },
+            }
         })
 
         let html = document.getElementById('html').value;
@@ -508,6 +543,33 @@
                 xhtml: true
             });
         hljs.initHighlightingOnLoad()
+
+        // 删除前置节点
+        $(document).on('click', '#deletePreModel', function() {
+            axios.get('/private/deleteNode?nodeId=' + app.deleteId + "&flag=true")
+                .then(response => {
+                    let msg = response.data
+                    if (msg.includes("成功")){
+                        app.preNodes.splice(app.index, 1)
+                    }
+                    alert(msg)
+                })
+                .catch(error => console.log(error))
+        })
+
+        $(document).on('click', '#deleteNexModel', function() {
+            axios.get('/private/deleteNode?nodeId=' + app.deleteId + "&flag=false")
+                .then(response => {
+                    let msg = response.data
+                    if (msg.includes("成功")){
+                        app.nexNodes.splice(app.index, 1)
+                    }
+                    alert(msg)
+                })
+                .catch(error => console.log(error))
+        })
+
+
     </script>
 </body>
 </html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<body>
+    <div class="ui pre modal" th:fragment="deletePreModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="description">
+                <div class="ui header">删除前置节点</div>
+                <p>要求：当前前置节点必须没有前置节点</p>
+                <p>是否同意删除?</p>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">
+                不同意
+            </div>
+            <div class="ui positive right labeled icon button" id="deletePreModel">
+                同意
+            </div>
+        </div>
+    </div>
+    <div class="ui nex modal" th:fragment="deleteNexModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="description">
+                <div class="ui header">删除后置节点</div>
+                <p>要求：当前后置节点必须没有后置节点</p>
+                <p>是否同意删除?</p>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">
+                不同意
+            </div>
+            <div class="ui positive right labeled icon button" id="deleteNexModel">
+                同意
+            </div>
+        </div>
+    </div>
+</body>
+</html>

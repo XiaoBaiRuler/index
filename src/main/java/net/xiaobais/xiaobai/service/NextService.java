@@ -81,4 +81,11 @@ public interface NextService {
      */
     int addNext(Integer nodeId, Integer nextId);
 
+    /**
+     * 删除后置关系
+     * @param nodeId nodeId
+     * @return boolean
+     */
+    boolean deleteNext(Integer nodeId);
+
 }

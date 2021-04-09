@@ -4,10 +4,20 @@
     <title>[[${username}]]的建议</title>
     <span th:replace="com/head :: head"></span>
     <title >index</title>
+    <style type="text/css">
+        .right_bar{
+            position: fixed !important;
+            z-index: 10 !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            padding: 0.8em !important;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
     <div th:replace="com/menu :: simpleMenu"></div>
+    <div id="top"></div>
     <br>
     <br>
     <div class="ui fluid container">
@@ -17,6 +27,7 @@
     </div>
     <br><br>
     <div th:replace="com/foot :: foot"></div>
+    <div th:replace="com/Bar :: right_bar"></div>
 </div>
 <script type="text/javascript">
 
@@ -27,7 +38,6 @@
             isLogin: false,
             nodeId: 0,
             userVo: {},
-            show: false
         },
         mounted: function(){
             axios.get("/user/getUserInfo")
@@ -51,6 +61,9 @@
                 } else {
                     console.log(this.str)
                 }
+            },
+            toTop: function(){
+                window.location.href = '#top'
             }
         },
     })

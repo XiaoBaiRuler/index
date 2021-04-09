@@ -18,4 +18,5 @@ public class NodeVo {
     private Integer collect;
     private String userUrl;
     private String avatar;
+    private String updateUrl;
 }

@@ -31,4 +31,19 @@ public interface MapService {
      * @return int
      */
     int insertMapByMapNameAndMapAuthorAndMapData(String mapName, String mapAuthor, String mapData);
+
+    /**
+     * 通过mapId更新思维导图内容
+     * @param mapId mapId
+     * @param mapData mapData
+     * @return int
+     */
+    int updateMapByMapId(Integer mapId, String mapData);
+
+    /**
+     * 通过mapId删除思维导图
+     * @param mapId mapId
+     * @return int
+     */
+    int deleteMapByMapId(Integer mapId);
 }

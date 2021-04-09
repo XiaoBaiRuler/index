@@ -48,6 +48,8 @@ public class PrivateNodeController {
     private PrivateNodeService privateNodeService;
     @Resource
     private PublicNodeService publicNodeService;
+    @Resource
+    private CommentService commentService;
 
     @ApiOperation("获取私有前置节点")
     @GetMapping("/getPreNode")
@@ -73,7 +75,8 @@ public class PrivateNodeController {
                     nodeId, pageNumber, pageSize, title, userId != 1 ? 1 : 0);
         }
         List<NodeVo> previousNodesVo = new ArrayList<>();
-        previousNodes.forEach(node -> previousNodesVo.add(nodeToNodeVo(node)));
+        Integer finalUserId = userId;
+        previousNodes.forEach(node -> previousNodesVo.add(nodeToNodeVo(node, finalUserId)));
         return previousNodesVo;
     }
 
@@ -103,7 +106,8 @@ public class PrivateNodeController {
             nextNodes = nextService.findNextByNodeIdAndTitle(nodeId, pageNumber, pageSize, title, userId != 1 ? 1 : 0);
         }
         List<NodeVo> nextNodesVo = new ArrayList<>();
-        nextNodes.forEach(node -> nextNodesVo.add(nodeToNodeVo(node)));
+        Integer finalUserId = userId;
+        nextNodes.forEach(node -> nextNodesVo.add(nodeToNodeVo(node, finalUserId)));
         return nextNodesVo;
     }
 
@@ -280,10 +284,127 @@ public class PrivateNodeController {
         return null;
     }
 
-    private NodeVo nodeToNodeVo(Node node){
+    @ApiOperation("删除节点内容")
+    @Transactional(rollbackFor = Exception.class)
+    @GetMapping("/deleteNode")
+    @ResponseBody
+    public String deleteNode(@RequestParam Integer nodeId,
+                             @RequestParam boolean flag, HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        Integer userId = -1;
+        if (cookies != null){
+            userId = JwtUtils.getUserId(cookies[0].getValue());
+        }
+        else{
+            return "用户没有登录";
+        }
+        User user = userService.getUserById(userId);
+        if (user.getIndexId().equals(nodeId)){
+            return "用户根节点不允许删除";
+        }
+        Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
+        if (node == null){
+            return "该节点不属于你";
+        }
+        // pre
+        if (flag){
+            List<Node> previous = previousService.findPrivatePreviousByNodeIdAndUserId(nodeId, userId);
+            if (!previous.isEmpty()){
+                return "当前节点还有前置节点";
+            }
+            else{
+                if (deleteNode(nodeId, node.getMapId(), node.getBlogId())){
+                    return "删除前置节点成功";
+                }
+            }
+        }
+        // nex
+        else{
+            List<Node> next = nextService.findPrivateNextByNodeIdAndUserId(nodeId, userId);
+            if (!next.isEmpty()){
+                return "当前节点还有后置节点";
+            }
+            else{
+                if (deleteNode(nodeId, node.getMapId(), node.getBlogId())){
+                    return "删除后置节点成功";
+                }
+            }
+        }
+        return "删除失败";
+    }
+
+    @ApiOperation("更新节点内容")
+    @Transactional(rollbackFor = Exception.class)
+    @PostMapping("/updateNode/{nodeId}")
+    @ResponseBody
+    public void updateNode(@PathVariable Integer nodeId, UpdatePrivateVo updateVo,
+                              HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        Integer userId = -1;
+        if (cookies != null){
+            userId = JwtUtils.getUserId(cookies[0].getValue());
+        }
+        else{
+            throw new Exception("用户权限不足");
+        }
+        Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
+        if (!updateVo.getTitle().equals(node.getNodeName())){
+            int i = privateNodeService.updateNodeByNodeId(nodeId, updateVo.getTitle());
+            if (i == -1){
+                throw new Exception("更新标题失败");
+            }
+        }
+        if (updateVo.getSelect().contains("1")){
+            int j = blogService.updateBlogByBlogId(node.getBlogId(),
+                    updateVo.getTitle(),
+                    updateVo.getBlogContent(),
+                    updateVo.getDesc());
+            if (j == -1){
+                throw new Exception("更新博客内容失败");
+            }
+        }
+        if (updateVo.getSelect().contains("2")){
+            // 更新博客内容
+            int k = mapService.updateMapByMapId(node.getMapId(), updateVo.getMapData());
+            if (k == -1){
+                throw new Exception("更新思维导图失败");
+            }
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteNode(Integer nodeId, Integer mapId, Integer blogId) throws Exception {
+        synchronized (this){
+            int i = blogService.deleteBlogByBlogId(blogId);
+            if (i == -1){
+                throw new Exception("删除博客失败");
+            }
+            int j = mapService.deleteMapByMapId(mapId);
+            if (j == -1){
+                throw new Exception("删除map失败");
+            }
+            int k = privateNodeService.deleteNodeByNodeId(nodeId);
+            if (k == -1){
+                throw new Exception("删除节点失败");
+            }
+            if (!previousService.deletePrevious(nodeId)){
+                throw new Exception("前置关系删除失败");
+            }
+            if (!nextService.deleteNext(nodeId)){
+                throw new Exception("后置关系删除失败");
+            }
+            int l = commentService.deleteCommentByNodeId(nodeId);
+            if (l == -1){
+                throw new Exception("删除评论失败");
+            }
+        }
+        return true;
+    }
+
+    private NodeVo nodeToNodeVo(Node node, Integer userId){
         NodeVo nodeVo = new NodeVo();
         nodeVo.setId(node.getNodeId());
-        nodeVo.setUrl("/private/node/" + node.getNodeId() + "/" + node.getUserId());
+        nodeVo.setUrl("/private/node/" + node.getNodeId() + "/" + node.getUserId() + "?isUpdate=0");
         nodeVo.setTitle(node.getNodeName());
         nodeVo.setRelationship(node.getRelationship());
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -316,6 +437,7 @@ public class PrivateNodeController {
         User user = userService.getUserById(node.getUserId());
         nodeVo.setUserUrl("/private/user/" + node.getUserId());
         nodeVo.setAvatar(user.getUserAvatar());
+        nodeVo.setUpdateUrl("/private/node/" + node.getNodeId() + "/" + userId + "?isUpdate=1");
         return nodeVo;
     }
 

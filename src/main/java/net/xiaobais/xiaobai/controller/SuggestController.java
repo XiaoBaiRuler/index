@@ -12,10 +12,12 @@ import net.xiaobais.xiaobai.service.UserService;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,9 +53,11 @@ public class SuggestController {
 
     @ApiOperation("跳转添加建议节点页面")
     @GetMapping("/person/public/toAddSuggest/{nodeId}")
-    public String toAddSuggest(@PathVariable Integer nodeId, Model model, HttpServletRequest request){
+    public String toAddSuggest(@PathVariable Integer nodeId, Model model){
 
-        Blog blog = blogService.findBlogById(nodeId);
+        Node node = nodeService.findNodeById(nodeId);
+        Blog blog = blogService.findBlogById(node.getBlogId());
+
         model.addAttribute("nodeId", nodeId);
         model.addAttribute("html", blog.getBlogContent());
         if (blog.getBlogContent() != null && blog.getBlogContent().length() > SIZE) {

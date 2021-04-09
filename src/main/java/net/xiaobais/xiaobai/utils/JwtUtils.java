@@ -123,7 +123,7 @@ public class JwtUtils {
                 .getBody();
         UserVo userVo = new UserVo();
         userVo.setUsername((String) claims.get("username"));
-        userVo.setUrl("/private/node/" + claims.get("indexId") + "/" + claims.get("id"));
+        userVo.setUrl("/private/node/" + claims.get("indexId") + "/" + claims.get("id") + "?isUpdate=0");
         userVo.setImg((String) claims.get("avatar"));
         userVo.setUserId((Integer) claims.get("id"));
         userVo.setIndexId((Integer) claims.get("indexId"));

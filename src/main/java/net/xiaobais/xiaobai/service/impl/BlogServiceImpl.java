@@ -43,5 +43,21 @@ public class BlogServiceImpl implements BlogService {
         return insert == -1 ? -1 : blog.getBlogId();
     }
 
+    @Override
+    public int updateBlogByBlogId(Integer blogId, String blogTitle, String blogContent, String blogDes) {
+        Blog blog = new Blog();
+        blog.setBlogId(blogId);
+        blog.setBlogTitle(blogTitle);
+        blog.setBlogContent(blogContent);
+        blog.setBlogDes(blogDes);
+        blog.setUpdateDate(new Date());
+        return blogMapper.updateByPrimaryKeySelective(blog);
+    }
+
+    @Override
+    public int deleteBlogByBlogId(Integer blogId) {
+        return blogMapper.deleteByPrimaryKey(blogId);
+    }
+
 
 }

@@ -9,12 +9,22 @@
     <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
     <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
     <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
+    <style type="text/css">
+        .right_bar{
+            position: fixed !important;
+            z-index: 10 !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            padding: 0.8em !important;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
         <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
         <input type="text" hidden="hidden" id="isPre" th:value="${isPre}">
         <div th:replace="com/menu :: addMenu"></div>
+        <div id="top"></div>
         <br><br><br>
         <div class="ui container" style="width: 90%;">
             <a class="ui red right ribbon label" @click.once="submit">保存</a>
@@ -43,6 +53,7 @@
         </div>
         <br><br>
         <div th:replace="com/foot :: foot"></div>
+        <div th:replace="com/Bar :: right_bar"></div>
     </div>
 </body>
 <script type="text/javascript">
@@ -140,7 +151,7 @@
                         {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
                         .then(response => {
                             alert("添加前置节点成功")
-                            window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId
+                            window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId + "?isUpdate=0"
                         })
                         .catch(error => console.log(error))
                 }
@@ -149,10 +160,13 @@
                         {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
                         .then(response => {
                                 alert("添加后置节点成功")
-                                window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId
+                                window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId + "?isUpdate=0"
                         })
                         .catch(error => console.log(error))
                 }
+            },
+            toTop: function(){
+                window.location.href = '#top'
             }
         },
     })

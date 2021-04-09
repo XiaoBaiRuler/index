@@ -31,4 +31,21 @@ public interface BlogService {
      * @return int
      */
     int insertBlogByTitleAndContent(String blogTitle, String blogContent, String blogDes);
+
+    /**
+     * 通过blogId更新博客
+     * @param blogId blogId
+     * @param blogTitle blogTitle
+     * @param blogContent blogContent
+     * @param blogDes blogDes
+     * @return int
+     */
+    int updateBlogByBlogId(Integer blogId, String blogTitle, String blogContent, String blogDes);
+
+    /**
+     * 根据博客Id删除博客
+     * @param blogId blogId
+     * @return blogId
+     */
+    int deleteBlogByBlogId(Integer blogId);
 }

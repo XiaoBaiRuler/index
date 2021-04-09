@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
 <body>
+    <!--suggestForm-->
     <div class="ui green inverted stacked segment" th:fragment="suggestForm">
         <div class="inline fields">
             <label class="ui red label">选择你想添加的建议模块</label>
@@ -54,8 +55,8 @@
                 <div class="field">
                     <select multiple="" class="ui dropdown" v-model="question3">
                         <option value="">请选择前置节点</option>
-                        <option :value="item.nodeId" v-for="item,index in preNode" :key="item.nodeId">
-                            {{item.nodeName}}</option>
+                        <option v-for="pre,index in preNode" :value="pre.nodeId" :key="'a' + index">
+                            {{pre.nodeName}}</option>
                     </select>
                 </div>
             </div>
@@ -70,8 +71,8 @@
                 <div class="field">
                     <select multiple="" class="ui dropdown" v-model="question4">
                         <option value="">请选择后置节点</option>
-                        <option :value="item.nodeId" v-for="item,index in nexNode" :key="item.nodeId" >
-                            {{item.nodeName}}</option>
+                        <option v-for="nex,index in nexNode" :value="nex.nodeId" :key="'b' + index" >
+                            {{nex.nodeName}}</option>
                     </select>
                 </div>
             </div>
@@ -80,6 +81,27 @@
             </div>
         </div>
         <div class="ui red button" @click.once="submitSuggest">提交</div>
+    </div>
+    <!--editForm-->
+    <div class="ui fluid container" th:fragment="editForm">
+        <div class="ui form">
+            <label>选择保存的部分</label>
+            <div class="field">
+                <div class="ui checkbox">
+                    <input type="checkbox" tabindex="0" class="hidden" value="1" name="select" v-model="select">
+                    <label>博客内容</label>
+                </div>
+                <div class="ui checkbox">
+                    <input type="checkbox" tabindex="1" class="hidden" value="2" name="select" v-model="select">
+                    <label>导图内容</label>
+                </div>
+                <div class="ui right floated buttons">
+                    <button class="ui button" @click.once="reBack">取消</button>
+                    <div class="or"></div>
+                    <button class="ui positive button" @click.once="edit(nodeId)">保存</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
