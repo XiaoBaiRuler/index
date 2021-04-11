@@ -166,5 +166,14 @@ public class PublicMindServiceImpl implements PublicMindService {
         return lists;
     }
 
+    @Override
+    public List<MindVo> getCollectMindVoByUserId(Integer userId) {
+        return null;
+    }
+
+    @Override
+    public List<MindVo> getPublicMindVoByUserId(Integer userId) {
+        return null;
+    }
 
 }

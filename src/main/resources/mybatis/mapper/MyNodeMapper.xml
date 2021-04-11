@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.xiaobais.xiaobai.mapper.MyNodeMapper">
+    <select id="countPublicNodeByUserId" parameterType="integer" resultType="integer">
+        select count(*)
+        from node
+        where user_id = #{userId}
+        and is_private = 0
+    </select>
+
+    <select id="countCollectNodeByUserId" parameterType="integer" resultType="integer">
+        select count(*)
+        from collect
+        where user_id = #{userId}
+    </select>
+
+    <select id="countLikeNodeByUserId" parameterType="integer" resultType="integer">
+        select count(*)
+        from likes
+        where user_id = #{userId}
+    </select>
+
+    <select id="countPublicNodeByUserIdAndTitle" resultType="integer">
+        select count(*)
+        from node
+        where user_id = #{userId}
+        and node_name like #{title}
+        and is_private = 0
+    </select>
+
+    <select id="countCollectNodeByUserIdAndTitle" resultType="integer">
+        select count(*)
+        from node
+        where node_id in (
+            select collect_id
+            from collect
+            where collect.user_id = #{userId}
+        )
+        and node_name like #{title}
+    </select>
+
+    <select id="countLikeNodeByUserIdAndTitle" resultType="integer">
+        select count(*)
+        from node
+        where node.node_id in (
+            select like_id
+            from likes
+            where likes.user_id = #{userId}
+        )
+        and node.node_name like #{title}
+    </select>
+
+    <select id="findCollectNodeByUserId" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Node">
+        select node.*
+        from node
+        where node.node_id in (
+            select collect.collect_id
+            from collect
+            where collect.user_id = #{userId}
+        )
+        order by node.update_date desc
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="findCollectNodeByUserIdAndTitle" resultType="net.xiaobais.xiaobai.model.Node">
+        select node.*
+        from node
+        where node.node_id in (
+            select collect.collect_id
+            from collect
+            where collect.user_id = #{userId}
+        )
+        and node.node_name like #{title}
+        order by node.update_date desc
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="findLikeNodeByUserId" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Node">
+        select node.*
+        from node
+        where node.node_id in (
+            select likes.like_id
+            from likes
+            where likes.user_id = #{userId}
+        )
+        order by node.update_date desc
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="findLikeNodeByUserIdAndTitle" resultType="net.xiaobais.xiaobai.model.Node">
+        select node.*
+        from node
+        where node.node_id in (
+            select likes.like_id
+            from likes
+            where likes.user_id = #{userId}
+        )
+        and node.node_name like #{title}
+        order by node.update_date desc
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="findPublicNodeByUserId" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Node">
+        select *
+        from node
+        where user_id = #{userId}
+        and is_private = 0
+        order by node.update_date desc
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="findPublicNodeByUserIdAndTitle" resultType="net.xiaobais.xiaobai.model.Node">
+        select *
+        from node
+        where user_id = #{userId}
+        and is_private = 0
+        and node_name like #{title}
+        order by node.update_date desc
+        limit #{pageNumber}, #{pageSize}
+    </select>
+</mapper>

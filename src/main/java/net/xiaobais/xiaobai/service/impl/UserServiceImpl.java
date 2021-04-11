@@ -1,13 +1,18 @@
 package net.xiaobais.xiaobai.service.impl;
 
+import net.xiaobais.xiaobai.mapper.MyFansMapper;
+import net.xiaobais.xiaobai.mapper.MyFollowMapper;
+import net.xiaobais.xiaobai.mapper.MyNodeMapper;
 import net.xiaobais.xiaobai.mapper.UserMapper;
 import net.xiaobais.xiaobai.model.User;
 import net.xiaobais.xiaobai.model.UserExample;
 import net.xiaobais.xiaobai.service.UserService;
+import net.xiaobais.xiaobai.vo.PublicUserVo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +26,12 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private MyFansMapper myFansMapper;
+    @Resource
+    private MyFollowMapper myFollowMapper;
+    @Resource
+    private MyNodeMapper myNodeMapper;
 
     private static final String KEY = "xiaobai";
 
@@ -84,5 +95,23 @@ public class UserServiceImpl implements UserService {
         user.setUserId(userId);
         user.setIndexId(nodeId);
         userMapper.updateByPrimaryKeySelective(user);
+    }
+
+    @Override
+    public PublicUserVo getPublicUserVo(Integer userId) {
+        PublicUserVo publicUserVo = new PublicUserVo();
+        User user = userMapper.selectByPrimaryKey(userId);
+        publicUserVo.setUsername(user.getUsername());
+        publicUserVo.setEmail(user.getUserEmail());
+        publicUserVo.setUserDesc(user.getUserDesc());
+        publicUserVo.setSignTime(new SimpleDateFormat("yyyy-MM-dd").format(user.getCreateDate()));
+
+        publicUserVo.setFans(myFansMapper.countFansByUserId(userId));
+        publicUserVo.setFollows(myFollowMapper.countFollowByUserId(userId));
+
+        publicUserVo.setPublicBlogs(myNodeMapper.countPublicNodeByUserId(userId));
+        publicUserVo.setCollectBlogs(myNodeMapper.countCollectNodeByUserId(userId));
+        publicUserVo.setLikeBlogs(myNodeMapper.countLikeNodeByUserId(userId));
+        return publicUserVo;
     }
 }

@@ -9,6 +9,7 @@ import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.NodeVo;
 import net.xiaobais.xiaobai.vo.PublicNodeVo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -128,6 +129,52 @@ public class PublicNodeController {
         Node node = publicNodeService.findNodeById(nodeId);
         Blog blog = blogService.findBlogById(node.getBlogId());
         return nodeToPublicNodeVo(node, blog);
+    }
+
+    @CrossOrigin
+    @ApiOperation("获取收藏节点")
+    @GetMapping("/public/getCollectNode")
+    @ResponseBody
+    public List<NodeVo> getCollectNodeByUserId(@RequestParam Integer userId,
+                                               @RequestParam Integer pageNumber,
+                                               @RequestParam Integer pageSize,
+                                               @RequestParam String title){
+        List<Node> nodes = publicNodeService.findNodeByCollect(userId, pageNumber, pageSize, title);
+        List<NodeVo> nodeVos = new ArrayList<>();
+        nodes.forEach(node -> nodeVos.add(nodeToNodeVo(node)));
+        return nodeVos;
+    }
+
+    @CrossOrigin
+    @ApiOperation("获取公开节点")
+    @GetMapping("/public/getPublicNode")
+    @ResponseBody
+    public List<NodeVo> getPublicNodeByUserId(@RequestParam Integer userId,
+                                              @RequestParam Integer pageNumber,
+                                              @RequestParam Integer pageSize,
+                                              @RequestParam String title){
+        List<Node> nodes = publicNodeService.findNodeByPublic(userId, pageNumber, pageSize, title);
+        List<NodeVo> nodeVos = new ArrayList<>();
+        nodes.forEach(node -> nodeVos.add(nodeToNodeVo(node)));
+        return nodeVos;
+    }
+
+    @CrossOrigin
+    @ApiOperation("获取公开节点")
+    @GetMapping("/public/countPublicNode")
+    @ResponseBody
+    public int countPublicNodeByUserIdAndTitle(@RequestParam Integer userId,
+                                               @RequestParam String title){
+        return publicNodeService.countPublicNodeByUserIdAndTitle(userId, title);
+    }
+
+    @CrossOrigin
+    @ApiOperation("获取公开节点")
+    @GetMapping("/public/countCollectNode")
+    @ResponseBody
+    public int countCollectNodeByUserIdAndTitle(@RequestParam Integer userId,
+                                                @RequestParam String title){
+        return publicNodeService.countCollectNodeByUserIdAndTitle(userId, title);
     }
 
     /**

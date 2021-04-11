@@ -25,4 +25,18 @@ public interface PublicMindService {
      * @return List<MindVo>
      */
     List<MindVo> getIteratorMindVoByNodeId(Integer nodeId);
+
+    /**
+     * 通过userId查找最新收藏的8个博客
+     * @param userId userId
+     * @return List<MindVo>
+     */
+    List<MindVo> getCollectMindVoByUserId(Integer userId);
+
+    /**
+     * 通过userId查找最新的公开8个博客
+     * @param userId userId
+     * @return List<MindVo>
+     */
+    List<MindVo> getPublicMindVoByUserId(Integer userId);
 }

@@ -1,6 +1,7 @@
 package net.xiaobais.xiaobai.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import net.xiaobais.xiaobai.mapper.MyNodeMapper;
 import net.xiaobais.xiaobai.mapper.NodeMapper;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.NodeExample;
@@ -20,6 +21,10 @@ public class PublicNodeServiceImpl implements PublicNodeService {
 
     @Resource
     private NodeMapper nodeMapper;
+    @Resource
+    private MyNodeMapper myNodeMapper;
+
+    private static final Integer SIZE = 4;
 
     @Override
     public Node findIndex() {
@@ -76,6 +81,54 @@ public class PublicNodeServiceImpl implements PublicNodeService {
         nodeExample.setOrderByClause("star desc");
         PageHelper.startPage(1, top);
         return nodeMapper.selectByExample(nodeExample);
+    }
+
+    @Override
+    public List<Node> findNodeByCollect(Integer userId, Integer pageNumber, Integer pageSize, String title) {
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * SIZE;
+        if ("".equals(title)){
+            return myNodeMapper.findCollectNodeByUserId(userId, pageNumber, pageSize);
+        }
+        else{
+            title = "%" + title + "%";
+            return myNodeMapper.findCollectNodeByUserIdAndTitle(userId, pageNumber, pageSize, title);
+        }
+    }
+
+    @Override
+    public List<Node> findNodeByLike(Integer userId, Integer pageNumber, Integer pageSize, String title) {
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * SIZE;
+        if ("".equals(title)){
+            return myNodeMapper.findLikeNodeByUserId(userId, pageNumber, pageSize);
+        }
+        else {
+            title = "%" + title + "%";
+            return myNodeMapper.findLikeNodeByUserIdAndTitle(userId, pageNumber, pageSize, title);
+        }
+    }
+
+    @Override
+    public List<Node> findNodeByPublic(Integer userId, Integer pageNumber, Integer pageSize, String title) {
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * SIZE;
+        if ("".equals(title)){
+            return myNodeMapper.findPublicNodeByUserId(userId, pageNumber, pageSize);
+        }
+        else {
+            title = "%" + title + "%";
+            return myNodeMapper.findPublicNodeByUserIdAndTitle(userId, pageNumber, pageSize, title);
+        }
+    }
+
+    @Override
+    public Integer countPublicNodeByUserIdAndTitle(Integer userId, String title) {
+        title = "%" + title + "%";
+        return myNodeMapper.countPublicNodeByUserIdAndTitle(userId, title);
+    }
+
+    @Override
+    public Integer countCollectNodeByUserIdAndTitle(Integer userId, String title) {
+        title = "%" + title + "%";
+        return myNodeMapper.countCollectNodeByUserIdAndTitle(userId, title);
     }
 
 }

@@ -1,6 +1,7 @@
 package net.xiaobais.xiaobai.service;
 
 import net.xiaobais.xiaobai.model.User;
+import net.xiaobais.xiaobai.vo.PublicUserVo;
 
 import java.util.List;
 
@@ -70,4 +71,11 @@ public interface UserService {
      * @param userId userId
      */
     void insertIndexId(Integer nodeId, Integer userId);
+
+    /**
+     * 通过userId获取基本信息
+     * @param userId userId
+     * @return PublicUserVo
+     */
+    PublicUserVo getPublicUserVo(Integer userId);
 }

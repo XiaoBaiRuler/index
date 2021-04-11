@@ -39,6 +39,9 @@ public class User {
     @ApiModelProperty(value="userAvatar用户头像")
     private String userAvatar;
 
+    @ApiModelProperty(value="userDesc用户简介")
+    private String userDesc;
+
     @ApiModelProperty(value="indexId用户个人主页节点")
     private Integer indexId;
 
@@ -128,6 +131,14 @@ public class User {
 
     public void setUserAvatar(String userAvatar) {
         this.userAvatar = userAvatar == null ? null : userAvatar.trim();
+    }
+
+    public String getUserDesc() {
+        return userDesc;
+    }
+
+    public void setUserDesc(String userDesc) {
+        this.userDesc = userDesc == null ? null : userDesc.trim();
     }
 
     public Integer getIndexId() {

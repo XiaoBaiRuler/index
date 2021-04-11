@@ -842,6 +842,76 @@ public class UserExample {
             return (Criteria) this;
         }
 
+        public Criteria andUserDescIsNull() {
+            addCriterion("user_desc is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescIsNotNull() {
+            addCriterion("user_desc is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescEqualTo(String value) {
+            addCriterion("user_desc =", value, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescNotEqualTo(String value) {
+            addCriterion("user_desc <>", value, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescGreaterThan(String value) {
+            addCriterion("user_desc >", value, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescGreaterThanOrEqualTo(String value) {
+            addCriterion("user_desc >=", value, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescLessThan(String value) {
+            addCriterion("user_desc <", value, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescLessThanOrEqualTo(String value) {
+            addCriterion("user_desc <=", value, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescLike(String value) {
+            addCriterion("user_desc like", value, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescNotLike(String value) {
+            addCriterion("user_desc not like", value, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescIn(List<String> values) {
+            addCriterion("user_desc in", values, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescNotIn(List<String> values) {
+            addCriterion("user_desc not in", values, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescBetween(String value1, String value2) {
+            addCriterion("user_desc between", value1, value2, "userDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserDescNotBetween(String value1, String value2) {
+            addCriterion("user_desc not between", value1, value2, "userDesc");
+            return (Criteria) this;
+        }
+
         public Criteria andIndexIdIsNull() {
             addCriterion("index_id is null");
             return (Criteria) this;

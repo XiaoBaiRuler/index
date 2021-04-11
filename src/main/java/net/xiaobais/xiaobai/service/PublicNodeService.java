@@ -68,4 +68,59 @@ public interface PublicNodeService {
      */
     List<Node> findNodeByTopStar(Integer top);
 
+    /**
+     * 通过userId和nodeName来查找所有收藏节点
+     * @param userId userId
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param title title
+     * @return List<Node>
+     */
+    List<Node> findNodeByCollect(Integer userId,
+                                 Integer pageNumber,
+                                 Integer pageSize,
+                                 String title);
+
+    /**
+     * 通过userId和nodeName来查找所有收藏节点
+     * @param userId userId
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param title title
+     * @return List<Node>
+     */
+    List<Node> findNodeByLike(Integer userId,
+                              Integer pageNumber,
+                              Integer pageSize,
+                              String title);
+
+    /**
+     * 通过userId和nodeName来查找所有收藏节点
+     * @param userId userId
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param title title
+     * @return List<Node>
+     */
+    List<Node> findNodeByPublic(Integer userId,
+                              Integer pageNumber,
+                              Integer pageSize,
+                              String title);
+
+    /**
+     * 通过userId和title获取公开节点个数
+     * @param userId userId
+     * @param title title
+     * @return Integer
+     */
+    Integer countPublicNodeByUserIdAndTitle(Integer userId, String title);
+
+    /**
+     * 通过userId和title获取收藏节点个数
+     * @param userId userId
+     * @param title title
+     * @return Integer
+     */
+    Integer countCollectNodeByUserIdAndTitle(Integer userId, String title);
+
 }
