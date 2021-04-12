@@ -15,7 +15,7 @@
 			<br><br><br>
 			<input type="number" id="userId" th:value="${userId}" hidden="hidden">
 			<div class="ui fluid container">
-				<div class="ui raised segment" style="margin-left: 8px; margin-right: 8px;" id="user">
+				<div class="ui raised segment" style="margin-left: 18px; margin-right: 18px;" id="user">
 					<h2 class="ui dividing header">个人信息</h2>
 					<div class="ui grid">
 						<div class="ui three wide column">
@@ -36,8 +36,8 @@
 										<tr>
 											<td>粉丝人数({{user.fans}})</td>
 											<td>
-												<div class="ui teal inverted button" v-if="!isFan">关注用户</div>
-												<div class="ui teal inverted button" v-if="isFan">取消关注</div>
+												<div class="ui teal inverted button" v-if="!isFan" @click="follow">关注用户</div>
+												<div class="ui teal inverted button" v-if="isFan" @click="unFollow">取消关注</div>
 											</td>
 										</tr>
 										<tr>
@@ -70,100 +70,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="ui raised segment" style="margin-left: 8px; margin-right: 8px;" id="collect">
-					<a class="ui orange right ribbon label" @click="exchangeCollect">
-						<i class="exchange icon"></i>
-						最新
-					</a>
-					<h2 class="ui dividing header">收藏博客</h2>
-					<div class="ui fluid icon input">
-						<input type="text" placeholder="根据标题搜索收藏过的博客..." name="collectInput" v-model="collectInput">
-						<button class="ui icon button" @click="searchCollect">
-							<i class="search icon"></i>
-						</button>
-					</div>
-					<div class="ui yellow inverted stacked right aligned segment" v-for="node,index in collectNodes"
-						:key="'collect' + node.id">
-						<div class="ui fluid card">
-							<div class="content">
-								<div class="center aligned header">
-									<a :href="node.url">{{node.title}}</a>
-								</div>
-								<div class="center aligned description">
-									{{node.relatioship}}
-								</div>
-								<div class="meta">
-									<a>{{node.time}}</a>
-								</div>
-							</div>
-							<div class="extra content">
-								<span class="left floated like">
-									<i class="like icon"></i>
-									{{node.like}}点赞
-								</span>
-								<span class="right floated star">
-									<i class="star icon"></i>
-									{{node.collect}}收藏
-								</span>
-							</div>
-						</div>
-					</div>
-					<div class="ui stacked right aligned segment">
-						<div class="ui four bottom attached buttons">
-							<div class="ui teal button" @click.prevent="toPrePage(true)">上一页</div>
-							<div class="ui button active">第{{nowCollectNum + 1}}页</div>
-							<div class="ui button active">共{{nowCollectSize}}条</div>
-							<div class="ui teal button" @click.prevent="toNexPage(true)">下一页</div>
-						</div>
-					</div>
-				</div>
-				<div class="ui raised segment" style="margin-left: 8px; margin-right: 8px;" id="public">
-					<a class="ui green right ribbon label" @click="exchangePublic">
-						<i class="exchange icon"></i>
-						最新
-					</a>
-					<h2 class="ui dividing header">发布博客</h2>
-					<div class="ui fluid icon input">
-						<input type="text" placeholder="根据标题搜索发布过的博客..." name="publicInput" v-model="publicInput">
-						<button class="ui icon button" @click="searchPublic">
-							<i class="search icon"></i>
-						</button>
-					</div>
-					<div class="ui green inverted stacked right aligned segment" v-for="node,index in publicNodes"
-						:key="'public' + node.id">
-						<div class="ui fluid card">
-							<div class="content">
-								<div class="center aligned header">
-									<a :href="node.url">{{node.title}}</a>
-								</div>
-								<div class="center aligned description">
-									{{node.relatioship}}
-								</div>
-								<div class="meta">
-									<a>{{node.time}}</a>
-								</div>
-							</div>
-							<div class="extra content">
-								<span class="left floated like">
-									<i class="like icon"></i>
-									{{node.like}}点赞
-								</span>
-								<span class="right floated star">
-									<i class="star icon"></i>
-									{{node.collect}}收藏
-								</span>
-							</div>
-						</div>
-					</div>
-					<div class="ui stacked right aligned segment">
-						<div class="ui four bottom attached buttons">
-							<div class="ui teal button" @click.prevent="toPrePage(false)">上一页</div>
-							<div class="ui button active">第{{nowPublicNum + 1}}页</div>
-							<div class="ui button active">共{{nowPublicSize}}条</div>
-							<div class="ui teal button" @click.prevent="toNexPage(false)">下一页</div>
-						</div>
-					</div>
-				</div>
+				<div th:replace="com/card :: collectCard"></div>
+				<div th:replace="com/card :: publicCard"></div>
 			</div>
 
 			<div class="ui left demo vertical inverted sidebar labeled icon menu">
@@ -246,6 +154,11 @@
 								if (response.data !== ""){
 									this.isLogin = true
 									this.userVo = response.data
+									axios.get("/public/isFollow?userId=" + this.userVo.userId + "&followId=" + this.userId)
+											.then(response =>{
+												console.log(response.data)
+												this.isFan = response.data === 1
+											})
 								}else{
 									this.isLogin = false
 								}
@@ -417,6 +330,18 @@
 							console.log(this.str)
 						}
 					},
+					follow: function(){
+						axios.get("/public/follow?userId=" + this.userVo.userId + "&followId=" + this.userId)
+								.then(response => {
+									this.isFan = true
+								})
+					},
+					unFollow: function(){
+						axios.get("/public/unFollow?userId=" + this.userVo.userId + "&followId=" + this.userId)
+								.then(response => {
+									this.isFan = response.data !== 1;
+								})
+					}
 				}
 			})
 		</script>
