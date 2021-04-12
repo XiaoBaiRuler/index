@@ -45,6 +45,12 @@
             right: 0 !important;
             padding: 0.8em !important;
         }
+        #content{
+            height: 1200px;
+        }
+        #editorContent{
+            height: 1200px;
+        }
     </style>
 </head>
 <body>
@@ -108,7 +114,7 @@
                                     <input type="text" name="blogDes" id="blogDes" placeholder="请输入简单描述" v-model="blogDes">
                                 </div>
                             </div>
-                            <div class="ui stacked segment" v-show="isBlog">
+                            <div class="ui stacked segment" v-show="isBlog" id="editorContent">
                                 <textarea hidden="hidden" th:text="${html}" id="editor_html" style="white-space: pre-line"></textarea>
                                 <div id="test-editor">
                                     <textarea style="display:none;" id="update_html">{{editorHtml}}</textarea>
@@ -277,7 +283,11 @@
                     }
                 },
                 logout: function() {
-                    this.isLogin = false
+                    axios.get("/private/logout")
+                        .then(response => {
+                            this.isLogin = response.data !== 1;
+                        })
+                        .catch(error => console.log(error))
                 },
                 search: function() {
                     if (this.str === "") {

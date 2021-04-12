@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -42,6 +45,24 @@ public class LoginController {
         UserVo userVo = JSONObject.parseObject(s, UserVo.class);
         return userService.checkPassword(userVo.getUsername(),
                 userVo.getPassword());
+    }
+
+    @ApiOperation("检测密码是否正确")
+    @GetMapping("/private/logout")
+    @ResponseBody
+    public Integer logout(HttpServletRequest request, HttpServletResponse response){
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    cookie.setMaxAge(0);
+                    cookie.setValue("");
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                    return 1;
+                }
+            }
+        }
+        return 0;
     }
 
     private static String deleteData(String data) throws UnsupportedEncodingException {

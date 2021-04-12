@@ -129,7 +129,11 @@
                 this.isBlog = !this.isBlog
             },
             logout: function() {
-                this.isLogin = false
+                axios.get("/private/logout")
+                    .then(response => {
+                        this.isLogin = response.data !== 1;
+                    })
+                    .catch(error => console.log(error))
             },
             search: function() {
                 if (this.str === "") {

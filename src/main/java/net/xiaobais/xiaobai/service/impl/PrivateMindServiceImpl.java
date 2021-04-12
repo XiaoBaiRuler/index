@@ -53,7 +53,7 @@ public class PrivateMindServiceImpl implements PrivateMindService {
         List<Node> previous;
         int count  = 0;
         MindVo mindVo = new MindVo("root" + nodeId, null, true,
-                "<a href='" + PREFIX_URL + nodeId + "/" + userId + "'>"
+                "<a href='" + PREFIX_URL + nodeId + "/" + userId + "?isUpdate=0" + "'>"
                         + node.getNodeName() + "</a>",
                 null, true);
         lists.add(mindVo);
@@ -89,7 +89,7 @@ public class PrivateMindServiceImpl implements PrivateMindService {
                             queue.addAll(previous);
                             MindVo mv = new MindVo("left" + remove.getNodeId(),
                                     item.getKey(), false,
-                                    "<a href='" + PREFIX_URL + remove.getNodeId() + "/" + userId + "'>"
+                                    "<a href='" + PREFIX_URL + remove.getNodeId() + "/" + userId + "?isUpdate=0" + "'>"
                                             + remove.getNodeName() + "</a>",
                                     "left", true);
                             lists.add(mv);
@@ -134,7 +134,7 @@ public class PrivateMindServiceImpl implements PrivateMindService {
                             nextParent.add(new Pair("right" + remove.getNodeId(), next.size()));
                             queue.addAll(next);
                             MindVo mv = new MindVo("right" + remove.getNodeId(), item.getKey(), false,
-                                    "<a href='" + PREFIX_URL + remove.getNodeId() + "/" + userId + "'>"
+                                    "<a href='" + PREFIX_URL + remove.getNodeId() + "/" + userId + "?isUpdate=0" + "'>"
                                             + remove.getNodeName() + "</a>",
                                     "right", true);
                             lists.add(mv);
@@ -154,7 +154,7 @@ public class PrivateMindServiceImpl implements PrivateMindService {
 
         Node node = iteratorService.getNodeByIteratorId(nodeId);
         MindVo mindVo = new MindVo("root" + node.getNodeId(), null, true,
-                "<a href='" + PREFIX_URL + node.getNodeId() + "/" + userId + "'>"
+                "<a href='" + PREFIX_URL + node.getNodeId() + "/" + userId + "?isUpdate=0" + "'>"
                         + node.getNodeName() + "</a>",
                 null, true);
         lists.add(mindVo);

@@ -48,7 +48,7 @@ public class MindController {
 
         Map map = mapService.findMapById(nodeId);
         Node node = publicNodeService.findNodeById(nodeId);
-        if (NOTHING.equals(map.getMapData())){
+        if (map == null || NOTHING.equals(map.getMapData())){
             List<MindVo> list = new ArrayList<>();
             MindVo mindVo = new MindVo("root" + nodeId, null, true,
                     "<a href='" + PREFIX_URL + nodeId + "'>" + node.getNodeName() + "</a>",
@@ -82,7 +82,7 @@ public class MindController {
                                                 @RequestParam Integer userId){
         Map map = mapService.findMapById(nodeId);
         Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
-        if (NOTHING.equals(map.getMapData())){
+        if (map == null || NOTHING.equals(map.getMapData())){
             List<MindVo> list = new ArrayList<>();
             MindVo mindVo = new MindVo("root" + nodeId, null, true,
                     "<a href='" + PRIVATE_URL + nodeId + "/" + userId + "'>"
