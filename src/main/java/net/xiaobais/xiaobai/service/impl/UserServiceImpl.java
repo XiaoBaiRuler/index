@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private MyNodeMapper myNodeMapper;
 
     private static final String KEY = "xiaobai";
+    private static final String PUBLIC_USER_URL = "/public/user/";
 
     @Override
     public int addUser(String username, String email, String password) {
@@ -105,6 +106,8 @@ public class UserServiceImpl implements UserService {
         publicUserVo.setEmail(user.getUserEmail());
         publicUserVo.setUserDesc(user.getUserDesc());
         publicUserVo.setSignTime(new SimpleDateFormat("yyyy-MM-dd").format(user.getCreateDate()));
+        publicUserVo.setAvatar(user.getUserAvatar());
+        publicUserVo.setUserUrl(PUBLIC_USER_URL + userId);
 
         publicUserVo.setFans(myFansMapper.countFansByUserId(userId));
         publicUserVo.setFollows(myFollowMapper.countFollowByUserId(userId));

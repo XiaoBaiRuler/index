@@ -8,6 +8,7 @@ import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.MindVo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -111,4 +112,19 @@ public class MindController {
     }
 
 
+    @CrossOrigin
+    @ApiOperation("通过userID获取用户的最新8个公开节点")
+    @GetMapping("/public/getPublicMind")
+    @ResponseBody
+    public List<MindVo> findPublicMindVoByUserId(@RequestParam Integer userId){
+        return publicMindService.getPublicMindVoByUserId(userId);
+    }
+
+    @CrossOrigin
+    @ApiOperation("通过userID获取用户的最新8个公开节点")
+    @GetMapping("/public/getCollectMind")
+    @ResponseBody
+    public List<MindVo> findCollectMindVoByUserId(@RequestParam Integer userId){
+        return publicMindService.getCollectMindVoByUserId(userId);
+    }
 }

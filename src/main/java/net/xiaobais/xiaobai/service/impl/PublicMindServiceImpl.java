@@ -3,6 +3,7 @@ package net.xiaobais.xiaobai.service.impl;
 import javafx.util.Pair;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.Suggest;
+import net.xiaobais.xiaobai.model.User;
 import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.MindVo;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,8 @@ public class PublicMindServiceImpl implements PublicMindService {
     private static final String PREFIX_ITERATOR = "/person/public/iterator/";
 
     private static final String PREFIX_SUG = "/person/public/getSuggest/";
+
+    private static final String PUBLIC_USER_URL = "/public/user/";
 
     @Override
     public List<MindVo> getMindVoByLevel(Integer level, Integer nodeId){
@@ -168,12 +171,70 @@ public class PublicMindServiceImpl implements PublicMindService {
 
     @Override
     public List<MindVo> getCollectMindVoByUserId(Integer userId) {
-        return null;
+        List<MindVo> lists = new ArrayList<>();
+        List<Node> collects = publicNodeService.findNodeByCollect(userId, 0, 8, "");
+        User user = userService.getUserById(userId);
+        // 根节点
+        MindVo mindVo = new MindVo("root" + user.getUserId(), null, true,
+                "<a href='" + PUBLIC_USER_URL + user.getUserId() + "'>" + user.getUsername() + "</a>",
+                null, true);
+        lists.add(mindVo);
+        int i = 0;
+        while (i < 4 && i < collects.size()){
+            Node node = collects.get(i);
+            MindVo mv = new MindVo("left" + node.getNodeId(),
+                    "root" + user.getUserId(),false,
+                    "<a href='" + PREFIX_URL + node.getNodeId() + "'>"
+                            + node.getNodeName() + "</a>",
+                    "left", true);
+            lists.add(mv);
+            i ++;
+        }
+        while (i < 8 && i < collects.size()){
+            Node node = collects.get(i);
+            MindVo mv = new MindVo("right" + node.getNodeId(),
+                    "root" + user.getUserId(),false,
+                    "<a href='" + PREFIX_URL + node.getNodeId() + "'>"
+                            + node.getNodeName() + "</a>",
+                    "right", true);
+            lists.add(mv);
+            i ++;
+        }
+        return lists;
     }
 
     @Override
     public List<MindVo> getPublicMindVoByUserId(Integer userId) {
-        return null;
+        List<MindVo> lists = new ArrayList<>();
+        List<Node> pls = publicNodeService.findNodeByPublic(userId, 0, 8, "");
+        User user = userService.getUserById(userId);
+        // 根节点
+        MindVo mindVo = new MindVo("root" + user.getUserId(), null, true,
+                "<a href='" + PUBLIC_USER_URL + user.getUserId() + "'>" + user.getUsername() + "</a>",
+                null, true);
+        lists.add(mindVo);
+        int i = 0;
+        while (i < 4 && i < pls.size()){
+            Node node = pls.get(i);
+            MindVo mv = new MindVo("left" + node.getNodeId(),
+                    "root" + user.getUserId(),false,
+                    "<a href='" + PREFIX_URL + node.getNodeId() + "'>"
+                            + node.getNodeName() + "</a>",
+                    "left", true);
+            lists.add(mv);
+            i ++;
+        }
+        while (i < 8 && i < pls.size()){
+            Node node = pls.get(i);
+            MindVo mv = new MindVo("right" + node.getNodeId(),
+                    "root" + user.getUserId(),false,
+                    "<a href='" + PREFIX_URL + node.getNodeId() + "'>"
+                            + node.getNodeName() + "</a>",
+                    "right", true);
+            lists.add(mv);
+            i ++;
+        }
+        return lists;
     }
 
 }

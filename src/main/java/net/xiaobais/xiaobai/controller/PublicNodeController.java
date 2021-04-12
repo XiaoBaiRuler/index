@@ -261,7 +261,7 @@ public class PublicNodeController {
         // 所属用户信息
         User user = userService.getUserById(node.getUserId());
         nodeVo.setUsername(user.getUsername());
-        nodeVo.setUserUrl("/private/user/" + node.getUserId());
+        nodeVo.setUserUrl("/public/user/" + node.getUserId());
         nodeVo.setAvatar(user.getUserAvatar());
         nodeVo.setEmail(user.getUserEmail());
         return nodeVo;

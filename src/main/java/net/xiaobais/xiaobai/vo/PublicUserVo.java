@@ -14,6 +14,8 @@ public class PublicUserVo {
     private String email;
     private String userDesc;
     private String signTime;
+    private String avatar;
+    private String userUrl;
     private Integer follows;
     private Integer fans;
     private Integer publicBlogs;

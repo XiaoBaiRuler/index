@@ -159,5 +159,36 @@
             </div>
         </div>
     </div>
+
+    <!--publicUserMenu-->
+    <div class="ui fixed inverted menu" th:fragment="publicUserMenu">
+        <div class="ui fluid container">
+            <a href="" class="header item" v-show="isLogin" :href="userVo.url">
+                <img class="logo" :src="userVo.img">
+                {{userVo.username}}
+            </a>
+            <div class="ui left aligned simple dropdown item" v-show="!isLogin">
+                加入我们 <i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item" th:href="@{/toSign}">注册</a>
+                    <a class="item" th:href="@{/toLogin}">登录</a>
+                </div>
+            </div>
+            <a href="" class="item" style="width: 6%;" th:href="@{/index}">主页</a>
+            <div class="ui inverted input item" style="width: 33%;">
+                <div class="ui action input">
+                    <input type="text" placeholder="搜索..." name="str" v-model="str">
+                    <div type="submit" class="ui button" @click="search">搜索</div>
+                </div>
+            </div>
+            <div class="ui right aligned simple dropdown item" style="margin-right: 40px;">
+                设置 <i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item" @click="toMenu">个人菜单</a>
+                    <a class="item" th:href="@{/logout}" @click="logout">注销</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

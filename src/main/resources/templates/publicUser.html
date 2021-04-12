@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<span th:replace="com/head :: head"></span>
+		<title >publicUser</title>
+		<link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+		<script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
+		<script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
+		<script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+	</head>
+	<body>
+		<div id="app">
+			<!--publicUserMenu-->
+			<div th:replace="com/menu :: publicUserMenu"></div>
+			<br><br><br>
+			<input type="number" id="userId" th:value="${userId}" hidden="hidden">
+			<div class="ui fluid container">
+				<div class="ui raised segment" style="margin-left: 8px; margin-right: 8px;" id="user">
+					<h2 class="ui dividing header">个人信息</h2>
+					<div class="ui grid">
+						<div class="ui three wide column">
+							<div class="ui fluid segment">
+								<a :href="user.userUrl" class="ui right aligned medium image">
+									<img class="ui fluid image" :src="user.avatar">
+								</a>
+							</div>
+						</div>
+						<div class="ui thirteen wide column">
+							<div class="ui fluid segment">
+								<table class="ui single line table">
+									<tbody>
+										<tr>
+											<td>用户名</td>
+											<td>{{user.username}}</td>
+										</tr>
+										<tr>
+											<td>粉丝人数({{user.fans}})</td>
+											<td>
+												<div class="ui teal inverted button" v-if="!isFan">关注用户</div>
+												<div class="ui teal inverted button" v-if="isFan">取消关注</div>
+											</td>
+										</tr>
+										<tr>
+											<td>用户邮箱</td>
+											<td>{{user.email}}</td>
+										</tr>
+										<tr>
+											<td>账号注册时间</td>
+											<td>{{user.signTime}}</td>
+										</tr>
+										<tr>
+											<td>关注人数</td>
+											<td>{{user.follows}}</td>
+										</tr>
+										<tr>
+											<td>发布博客数量</td>
+											<td>{{user.publicBlogs}}</td>
+										</tr>
+										<tr>
+											<td>点赞总数量</td>
+											<td>{{user.likeBlogs}}</td>
+										</tr>
+										<tr>
+											<td>个人简介</td>
+											<td>{{user.userDesc}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui raised segment" style="margin-left: 8px; margin-right: 8px;" id="collect">
+					<a class="ui orange right ribbon label" @click="exchangeCollect">
+						<i class="exchange icon"></i>
+						最新
+					</a>
+					<h2 class="ui dividing header">收藏博客</h2>
+					<div class="ui fluid icon input">
+						<input type="text" placeholder="根据标题搜索收藏过的博客..." name="collectInput" v-model="collectInput">
+						<button class="ui icon button" @click="searchCollect">
+							<i class="search icon"></i>
+						</button>
+					</div>
+					<div class="ui yellow inverted stacked right aligned segment" v-for="node,index in collectNodes"
+						:key="'collect' + node.id">
+						<div class="ui fluid card">
+							<div class="content">
+								<div class="center aligned header">
+									<a :href="node.url">{{node.title}}</a>
+								</div>
+								<div class="center aligned description">
+									{{node.relatioship}}
+								</div>
+								<div class="meta">
+									<a>{{node.time}}</a>
+								</div>
+							</div>
+							<div class="extra content">
+								<span class="left floated like">
+									<i class="like icon"></i>
+									{{node.like}}点赞
+								</span>
+								<span class="right floated star">
+									<i class="star icon"></i>
+									{{node.collect}}收藏
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="ui stacked right aligned segment">
+						<div class="ui four bottom attached buttons">
+							<div class="ui teal button" @click.prevent="toPrePage(true)">上一页</div>
+							<div class="ui button active">第{{nowCollectNum + 1}}页</div>
+							<div class="ui button active">共{{nowCollectSize}}条</div>
+							<div class="ui teal button" @click.prevent="toNexPage(true)">下一页</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui raised segment" style="margin-left: 8px; margin-right: 8px;" id="public">
+					<a class="ui green right ribbon label" @click="exchangePublic">
+						<i class="exchange icon"></i>
+						最新
+					</a>
+					<h2 class="ui dividing header">发布博客</h2>
+					<div class="ui fluid icon input">
+						<input type="text" placeholder="根据标题搜索发布过的博客..." name="publicInput" v-model="publicInput">
+						<button class="ui icon button" @click="searchPublic">
+							<i class="search icon"></i>
+						</button>
+					</div>
+					<div class="ui green inverted stacked right aligned segment" v-for="node,index in publicNodes"
+						:key="'public' + node.id">
+						<div class="ui fluid card">
+							<div class="content">
+								<div class="center aligned header">
+									<a :href="node.url">{{node.title}}</a>
+								</div>
+								<div class="center aligned description">
+									{{node.relatioship}}
+								</div>
+								<div class="meta">
+									<a>{{node.time}}</a>
+								</div>
+							</div>
+							<div class="extra content">
+								<span class="left floated like">
+									<i class="like icon"></i>
+									{{node.like}}点赞
+								</span>
+								<span class="right floated star">
+									<i class="star icon"></i>
+									{{node.collect}}收藏
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="ui stacked right aligned segment">
+						<div class="ui four bottom attached buttons">
+							<div class="ui teal button" @click.prevent="toPrePage(false)">上一页</div>
+							<div class="ui button active">第{{nowPublicNum + 1}}页</div>
+							<div class="ui button active">共{{nowPublicSize}}条</div>
+							<div class="ui teal button" @click.prevent="toNexPage(false)">下一页</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="ui left demo vertical inverted sidebar labeled icon menu">
+				<a class="item" @click="toUser">
+					<i class="user icon"></i>
+					个人信息
+				</a>
+				<a class="item" @click="toCollect">
+					<i class="star icon"></i>
+					收藏博客
+				</a>
+				<a class="item" @click="toPublic">
+					<i class="paper plane icon"></i>
+					公开博客
+				</a>
+			</div>
+
+			<div class="ui collect fullscreen modal">
+				<div class="content">
+					<h2 class="ui center aligned header">{{user.username}}最新收藏的8个博客</h2>
+					<div class="ui container">
+						<div class="ui stacked segment">
+							<div id="collect_container"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="ui public fullscreen modal">
+				<div class="content">
+					<h2 class="ui center aligned header">{{user.username}}最新发布的8个博客</h2>
+					<div class="ui container">
+						<div class="ui stacked segment">
+							<div id="public_container"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div th:replace="com/foot :: foot"></div>
+		</div>
+		<script type="text/javascript">
+			let app = new Vue({
+				el: '#app',
+				data: {
+					user: {},
+					userId: -1,
+					isLogin: false,
+					collectNodes: [],
+					publicNodes: [],
+					isFan: false,
+					nowCollectNum: 0,
+					nowPublicNum: 0,
+					nowCollectSize: 0,
+					nowPublicSize: 0,
+					collectInput: "",
+					publicInput: "",
+					size: 4,
+					collectFlag: false,
+					publicFlag: false,
+					userVo: {},
+					str: ""
+				},
+				mounted: function() {
+
+					this.userId = document.getElementById('userId').value
+					axios.get('/public/getPublicUserVo/' + this.userId)
+						.then(response => {
+							this.user = response.data
+							this.nowPublicSize = this.user.publicBlogs
+							this.nowCollectSize = this.user.collectBlogs
+						})
+						.catch(function(error) {
+							console.log(error);
+						});
+					this.preparePage(true, this.userId, 0, this.size)
+					this.preparePage(false, this.userId, 0, this.size)
+
+					axios.get("/user/getUserInfo")
+							.then(response => {
+								if (response.data !== ""){
+									this.isLogin = true
+									this.userVo = response.data
+								}else{
+									this.isLogin = false
+								}
+							})
+							.catch(error => console.log(error))
+				},
+				methods: {
+					toMenu: function() {
+						$('.ui.labeled.icon.sidebar').sidebar('toggle');
+					},
+					toUser: function() {
+						window.location.href = '#user'
+					},
+					toCollect: function() {
+						window.location.href = '#collect'
+					},
+					toPublic: function() {
+						window.location.href = '#public'
+					},
+					toPrePage: function(flag) {
+						if (flag && this.nowCollectNum > 0) {
+							this.nowCollectNum -= 1
+							this.preparePage(flag, this.userId, this.nowCollectNum, this.size)
+						}
+						if (!flag && this.nowPublicNum > 0) {
+							this.nowPublicNum -= 1
+							this.preparePage(flag, this.userId, this.nowPublicNum, this.size)
+						}
+					},
+					toNexPage: function(flag) {
+						let collect = this.nowCollectSize - (this.nowCollectNum + 1) * this.size
+						if (flag && collect > 0) {
+							this.nowCollectNum += 1
+							collect = collect > this.size ? this.size : collect
+							this.preparePage(flag, this.userId, this.nowCollectNum, collect)
+						}
+
+						let publics = this.nowPublicSize - (this.nowPublicNum + 1) * this.size
+						if (!flag && publics > 0) {
+							this.nowPublicNum += 1
+							publics = publics > this.size ? this.size : publics
+							this.preparePage(flag, this.userId, this.nowPublicNum, publics)
+						}
+					},
+					preparePage: function(flag, userId, pageNumber, pageSize) {
+						if (flag) {
+							axios.get('/public/getCollectNode?userId=' + userId +
+									'&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&title=' + this
+									.collectInput)
+								.then(response => {
+									this.collectNodes = response.data
+								})
+								.catch(function(error) {
+									console.log(error);
+								});
+						} else {
+							axios.get('/public/getPublicNode?userId=' + userId +
+									'&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&title=' + this
+									.publicInput)
+								.then(response => {
+									this.publicNodes = response.data
+								})
+								.catch(function(error) {
+									console.log(error);
+								});
+						}
+					},
+					searchCollect: function() {
+						axios.get('/public/countCollectNode?userId=' + this.userId + '&title=' +
+								this.collectInput)
+							.then(response => {
+								this.nowCollectSize = response.data
+							})
+							.catch(function(error) {
+								console.log(error);
+							});
+						this.preparePage(true, this.userId, 0, this.size);
+					},
+					searchPublic: function() {
+						axios.get('/public/countPublicNode?userId=' + this.userId + '&title=' +
+								this.publicInput)
+							.then(response => {
+								this.nowPublicSize = response.data
+							})
+							.catch(function(error) {
+								console.log(error);
+							});
+						this.preparePage(false, this.userId, 0, this.size)
+					},
+					exchangeCollect: function() {
+						if (!this.collectFlag){
+							axios.get('/public/getCollectMind?userId=' + this.userId)
+								.then(response => {
+									this.getMind(response.data, "collect_container")
+									$('.ui.collect.fullscreen.modal').modal('show');
+								})
+								.catch(error => console.log(error))
+							this.collectFlag = true
+						}
+						else {
+							$('.ui.collect.fullscreen.modal').modal('show');
+						}	
+					},
+					exchangePublic: function() {
+						if (!this.publicFlag){
+							axios.get('/public/getPublicMind?userId=' + this.userId)
+								.then(response => {
+									this.getMind(response.data, "public_container")
+									$('.ui.public.fullscreen.modal').modal('show');
+								})
+								.catch(error => console.log(error))
+							this.publicFlag = true
+						}
+						else{
+							$('.ui.public.fullscreen.modal').modal('show');
+						}
+					},
+					getMind: function(data, container){
+						let options = {
+							mode: 'full',
+							container: container,
+							editable: false,
+							theme: 'orange',
+							support_html: true,
+							view: {
+								engine: 'canvas', // 思维导图各节点之间线条的绘制引擎
+								hmargin: 50, // 思维导图距容器外框的最小水平距离
+								vmargin: 50, // 思维导图距容器外框的最小垂直距离
+								line_width: 3, // 思维导图线条的粗细
+								line_color: '#555' // 思维导图线条的颜色
+							},
+							layout: {
+								hspace: 400, // 节点之间的水平间距
+								vspace: 200, // 节点之间的垂直间距
+								pspace: 2 // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+							},
+						}
+						let m = data
+						let res = []
+						m.forEach((item) => {
+							let obj = {}
+							obj.id = item.id
+							obj.parentid = item.parentid
+							obj.isroot = item.isroot
+							obj.topic = item.topic
+							obj.direction = item.direction
+							obj.expanded = item.expanded
+							res.push(obj)
+						})
+						let mind = {
+							"meta": {
+								"name": "测试",
+								"author": "xiaobai",
+								"version": "1.0",
+							},
+							"format": "node_array",
+							"data": res
+						}
+						let jm = new jsMind(options)
+						jm.show(mind)
+					},
+					logout: function(){
+						this.isLogin = false
+					},
+					search: function() {
+						if (this.str === "") {
+							alert("请输入搜索内容")
+						} else {
+							console.log(this.str)
+						}
+					},
+				}
+			})
+		</script>
+	</body>
+</html>
