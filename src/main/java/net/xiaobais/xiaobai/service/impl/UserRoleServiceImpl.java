@@ -27,11 +27,11 @@ public class UserRoleServiceImpl implements UserRoleService {
     private RoleService roleService;
 
     @Override
-    public void addUserRole(Integer userId, Integer roleId) {
+    public int addUserRole(Integer userId, Integer roleId) {
         UserRole userRole = new UserRole();
         userRole.setUserId(userId);
         userRole.setRoleId(roleId);
-        userRoleMapper.insert(userRole);
+        return userRoleMapper.insert(userRole);
     }
 
     @Override

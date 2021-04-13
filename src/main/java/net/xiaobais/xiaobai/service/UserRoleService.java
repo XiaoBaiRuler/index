@@ -16,7 +16,7 @@ public interface UserRoleService {
      * @param userId userId
      * @param roleId roleId
      */
-    void addUserRole(Integer userId, Integer roleId);
+    int addUserRole(Integer userId, Integer roleId);
 
     /**
      * 解除用户和角色绑定

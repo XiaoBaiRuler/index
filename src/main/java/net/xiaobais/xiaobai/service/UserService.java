@@ -70,7 +70,7 @@ public interface UserService {
      * @param nodeId nodeId
      * @param userId userId
      */
-    void insertIndexId(Integer nodeId, Integer userId);
+    int insertIndexId(Integer nodeId, Integer userId);
 
     /**
      * 通过userId获取基本信息

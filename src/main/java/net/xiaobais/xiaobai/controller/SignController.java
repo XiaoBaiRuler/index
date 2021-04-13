@@ -8,6 +8,7 @@ import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -34,6 +35,8 @@ public class SignController {
     private BlogService blogService;
     @Resource
     private MapService mapService;
+    @Resource
+    private FileService fileService;
 
     @ApiOperation("跳转注册页面")
     @GetMapping("/toSign")
@@ -42,17 +45,37 @@ public class SignController {
     }
 
     @ApiOperation("注册处理")
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/sign")
-    public String sign(String username, String email, String password){
+    public String sign(String username, String email, String password) throws Exception {
         synchronized (this){
             //1. 添加用户
             int userId = userService.addUser(username, email, password);
+            if (userId == -1){
+                throw new Exception("用户添加失败");
+            }
             //2. 添加用户个人节点
             Integer nodeId = addNode(userId, username);
-            userService.insertIndexId(nodeId, userId);
+            if (nodeId == -1){
+                throw new Exception("用户根节点添加失败");
+            }
+            int i = userService.insertIndexId(nodeId, userId);
+            if (i == -1){
+                throw new Exception("添加根节点Id失败");
+            }
             //3. 添加普通用户权限
             int roleId = roleService.getRoleIdByRoleName("user");
-            userRoleService.addUserRole(userId, roleId);
+            if (roleId == -1){
+                throw new Exception("添加权限失败");
+            }
+            int j = userRoleService.addUserRole(userId, roleId);
+            if (j == -1){
+                throw new Exception("绑定角色失败");
+            }
+            //4. 创建归属于用户的图片文件夹
+            if (!fileService.createRootDirectory(username)){
+                throw new Exception("创建图片文件夹失败");
+            }
         }
         return "redirect:/index";
     }
@@ -69,6 +92,9 @@ public class SignController {
         Blog blog = new Blog();
         blog.setBlogTitle(username);
         blog.setBlogContent("# 欢迎" + username);
+        blog.setCreateDate(new Date());
+        blog.setUpdateDate(new Date());
+        blog.setIsComment(false);
         int blogId = blogService.insertBlog(blog);
         Map map = new Map();
         map.setMapName(username);

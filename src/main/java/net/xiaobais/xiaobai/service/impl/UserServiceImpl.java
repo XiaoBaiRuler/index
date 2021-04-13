@@ -91,11 +91,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void insertIndexId(Integer nodeId, Integer userId) {
+    public int insertIndexId(Integer nodeId, Integer userId) {
         User user = new User();
         user.setUserId(userId);
         user.setIndexId(nodeId);
-        userMapper.updateByPrimaryKeySelective(user);
+        return userMapper.updateByPrimaryKeySelective(user);
     }
 
     @Override
