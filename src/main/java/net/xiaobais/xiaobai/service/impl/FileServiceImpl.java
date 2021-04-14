@@ -41,6 +41,12 @@ public class FileServiceImpl implements FileService {
     public boolean createRootDirectory(String username) {
         String s = DigestUtils.md5Hex(username + NAME);
         File file = new File(directory + s);
-        return file.mkdirs();
+        if (file.mkdirs()){
+            File avatar = new File(directory + s + "//" + "avatar");
+            return file.mkdirs();
+        }
+        else{
+            return false;
+        }
     }
 }

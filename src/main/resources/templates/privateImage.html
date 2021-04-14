@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: head"></span>
+    <title >privateImage</title>
+    <style>
+        .ui.custom.popup {
+            min-width: 800px;
+        }
+        .ui.form {
+            margin: 10px 5px 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <input type="number" id="userId" th:value="${userId}" hidden="hidden">
+    <div th:replace="com/menu :: publicUserMenu"></div>
+    <br><br><br>
+    <div class="ui fluid container" v-if="!isShowImage">
+        <div class="ui container" style="width: 95%;">
+            <div class="ui stacked segment">
+                <div class="ui stackable grid">
+                    <div class="four wide column">
+                        <div class="ui raised segment">
+                            <div class="ui placeholder segment">
+                                <div class="ui icon header">
+                                    <i class="file outline icon"></i>
+                                    添加目录
+                                </div>
+                                <div class="ui primary button" @click="createDir">添加目录</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="four wide column" v-for="dir, index in allDir" :key="'dir' + index">
+                        <div class="ui raised segment">
+                            <div class="ui center aligned header">{{dir.dir}}</div>
+                            <a class="image">
+                                <img class="ui huge image" th:src="@{/img/bh.png}">
+                            </a>
+                            <div class="ui fluid icon buttons">
+                                <button class="ui right aligned button" data-content="修改目录" @click="changeDirName(dir.dir, index)">
+                                    <i class="exchange icon"></i>
+                                </button>
+                                <button class="ui center aligned button" data-content="删除目录" @click="delDir(dir.dir, index)">
+                                    <i class="delete icon"></i>
+                                </button>
+                                <button class="ui left aligned button" data-content="进入目录" @click="toDir(dir.dir)">
+                                    <i class="play icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui fluid container" v-if="isShowImage">
+        <div class="ui container" style="width: 95%;">
+            <div class="ui stackable segment" style="height: 1200px;">
+                <div class="ui grid">
+                    <div class="four wide column">
+                        <div class="ui raised segment">
+                            <div class="ui placeholder segment">
+                                <div class="ui icon header">
+                                    <i class="file outline icon"></i>
+                                    添加图片
+                                </div>
+                                <div class="ui primary button" @click="createFile">添加图片</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="four wide column" v-for="file, index in allFile" :key="'file' + index">
+                        <div class="ui raised segment">
+                            <div class="ui center aligned header">{{file.fileName}}</div>
+                            <a class="center floated image" id="show-pop" :href="file.fileUrl">
+                                <img class="ui huge image" :src="file.fileUrl" id="show-image">
+                            </a>
+                            <div class="ui fluid icon buttons">
+                                <button class="ui right aligned button" data-content="修改文件" @click="updateFile(index)">
+                                    <i class="exchange icon"></i>
+                                </button>
+                                <button class="ui center aligned button" data-content="删除文件" @click="delFile(index)">
+                                    <i class="delete icon"></i>
+                                </button>
+                                <button class="ui icon button" @click="copyFile(file.fileUrl)">
+                                    <i class="copy left aligned icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ui custom popup transition hidden">
+                            <img class="ui fluid image" :src="file.fileUrl">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui createDir modal">
+        <div class="stacked segment">
+            <div class="ui form">
+                <div class="ui teal inverted field">
+                    <label>目录名</label>
+                    <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">取消</div>
+                    <div class="ui positive button" id="createButton">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui updateDir modal">
+        <div class="stacked segment">
+            <div class="ui form">
+                <div class="ui teal inverted field">
+                    <label>目录名</label>
+                    <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">取消</div>
+                    <div class="ui positive button" id="updateButton">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui deleteDir basic modal">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            需要删除的文件
+        </div>
+        <div class="content">
+            <p>是否删除？</p>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteButton">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+
+    <div class="ui createFile modal">
+        <div class="stacked segment">
+            <div class="ui form">
+                <div class="ui teal inverted field">
+                    <label>目录名</label>
+                    <input type="file" id="fileUpload" placeholder="选择文件">
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">取消</div>
+                    <div class="ui positive button" id="createFileButton">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui updateFile modal">
+        <div class="stacked segment">
+            <div class="ui form">
+                <div class="ui teal inverted field">
+                    <label>新文件名</label>
+                    <input type="text" name="newName" v-model="newName"  placeholder="选择文件">
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">取消</div>
+                    <div class="ui positive button" id="updateFileButton">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui deleteFile basic modal">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            需要删除的文件
+        </div>
+        <div class="content">
+            <p>是否删除？</p>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteFileButton">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+
+    <div class="ui left demo vertical inverted sidebar labeled icon menu">
+        <a class="item" @click="toUser">
+            <i class="user icon"></i>
+            个人信息
+        </a>
+        <a class="item" @click="toCollect">
+            <i class="star icon"></i>
+            收藏博客
+        </a>
+        <a class="item" @click="toPublic">
+            <i class="paper plane icon"></i>
+            公开博客
+        </a>
+        <a class="item" @click="toImage">
+            <i class="image icon"></i>
+            图片管理
+        </a>
+    </div>
+
+    <div th:replace="com/foot :: foot"></div>
+</div>
+<script type="text/javascript">
+    let app = new Vue({
+        el: '#app',
+        data: {
+            user: {},
+            allDir: [],
+            userVo: {},
+            isLogin: false,
+            userId: -1,
+            str: "",
+            dir: "",
+            dirIndex: -1,
+            isShowImage: false,
+            allFile: [],
+            newName: "",
+            oldName: "",
+            fileIndex: -1
+        },
+        mounted: function() {
+            this.userId = document.getElementById('userId').value
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                    }else{
+                        this.isLogin = false
+                    }
+                })
+                .catch(error => console.log(error))
+            this.getDir()
+        },
+        updated: function(){
+            $('.aligned.button')
+                .popup({
+                    inline: true
+                });
+            $('.huge.image').popup({
+                position: 'bottom left',
+                popup: $('.custom.popup'),
+                on: 'hover',
+            });
+        },
+        methods: {
+            logout: function(){
+                axios.get("/private/logout")
+                    .then(response => {
+                        this.isLogin = response.data !== 1;
+                    })
+                    .catch(error => console.log(error))
+            },
+            search: function() {
+                if (this.str === "") {
+                    alert("请输入搜索内容")
+                } else {
+                    console.log(this.str)
+                }
+            },
+            toMenu: function() {
+                $('.ui.labeled.icon.sidebar').sidebar('toggle');
+            },
+            toUser: function() {
+                window.location.href = '#user'
+            },
+            toCollect: function() {
+                window.location.href = '#collect'
+            },
+            toPublic: function() {
+                window.location.href = '#public'
+            },
+            toImage: function() {
+                window.location.href = "/person/public/toImage"
+            },
+            changeDirName: function(dir, index){
+                this.dir = dir
+                this.dirIndex = index
+                $('.ui.updateDir.modal').modal('show');
+            },
+            createDir: function(){
+                $('.ui.createDir.modal').modal('show');
+            },
+            toDir: function(dir){
+                this.dir = dir
+                axios.get('/person/public/file/getAllFile?dir=' + dir)
+                    .then(response => {
+                        this.allFile = response.data
+                        this.isShowImage = true
+                        console.log(this.allFile)
+                    })
+                    .catch(error => console.log(error));
+            },
+            getDir: function(){
+                axios.get('/person/public/file/getAllDir')
+                    .then(response => {
+                        this.allDir = response.data
+                    })
+                    .catch(error => console.log(error));
+            },
+            delDir: function(dir, index){
+                this.dir = dir
+                this.dirIndex = index
+                $('.ui.deleteDir.basic.modal').modal('show');
+            },
+            copyFile: function(url){
+                let transfer = document.createElement('input');
+                document.body.appendChild(transfer);
+                transfer.value = url
+                transfer.focus();
+                transfer.select();
+                if (document.execCommand('copy')) {
+                    document.execCommand('copy');
+                }
+                transfer.blur();
+                alert("复制成功")
+                document.body.removeChild(transfer);
+            },
+            delFile: function(index){
+                this.fileIndex = index
+                $('.ui.deleteFile.basic.modal').modal('show');
+            },
+            createFile: function(){
+                $('.ui.createFile.modal').modal('show');
+            },
+            updateFile: function(index){
+                this.fileIndex = index
+                $('.ui.updateFile.modal').modal('show');
+            }
+        }
+    })
+
+    // 添加目录
+    $(document).on('click', '#createButton', function() {
+        axios.get('/person/public/file/createMyDir?dir=' + app.dir)
+            .then(response => {
+                let msg = response.data
+                if (!msg.includes("#")){
+                    let s = {
+                        dir: app.dir
+                    }
+                    app.allDir.unshift(s)
+                }
+                else{
+                    alert(msg)
+                }
+            })
+            .catch(error => console.log(error))
+    })
+    // 更新目录
+    $(document).on('click', '#updateButton', function() {
+        let dir = new FormData()
+        dir.append("newDir", app.dir)
+        dir.append("oldDir", app.allDir[app.dirIndex].dir)
+        axios.post('/person/public/file/updateDirName', dir,
+            {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+            .then(response => {
+                let msg = response.data
+                if (!msg.includes("#")){
+                    app.allDir[app.dirIndex].dir = app.dir
+                }
+                else{
+                    alert(msg)
+                }
+            })
+            .catch(error => console.log(error))
+    })
+    // 删除目录
+    $(document).on('click', '#deleteButton', function() {
+        axios.get('/person/public/file/deleteFile?path=' + app.dir)
+            .then(response => {
+                let msg = response.data
+                if (!msg.includes("#")){
+                    let s = {
+                        dir: app.dir
+                    }
+                    app.allDir.splice(app.dirIndex, 1)
+                }
+                else{
+                    alert(msg)
+                }
+            })
+            .catch(error => console.log(error))
+    })
+    // 添加文件
+    $(document).on('click', '#createFileButton', function() {
+        let myFile = document.getElementById('fileUpload')
+        if (myFile.files[0] === undefined) {
+            alert('未上传任何文件！');
+        } else {
+            let f = new FormData()
+            f.append("file", myFile.files[0])
+            f.append("userDir", app.dir)
+            axios.post('/person/public/file/uploadOneFile', f,
+                {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                .then(response => {
+                    let msg = response.data
+                    if (!msg.includes("#")){
+                        alert("添加成功");
+                        location.reload();
+                    }
+                    else{
+                        alert(msg)
+                    }
+                })
+                .catch(error => console.log(error))
+        }
+    })
+    // 修改文件名
+    $(document).on('click', '#updateFileButton', function() {
+        let file = new FormData()
+        file.append("newName", app.newName)
+        file.append("oldName", app.allFile[app.fileIndex].fileName)
+        file.append("userDir", app.dir)
+        axios.post('/person/public/file/updateFileName', file,
+            {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+            .then(response => {
+                let msg = response.data
+                if (!msg.includes("#")){
+                    app.allFile[app.fileIndex].fileName = app.newName
+                }
+                else{
+                    alert(msg)
+                }
+            })
+            .catch(error => console.log(error))
+    })
+    // 删除文件
+    $(document).on('click', '#deleteFileButton', function() {
+        axios.get('/person/public/file/deleteFile?path=' + app.dir + "//" + app.allFile[app.fileIndex].fileName)
+            .then(response => {
+                let msg = response.data
+                if (!msg.includes("#")){
+                    app.allFile.splice(app.fileIndex, 1)
+                }
+                else{
+                    alert(msg)
+                }
+            })
+            .catch(error => console.log(error))
+    })
+</script>
+</body>
+</html>

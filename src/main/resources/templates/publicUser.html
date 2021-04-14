@@ -11,9 +11,9 @@
 	<body>
 		<div id="app">
 			<!--publicUserMenu-->
+			<input type="number" id="userId" th:value="${userId}" hidden="hidden">
 			<div th:replace="com/menu :: publicUserMenu"></div>
 			<br><br><br>
-			<input type="number" id="userId" th:value="${userId}" hidden="hidden">
 			<div class="ui fluid container">
 				<div class="ui raised segment" style="margin-left: 18px; margin-right: 18px;" id="user">
 					<h2 class="ui dividing header">个人信息</h2>

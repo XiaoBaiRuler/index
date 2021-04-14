@@ -9,7 +9,12 @@ import lombok.Data;
  */
 @Data
 public class DirVo {
-    private String key;
     private String dir;
-    private String username;
+
+    public DirVo() {
+    }
+
+    public DirVo(String dir) {
+        this.dir = dir;
+    }
 }

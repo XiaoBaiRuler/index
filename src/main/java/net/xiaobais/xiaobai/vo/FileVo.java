@@ -10,9 +10,8 @@ import lombok.Data;
 @Data
 public class FileVo {
 
-    private String username;
-    private String key;
     private String fileName;
     private String fileUrl;
+    private String mkUrl;
 
 }

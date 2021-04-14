@@ -69,6 +69,7 @@ public interface UserService {
      * 添加个人index节点
      * @param nodeId nodeId
      * @param userId userId
+     * @return int
      */
     int insertIndexId(Integer nodeId, Integer userId);
 
