@@ -14,4 +14,11 @@ public interface EmailService {
      * @return boolean
      */
     boolean sendEmailVerifyCode(String email);
+
+    /**
+     * 发送验证码到邮箱
+     * @param email email
+     * @return boolean
+     */
+    boolean sendEmailCode(String email);
 }

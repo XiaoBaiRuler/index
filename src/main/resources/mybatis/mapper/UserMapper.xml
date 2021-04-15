@@ -15,6 +15,7 @@
     <result column="user_avatar" jdbcType="VARCHAR" property="userAvatar" />
     <result column="user_desc" jdbcType="VARCHAR" property="userDesc" />
     <result column="index_id" jdbcType="INTEGER" property="indexId" />
+    <result column="is_auth" jdbcType="BIT" property="isAuth" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -76,7 +77,8 @@
   </sql>
   <sql id="Base_Column_List">
     user_id, username, password, create_date, last_login_time, enabled, account_non_expired, 
-    credentials_non_expired, user_phone, user_email, user_avatar, user_desc, index_id
+    credentials_non_expired, user_phone, user_email, user_avatar, user_desc, index_id, 
+    is_auth
   </sql>
   <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.UserExample" resultMap="BaseResultMap">
     select
@@ -115,13 +117,13 @@
     insert into user (username, password, create_date, 
       last_login_time, enabled, account_non_expired, 
       credentials_non_expired, user_phone, user_email, 
-      user_avatar, user_desc, index_id
-      )
+      user_avatar, user_desc, index_id, 
+      is_auth)
     values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{createDate,jdbcType=DATE}, 
       #{lastLoginTime,jdbcType=DATE}, #{enabled,jdbcType=BIT}, #{accountNonExpired,jdbcType=BIT}, 
       #{credentialsNonExpired,jdbcType=BIT}, #{userPhone,jdbcType=VARCHAR}, #{userEmail,jdbcType=VARCHAR}, 
-      #{userAvatar,jdbcType=VARCHAR}, #{userDesc,jdbcType=VARCHAR}, #{indexId,jdbcType=INTEGER}
-      )
+      #{userAvatar,jdbcType=VARCHAR}, #{userDesc,jdbcType=VARCHAR}, #{indexId,jdbcType=INTEGER}, 
+      #{isAuth,jdbcType=BIT})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.User">
     <selectKey keyProperty="userId" order="AFTER" resultType="java.lang.Integer">
@@ -165,6 +167,9 @@
       <if test="indexId != null">
         index_id,
       </if>
+      <if test="isAuth != null">
+        is_auth,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="username != null">
@@ -202,6 +207,9 @@
       </if>
       <if test="indexId != null">
         #{indexId,jdbcType=INTEGER},
+      </if>
+      <if test="isAuth != null">
+        #{isAuth,jdbcType=BIT},
       </if>
     </trim>
   </insert>
@@ -253,6 +261,9 @@
       <if test="record.indexId != null">
         index_id = #{record.indexId,jdbcType=INTEGER},
       </if>
+      <if test="record.isAuth != null">
+        is_auth = #{record.isAuth,jdbcType=BIT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -272,7 +283,8 @@
       user_email = #{record.userEmail,jdbcType=VARCHAR},
       user_avatar = #{record.userAvatar,jdbcType=VARCHAR},
       user_desc = #{record.userDesc,jdbcType=VARCHAR},
-      index_id = #{record.indexId,jdbcType=INTEGER}
+      index_id = #{record.indexId,jdbcType=INTEGER},
+      is_auth = #{record.isAuth,jdbcType=BIT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -316,6 +328,9 @@
       <if test="indexId != null">
         index_id = #{indexId,jdbcType=INTEGER},
       </if>
+      <if test="isAuth != null">
+        is_auth = #{isAuth,jdbcType=BIT},
+      </if>
     </set>
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
@@ -332,7 +347,8 @@
       user_email = #{userEmail,jdbcType=VARCHAR},
       user_avatar = #{userAvatar,jdbcType=VARCHAR},
       user_desc = #{userDesc,jdbcType=VARCHAR},
-      index_id = #{indexId,jdbcType=INTEGER}
+      index_id = #{indexId,jdbcType=INTEGER},
+      is_auth = #{isAuth,jdbcType=BIT}
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
 </mapper>

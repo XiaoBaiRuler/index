@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: head"></span>
+    <title>图片管理</title>
+    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+</head>
+<body>
+    <div id="app">
+        <input type="number" id="userId" th:value="${userId}" hidden="hidden">
+        <div th:replace="com/menu :: publicUserMenu"></div>
+        <br><br><br>
+        <div class="ui fluid container">
+            <div class="ui raised segment" style="margin-left: 8px; margin-right: 8px;" id="user">
+                <h2 class="ui dividing header">个人信息</h2>
+                <div class="ui grid">
+                    <div class="ui three wide column">
+                        <div class="ui fluid segment">
+                            <a :href="user.userUrl" class="ui right aligned medium image">
+                                <img class="ui fluid medium image" :src="user.avatar">
+                            </a>
+                            <button class="ui teal inverted fluid toggle button" @click="exchangeAvatar">
+                                <i class="exchange icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="ui thirteen wide column">
+                        <div class="ui fluid segment">
+                            <table class="ui single line table">
+                                <tbody>
+                                <tr>
+                                    <td>用户名</td>
+                                    <td>{{user.username}}</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>粉丝人数</td>
+                                    <td>{{user.fans}}</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>用户邮箱</td>
+                                    <td>{{user.email}}</td>
+                                    <td>
+                                        <button class="ui teal inverted button" v-if="!user.auth" @click="toAuth">认证邮箱</button>
+                                        <button class="ui disabled teal inverted button" v-if="user.auth">已认证</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>账号注册时间</td>
+                                    <td>{{user.signTime}}</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>关注人数</td>
+                                    <td>{{user.follows}}</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>发布博客数量</td>
+                                    <td>{{user.publicBlogs}}</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>点赞总数量</td>
+                                    <td>{{user.likeBlogs}}</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>个人简介</td>
+                                    <td>{{user.userDesc}}</td>
+                                    <td>
+                                        <button class="ui teal inverted button" @click="updateDesc">修改简介</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:replace="com/card :: collectPrivateCard"></div>
+            <div th:replace="com/card :: publicCard"></div>
+        </div>
+        <div th:replace="com/foot :: foot"></div>
+
+        <div class="ui left demo vertical inverted sidebar labeled icon menu">
+            <a class="item" th:href="@{'/private/user/' + ${userId}}">
+                <i class="user icon"></i>
+                个人信息
+            </a>
+            <a class="item" th:href="@{'/private/user/' + ${userId} + '#privateCollect'}">
+                <i class="star icon"></i>
+                收藏博客
+            </a>
+            <a class="item">
+                <i class="paper plane icon" th:href="@{'/private/user/' + ${userId} + '#public'}"></i>
+                发布博客
+            </a>
+            <a class="item" th:href="@{/person/public/toImage}">
+                <i class="image icon"></i>
+                图片管理
+            </a>
+            <a class="item" th:href="@{/person/public/toNotice}">
+                <i class="comment alternate icon"></i>
+                通知管理
+            </a>
+        </div>
+
+        <!--收藏博客思维导图-->
+        <div class="ui collect fullscreen modal">
+            <div class="content">
+                <h2 class="ui center aligned header">{{user.username}}最新收藏的8个博客</h2>
+                <div class="ui container">
+                    <div class="ui stacked segment">
+                        <div id="collect_container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--发布博客思维导图-->
+        <div class="ui public fullscreen modal">
+            <div class="content">
+                <h2 class="ui center aligned header">{{user.username}}最新发布的8个博客</h2>
+                <div class="ui container">
+                    <div class="ui stacked segment">
+                        <div id="public_container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--修改头像model-->
+        <div class="ui avatar modal">
+            <i class="close icon"></i>
+            <div class="header">
+                修改头像
+            </div>
+            <div class="ui grid">
+                <div class="ui eight wide column">
+                    <img class="ui medium image" :src="user.avatar">
+                </div>
+                <div class="ui eight wide column">
+                    <div class="ui placeholder segment">
+                        <div class="ui icon header">
+                            <i class="png file outline icon"></i>
+                            请上传你的图片
+                        </div>
+                        <input type="file" name="uploadFile" accept="image/jpeg,image/png,image/gif" id="uploadFile">
+                    </div>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui black deny button">
+                    取消上传
+                </div>
+                <div class="ui positive right labeled icon button" id="updateAvatar">
+                    确认上传
+                    <i class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+        <!--认证邮箱model-->
+        <div class="ui authEmail modal">
+            <div class="header">验证邮箱</div>
+            <div class="content">
+                <form class="ui authEmail form">
+                    <div class="ui header">邮箱</div>
+                    <div class="field">
+                        <input type="email" name="email" v-model="email" disabled="disabled">
+                    </div>
+                    <div class="ui grid">
+                        <div class="ui eleven wide column">
+                            <div class="ui field">
+                                <input type="number" size="6" minLength="6" name="code" v-model="code" placeholder="请输入验证码">
+                            </div>
+                        </div>
+                        <div class="ui four wide column">
+                            <button class="ui fluid disabled button">{{number}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="actions">
+                <div class="ui right floated submit green button approve">提交验证</div>
+                <div class="ui right floated yellow button deny" @click="countdown()">发送邮箱</div>
+                <div class="ui right floated button" @click="refresh">取消操作</div>
+            </div>
+        </div>
+        <!--修改简介-->
+        <div class="ui updateDesc modal">
+            <div class="header">修改简介</div>
+            <div class="content">
+                <form class="ui authEmail form">
+                    <div class="ui negative message" v-if="descMessage != ''">
+                        <i class="close icon"></i>
+                        <p>{{descMessage}}</p>
+                    </div>
+                    <div class="field">
+                        <textarea rows="4" cols="" name="desc" v-model="desc"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="actions">
+                <div class="ui right floated submit green button approve">提交修改</div>
+                <div class="ui right floated button" @click="refresh">取消操作</div>
+            </div>
+        </div>
+        <!--切换为私有节点-->
+        <div class="ui collectToPrivate modal">
+            <div class="header">收藏节点转为私有节点</div>
+            <div class="content">
+                <div class="ui form">
+                    <div class="field">
+                        <select v-model="privateId">
+                            <option value="">选择当前节点的私有根节点</option>
+                            <option v-for="node,index in privateNode" :value="node.id" :key="'a' + index">
+                                {{node.title}}</option>
+                        </select>
+                    </div>
+                    <div class="fields">
+                        <label>选择新节点和私有根节点的关系</label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="choice" v-model="choice"
+                                       checked="checked" tabindex="0" class="hidden" value="1">
+                                <label>前置节点</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="choice" v-model="choice"
+                                       tabindex="0" class="hidden" value="0">
+                                <label>后置节点</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui right floated submit green button approve" id="changePrivateButton">提交修改</div>
+                <div class="ui right floated button cancel">取消操作</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        let app = new Vue({
+            el: '#app',
+            data: {
+                userVo: {},
+                userId: -1,
+                isLogin: false,
+                user: {},
+                email: "",
+                code: "",
+                number: 120,
+                desc: "",
+                descMessage: "",
+                size: 4,
+                collectFlag: false,
+                collectInput: "",
+                nowCollectSize: 0,
+                nowCollectNum: 0,
+                collectNodes: [],
+                publicNodes: [],
+                nowPublicSize: 0,
+                nowPublicNum: 0,
+                publicInput: "",
+                publicFlag: false,
+                str: "",
+                collectId: -1,
+                choice: 1,
+                privateId: -1,
+                privateNode: []
+            },
+            mounted: function() {
+                this.userId = document.getElementById('userId').value
+                axios.get('/public/getPublicUserVo/' + this.userId)
+                    .then(response => {
+                        this.user = response.data
+                        this.email = this.user.email
+                        this.desc = this.user.userDesc
+                        this.nowPublicSize = this.user.publicBlogs
+                        this.nowCollectSize = this.user.collectBlogs
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+                this.preparePage(true, this.userId, 0, this.size)
+                this.preparePage(false, this.userId, 0, this.size)
+                axios.get("/user/getUserInfo")
+                    .then(response => {
+                        if (response.data !== ""){
+                            this.isLogin = true
+                            this.userVo = response.data
+                        }else{
+                            this.isLogin = false
+                        }
+                    })
+                    .catch(error => console.log(error))
+            },
+            methods: {
+                exchangeAvatar: function(){
+                    $('.ui.avatar.modal').modal('show');
+                },
+                toAuth: function(){
+                    $('.ui.authEmail.modal')
+                        .modal({
+                            closable  : false,
+                            onDeny    : function(){
+                                return false;
+                            },
+                            onApprove : function() {
+                                return app.checkCode()
+                            }
+                        }).modal('show');
+                },
+                countdown: function(){
+                    if (this.number === 120){
+                        let email = new FormData()
+                        email.append("email", app.email)
+                        axios.post('/person/public/verifyEmail/', email, {
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                            }
+                        })
+                    }
+                    if (this.number === 0) {
+                        this.number = 120;
+                        return;
+                    } else {
+                        this.number--;
+                    }
+                    setTimeout(this.countdown,1000);
+                },
+                refresh: function(){
+                    location.reload();
+                },
+                checkCode: function(){
+                    let re = new RegExp("[0-9]{6}");
+                    if (!re.test(this.code)){
+                        window.alert('必须为6个数字');
+                        return false;
+                    }
+                    let auth = new FormData()
+                    auth.append("email", this.email)
+                    auth.append("code", this.code)
+                    auth.append("userId", this.userId)
+                    axios.post('/user/verifyCode', auth,
+                        {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'}})
+                        .then(response => {
+                            let msg = response.data
+                            if (msg.includes("成功")){
+                                alert(msg)
+                                this.user.auth = true
+                                return true;
+                            }
+                            else{
+                                alert(msg)
+                                return false;
+                            }
+                        })
+                        .catch(error => console.log(error))
+                },
+                updateDesc: function(){
+                    $('.ui.updateDesc.modal')
+                        .modal({
+                            closable  : false,
+                            onApprove : function() {
+                                if (app.desc.length < 8){
+                                    app.descMessage = "字数必须超过8个"
+                                    return false;
+                                }
+                                let desc = new FormData()
+                                desc.append("desc", app.desc)
+                                axios.post('/person/public/changeDesc', desc,
+                                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                                    .then(response => {
+                                        let msg = response.data
+                                        if (!msg.includes("#")){
+                                            alert(msg)
+                                            app.user.userDesc = app.desc
+                                            return true
+                                        }
+                                        else{
+                                            app.descMessage = msg
+                                            return false
+                                        }
+                                    })
+                                    .catch(error => console.log(error))
+                            }
+                        })
+                        .modal('show');
+                },
+                exchangeCollect: function() {
+                    if (!this.collectFlag){
+                        axios.get('/public/getCollectMind?userId=' + this.userId)
+                            .then(response => {
+                                this.getMind(response.data, "collect_container")
+                                $('.ui.collect.fullscreen.modal').modal('show');
+                            })
+                            .catch(error => console.log(error))
+                        this.collectFlag = true
+                    }
+                    else {
+                        $('.ui.collect.fullscreen.modal').modal('show');
+                    }
+                },
+                searchCollect: function() {
+                    axios.get('/public/countCollectNode?userId=' + this.userId + '&title=' +
+                        this.collectInput)
+                        .then(response => {
+                            this.nowCollectSize = response.data
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+                    this.preparePage(true, this.userId, 0, this.size);
+                },
+                exchangePublic: function() {
+                    if (!this.publicFlag){
+                        axios.get('/public/getPublicMind?userId=' + this.userId)
+                            .then(response => {
+                                this.getMind(response.data, "public_container")
+                                $('.ui.public.fullscreen.modal').modal('show');
+                            })
+                            .catch(error => console.log(error))
+                        this.publicFlag = true
+                    }
+                    else{
+                        $('.ui.public.fullscreen.modal').modal('show');
+                    }
+                },
+                searchPublic: function() {
+                    axios.get('/public/countPublicNode?userId=' + this.userId + '&title=' +
+                        this.publicInput)
+                        .then(response => {
+                            this.nowPublicSize = response.data
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+                    this.preparePage(false, this.userId, 0, this.size)
+                },
+                getMind: function(data, container){
+                    let options = {
+                        mode: 'full',
+                        container: container,
+                        editable: false,
+                        theme: 'orange',
+                        support_html: true,
+                        view: {
+                            engine: 'canvas', // 思维导图各节点之间线条的绘制引擎
+                            hmargin: 50, // 思维导图距容器外框的最小水平距离
+                            vmargin: 50, // 思维导图距容器外框的最小垂直距离
+                            line_width: 3, // 思维导图线条的粗细
+                            line_color: '#555' // 思维导图线条的颜色
+                        },
+                        layout: {
+                            hspace: 400, // 节点之间的水平间距
+                            vspace: 200, // 节点之间的垂直间距
+                            pspace: 2 // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                        },
+                    }
+                    let m = data
+                    let res = []
+                    m.forEach((item) => {
+                        let obj = {}
+                        obj.id = item.id
+                        obj.parentid = item.parentid
+                        obj.isroot = item.isroot
+                        obj.topic = item.topic
+                        obj.direction = item.direction
+                        obj.expanded = item.expanded
+                        res.push(obj)
+                    })
+                    let mind = {
+                        "meta": {
+                            "name": "测试",
+                            "author": "xiaobai",
+                            "version": "1.0",
+                        },
+                        "format": "node_array",
+                        "data": res
+                    }
+                    let jm = new jsMind(options)
+                    jm.show(mind)
+                },
+                preparePage: function(flag, userId, pageNumber, pageSize) {
+                    if (flag) {
+                        axios.get('/public/getCollectNode?userId=' + userId +
+                            '&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&title=' + this
+                                .collectInput)
+                            .then(response => {
+                                this.collectNodes = response.data
+                            })
+                            .catch(function(error) {
+                                console.log(error);
+                            });
+                    } else {
+                        axios.get('/public/getPublicNode?userId=' + userId +
+                            '&pageNumber=' + pageNumber + '&pageSize=' + pageSize + '&title=' + this
+                                .publicInput)
+                            .then(response => {
+                                this.publicNodes = response.data
+                            })
+                            .catch(function(error) {
+                                console.log(error);
+                            });
+                    }
+                },
+                toPrePage: function(flag) {
+                    if (flag && this.nowCollectNum > 0) {
+                        this.nowCollectNum -= 1
+                        this.preparePage(flag, this.userId, this.nowCollectNum, this.size)
+                    }
+                    if (!flag && this.nowPublicNum > 0) {
+                        this.nowPublicNum -= 1
+                        this.preparePage(flag, this.userId, this.nowPublicNum, this.size)
+                    }
+                },
+                toNexPage: function(flag) {
+                    let collect = this.nowCollectSize - (this.nowCollectNum + 1) * this.size
+                    if (flag && collect > 0) {
+                        this.nowCollectNum += 1
+                        collect = collect > this.size ? this.size : collect
+                        this.preparePage(flag, this.userId, this.nowCollectNum, collect)
+                    }
+
+                    let publics = this.nowPublicSize - (this.nowPublicNum + 1) * this.size
+                    if (!flag && publics > 0) {
+                        this.nowPublicNum += 1
+                        publics = publics > this.size ? this.size : publics
+                        this.preparePage(flag, this.userId, this.nowPublicNum, publics)
+                    }
+                },
+                toMenu: function() {
+                    $('.ui.labeled.icon.sidebar').sidebar('toggle');
+                },
+                logout: function(){
+                    axios.get("/private/logout")
+                        .then(response => {
+                            this.isLogin = response.data !== 1;
+                        })
+                        .catch(error => console.log(error))
+                },
+                search: function() {
+                    if (this.str === "") {
+                        alert("请输入搜索内容")
+                    } else {
+                        console.log(this.str)
+                    }
+                },
+                copy: function(nodeId){
+                    this.collectId = nodeId
+                    axios.get("/private/getAllPrivate")
+                        .then(response => {
+                            this.privateNode = response.data;
+                            console.log(this.privateNode)
+                            $('.ui.collectToPrivate.modal').modal('show');
+                            $('.ui.radio.checkbox').checkbox();
+                        })
+                        .catch(error => console.log(error))
+                }
+            }
+        })
+
+        // 更新头像
+        $(document).on('click', '#updateAvatar', function() {
+            let myFile = document.getElementById('uploadFile')
+            if (myFile.files[0] === undefined) {
+                alert('未上传任何文件！');
+            } else {
+                let f = new FormData()
+                f.append("file", myFile.files[0])
+                axios.post('/person/public/file/uploadAvatar', f,
+                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                    .then(response => {
+                        let msg = response.data
+                        if (!msg.includes("#")){
+                            app.user.avatar = msg
+                        }
+                        else{
+                            alert(msg)
+                        }
+                    })
+                    .catch(error => console.log(error))
+            }
+        })
+        $(document).on('click', '#changePrivateButton', function() {
+            let ctp = new FormData()
+            ctp.append("nodeId", app.collectId)
+            ctp.append("yourNodeId", app.privateId)
+            ctp.append("flag", app.choice)
+            axios.post('/person/public/collectToPrivate', ctp,
+                {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                .then(response => {
+                    let msg = response.data
+                    if (!msg.includes("#")){
+                        window.location.href = msg
+                    }
+                    else{
+                        alert(msg)
+                    }
+                })
+                .catch(error => console.log(error))
+        })
+    </script>
+</body>
+</html>

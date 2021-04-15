@@ -49,6 +49,7 @@ public class UserServiceImpl implements UserService {
         user.setUserEmail(email);
         user.setUserAvatar("/img/logo.png");
         user.setIndexId(-1);
+        user.setIsAuth(false);
         userMapper.insert(user);
         return user.getUserId();
     }
@@ -115,6 +116,7 @@ public class UserServiceImpl implements UserService {
         publicUserVo.setPublicBlogs(myNodeMapper.countPublicNodeByUserId(userId));
         publicUserVo.setCollectBlogs(myNodeMapper.countCollectNodeByUserId(userId));
         publicUserVo.setLikeBlogs(myNodeMapper.countLikeNodeByUserId(userId));
+        publicUserVo.setAuth(user.getIsAuth());
         return publicUserVo;
     }
 }

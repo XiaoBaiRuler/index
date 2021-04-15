@@ -971,6 +971,66 @@ public class UserExample {
             addCriterion("index_id not between", value1, value2, "indexId");
             return (Criteria) this;
         }
+
+        public Criteria andIsAuthIsNull() {
+            addCriterion("is_auth is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthIsNotNull() {
+            addCriterion("is_auth is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthEqualTo(Boolean value) {
+            addCriterion("is_auth =", value, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthNotEqualTo(Boolean value) {
+            addCriterion("is_auth <>", value, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthGreaterThan(Boolean value) {
+            addCriterion("is_auth >", value, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("is_auth >=", value, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthLessThan(Boolean value) {
+            addCriterion("is_auth <", value, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthLessThanOrEqualTo(Boolean value) {
+            addCriterion("is_auth <=", value, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthIn(List<Boolean> values) {
+            addCriterion("is_auth in", values, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthNotIn(List<Boolean> values) {
+            addCriterion("is_auth not in", values, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthBetween(Boolean value1, Boolean value2) {
+            addCriterion("is_auth between", value1, value2, "isAuth");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsAuthNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("is_auth not between", value1, value2, "isAuth");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

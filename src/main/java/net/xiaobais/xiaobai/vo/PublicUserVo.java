@@ -21,4 +21,5 @@ public class PublicUserVo {
     private Integer publicBlogs;
     private Integer collectBlogs;
     private Integer likeBlogs;
+    private boolean auth;
 }

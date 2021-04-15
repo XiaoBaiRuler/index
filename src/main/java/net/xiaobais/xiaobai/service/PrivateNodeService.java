@@ -1,6 +1,9 @@
 package net.xiaobais.xiaobai.service;
 
 import net.xiaobais.xiaobai.model.Node;
+import net.xiaobais.xiaobai.vo.NodeVo;
+
+import java.util.List;
 
 /**
  * @Author xiaobai
@@ -39,4 +42,11 @@ public interface PrivateNodeService {
      * @return int
      */
     int deleteNodeByNodeId(Integer nodeId);
+
+    /**
+     * 通过userId查找所有私有Node
+     * @param userId userId
+     * @return List<NodeVo>
+     */
+    List<NodeVo> getAllPrivate(Integer userId);
 }

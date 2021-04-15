@@ -112,24 +112,25 @@ public class PersonFileController {
                 + "//" + "avatar";
         File newFile = new File(newFilePath);
         if (!newFile.exists()){
-            return "文件不存在，请联系管理员";
+            return "#文件不存在，请联系管理员";
         }
 
         String originFileName = file.getOriginalFilename();
         assert originFileName != null;
         String suffix = originFileName.substring(originFileName.lastIndexOf(".") + 1);
         if (!("jpg".equals(suffix) || "png".equals(suffix) || "gif".equals(suffix))){
-            return "文件类型错误";
+            return "#文件类型错误";
         }
 
-        if (fileService.uploadFile(newFilePath + "//" + originFileName, file)){
-            return "文件上传失败";
+        if (!fileService.uploadFile(newFilePath + "//" + originFileName, file)){
+            return "#文件上传失败";
         }
         Integer userId = JwtUtils.getUserId(cookies[0].getValue());
         User user = new User();
         user.setUserId(userId);
-        user.setUserAvatar(URL + key + "/avatar/" + originFileName);
-        return userService.updateUser(user) == -1 ? "文件上传失败" : "文件上传成功";
+        String avatar =  URL + key + "/avatar/" + originFileName;
+        user.setUserAvatar(avatar);
+        return userService.updateUser(user) == -1 ? "#文件上传失败" : avatar;
     }
 
     @ApiOperation("多文件上传")

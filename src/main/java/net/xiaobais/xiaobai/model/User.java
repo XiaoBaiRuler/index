@@ -45,6 +45,9 @@ public class User {
     @ApiModelProperty(value="indexId用户个人主页节点")
     private Integer indexId;
 
+    @ApiModelProperty(value="isAuth是否认证")
+    private Boolean isAuth;
+
     public Integer getUserId() {
         return userId;
     }
@@ -147,5 +150,13 @@ public class User {
 
     public void setIndexId(Integer indexId) {
         this.indexId = indexId;
+    }
+
+    public Boolean getIsAuth() {
+        return isAuth;
+    }
+
+    public void setIsAuth(Boolean isAuth) {
+        this.isAuth = isAuth;
     }
 }

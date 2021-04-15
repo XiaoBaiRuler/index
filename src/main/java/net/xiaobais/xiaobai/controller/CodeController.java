@@ -2,10 +2,14 @@ package net.xiaobais.xiaobai.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.xiaobais.xiaobai.model.User;
 import net.xiaobais.xiaobai.service.CodeService;
+import net.xiaobais.xiaobai.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * @Author xiaobai
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 public class CodeController {
     @Autowired
     private CodeService codeService;
+    @Resource
+    private UserService userService;
 
     @CrossOrigin
     @ApiOperation("获取验证码")
@@ -27,11 +33,15 @@ public class CodeController {
     }
 
     @ApiOperation("判断验证码是否正确")
-    @GetMapping("/user/verifyCode")
-    public String updatePassword(@RequestParam String email, @RequestParam String code){
+    @PostMapping("/user/verifyCode")
+    @ResponseBody
+    public String updatePassword(String email, String code, Integer userId){
         if (codeService.verifyCode(email, code)){
-            return "redirect:/index";
+            User user = new User();
+            user.setUserId(userId);
+            user.setIsAuth(true);
+            return userService.updateUser(user) != -1 ? "验证成功" : "验证失败";
         }
-        return "verifyEmail";
+        return "验证失败";
     }
 }

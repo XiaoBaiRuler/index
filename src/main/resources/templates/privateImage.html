@@ -199,21 +199,25 @@
     </div>
 
     <div class="ui left demo vertical inverted sidebar labeled icon menu">
-        <a class="item" @click="toUser">
+        <a class="item" th:href="@{'/private/user/' + ${userId}}">
             <i class="user icon"></i>
             个人信息
         </a>
-        <a class="item" @click="toCollect">
+        <a class="item" th:href="@{'/private/user/' + ${userId} + '#collect'}">
             <i class="star icon"></i>
             收藏博客
         </a>
-        <a class="item" @click="toPublic">
+        <a class="item" th:href="@{'/private/user/' + ${userId} + '#public'}">
             <i class="paper plane icon"></i>
-            公开博客
+            发布博客
         </a>
-        <a class="item" @click="toImage">
+        <a class="item" th:href="@{/person/public/toImage}">
             <i class="image icon"></i>
             图片管理
+        </a>
+        <a class="item" th:href="@{/person/public/toNotice}">
+            <i class="comment alternate icon"></i>
+            通知管理
         </a>
     </div>
 
@@ -279,18 +283,6 @@
             },
             toMenu: function() {
                 $('.ui.labeled.icon.sidebar').sidebar('toggle');
-            },
-            toUser: function() {
-                window.location.href = '#user'
-            },
-            toCollect: function() {
-                window.location.href = '#collect'
-            },
-            toPublic: function() {
-                window.location.href = '#public'
-            },
-            toImage: function() {
-                window.location.href = "/person/public/toImage"
             },
             changeDirName: function(dir, index){
                 this.dir = dir

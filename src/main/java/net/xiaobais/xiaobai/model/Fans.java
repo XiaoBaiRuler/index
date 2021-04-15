@@ -12,7 +12,7 @@ public class Fans {
     @ApiModelProperty(value="fansId粉丝ID")
     private Integer fansId;
 
-    @ApiModelProperty(value="status是否取消关注")
+    @ApiModelProperty(value="status是否关注")
     private Boolean status;
 
     @ApiModelProperty(value="fansDate关注日期")

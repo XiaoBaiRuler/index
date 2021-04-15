@@ -289,7 +289,8 @@ public class PrivateNodeController {
     @GetMapping("/deleteNode")
     @ResponseBody
     public String deleteNode(@RequestParam Integer nodeId,
-                             @RequestParam boolean flag, HttpServletRequest request) throws Exception {
+                             @RequestParam boolean flag,
+                             HttpServletRequest request) throws Exception {
         Cookie[] cookies = request.getCookies();
         Integer userId = -1;
         if (cookies != null){
@@ -370,6 +371,17 @@ public class PrivateNodeController {
                 throw new Exception("更新思维导图失败");
             }
         }
+    }
+
+    @ApiOperation("获取所有私有节点")
+    @GetMapping("/getAllPrivate")
+    @ResponseBody
+    public List<NodeVo> getAllPrivateNode(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        return privateNodeService.getAllPrivate(JwtUtils.getUserId(cookies[0].getValue()));
     }
 
     @Transactional(rollbackFor = Exception.class)

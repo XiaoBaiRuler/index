@@ -199,6 +199,54 @@
             </div>
         </div>
     </div>
+    <!--私有收藏博客卡片-->
+    <div class="ui raised segment" style="margin-left: 18px; margin-right: 18px;"
+         id="privateCollect" th:fragment="collectPrivateCard">
+            <a class="ui orange right ribbon label" @click="exchangeCollect">
+                <i class="exchange icon"></i>
+                最新
+            </a>
+            <h2 class="ui dividing header">收藏博客</h2>
+            <div class="ui fluid icon input">
+                <input type="text" placeholder="根据标题搜索收藏过的博客..." name="collectInput" v-model="collectInput">
+                <button class="ui icon button" @click="searchCollect">
+                    <i class="teal inverted search icon"></i>
+                </button>
+            </div>
+            <div class="ui stacked right aligned segment" v-for="node,index in collectNodes"
+                 :key="'collect' + node.id">
+                <div class="ui yellow inverted fluid card">
+                    <div class="content">
+                        <i class="red left floated exchange icon"></i>
+                        <a class="left floated" @click="copy(node.id)">转私有博客</a>
+                        <div class="center aligned header">
+                            <a :href="node.url">{{node.title}}</a>
+                        </div>
+                        <div class="meta">
+                            <a>{{node.time}}</a>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                    <span class="left floated like">
+                        <i class="like icon"></i>
+                        {{node.like}}点赞
+                    </span>
+                        <span class="right floated star">
+                        <i class="star icon"></i>
+                        {{node.collect}}收藏
+                    </span>
+                    </div>
+                </div>
+            </div>
+        <div class="ui stacked right aligned segment">
+            <div class="ui four bottom attached buttons">
+                <div class="ui teal inverted button" @click.prevent="toPrePage(true)">上一页</div>
+                <div class="ui inverted button active">第{{nowCollectNum + 1}}页</div>
+                <div class="ui inverted button active">共{{nowCollectSize}}条</div>
+                <div class="ui teal inverted button" @click.prevent="toNexPage(true)">下一页</div>
+            </div>
+        </div>
+    </div>
     <!--公开博客卡片-->
     <div class="ui raised segment" style="margin-left: 18px; margin-right: 18px;" id="public" th:fragment="publicCard">
         <a class="ui green right ribbon label" @click="exchangePublic">

@@ -12,7 +12,7 @@ public class Follow {
     @ApiModelProperty(value="followId关注人ID")
     private Integer followId;
 
-    @ApiModelProperty(value="status是否取消关注")
+    @ApiModelProperty(value="status是否关注")
     private Boolean status;
 
     @ApiModelProperty(value="followDate关注日期")
