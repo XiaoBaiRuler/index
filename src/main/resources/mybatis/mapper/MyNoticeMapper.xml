@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.xiaobais.xiaobai.mapper.MyNoticeMapper">
+    <select id="findPublicNotice"  parameterType="integer" resultType="net.xiaobais.xiaobai.model.Notice">
+        select *
+        from notice
+        where accept_id = 1
+        and submit_type = 0
+        and accept_type = 0
+        and is_delete = 0
+        limit #{pageNumber}, #{pageSize}
+    </select>
+    <select id="findPublicNoticeByMessage" resultType="net.xiaobais.xiaobai.model.Notice">
+        select *
+        from notice
+        where accept_id = 1
+          and submit_type = 0
+          and accept_type = 0
+          and is_delete = 0
+          and message like #{message}
+        limit #{pageNumber}, #{pageSize}
+    </select>
+    <select id="findPublicNoticeCount" resultType="integer">
+        select count(*)
+        from notice
+        where accept_id = 1
+          and submit_type = 0
+          and accept_type = 0
+          and is_delete = 0
+    </select>
+    <select id="findPublicNoticeByMessageCount" resultType="integer">
+        select count(*)
+        from notice
+        where accept_id = 1
+          and submit_type = 0
+          and accept_type = 0
+          and is_delete = 0
+          and message like #{message}
+    </select>
+</mapper>

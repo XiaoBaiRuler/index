@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.xiaobais.xiaobai.mapper.NoticeMapper">
+  <resultMap id="BaseResultMap" type="net.xiaobais.xiaobai.model.Notice">
+    <id column="notice_id" jdbcType="INTEGER" property="noticeId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="accept_id" jdbcType="INTEGER" property="acceptId" />
+    <result column="submit_type" jdbcType="INTEGER" property="submitType" />
+    <result column="accept_type" jdbcType="BIT" property="acceptType" />
+    <result column="node_id" jdbcType="INTEGER" property="nodeId" />
+    <result column="suggest_id" jdbcType="INTEGER" property="suggestId" />
+    <result column="iterator_id" jdbcType="INTEGER" property="iteratorId" />
+    <result column="message" jdbcType="VARCHAR" property="message" />
+    <result column="deal_url" jdbcType="VARCHAR" property="dealUrl" />
+    <result column="error_url" jdbcType="VARCHAR" property="errorUrl" />
+    <result column="is_delete" jdbcType="BIT" property="isDelete" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    notice_id, user_id, accept_id, submit_type, accept_type, node_id, suggest_id, iterator_id, 
+    message, deal_url, error_url, is_delete
+  </sql>
+  <select id="selectByExample" parameterType="net.xiaobais.xiaobai.model.NoticeExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from notice
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from notice
+    where notice_id = #{noticeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from notice
+    where notice_id = #{noticeId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.xiaobais.xiaobai.model.NoticeExample">
+    delete from notice
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Notice">
+    <selectKey keyProperty="noticeId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into notice (user_id, accept_id, submit_type, 
+      accept_type, node_id, suggest_id, 
+      iterator_id, message, deal_url, 
+      error_url, is_delete)
+    values (#{userId,jdbcType=INTEGER}, #{acceptId,jdbcType=INTEGER}, #{submitType,jdbcType=INTEGER}, 
+      #{acceptType,jdbcType=BIT}, #{nodeId,jdbcType=INTEGER}, #{suggestId,jdbcType=INTEGER}, 
+      #{iteratorId,jdbcType=INTEGER}, #{message,jdbcType=VARCHAR}, #{dealUrl,jdbcType=VARCHAR}, 
+      #{errorUrl,jdbcType=VARCHAR}, #{isDelete,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Notice">
+    <selectKey keyProperty="noticeId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into notice
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="acceptId != null">
+        accept_id,
+      </if>
+      <if test="submitType != null">
+        submit_type,
+      </if>
+      <if test="acceptType != null">
+        accept_type,
+      </if>
+      <if test="nodeId != null">
+        node_id,
+      </if>
+      <if test="suggestId != null">
+        suggest_id,
+      </if>
+      <if test="iteratorId != null">
+        iterator_id,
+      </if>
+      <if test="message != null">
+        message,
+      </if>
+      <if test="dealUrl != null">
+        deal_url,
+      </if>
+      <if test="errorUrl != null">
+        error_url,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="acceptId != null">
+        #{acceptId,jdbcType=INTEGER},
+      </if>
+      <if test="submitType != null">
+        #{submitType,jdbcType=INTEGER},
+      </if>
+      <if test="acceptType != null">
+        #{acceptType,jdbcType=BIT},
+      </if>
+      <if test="nodeId != null">
+        #{nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="suggestId != null">
+        #{suggestId,jdbcType=INTEGER},
+      </if>
+      <if test="iteratorId != null">
+        #{iteratorId,jdbcType=INTEGER},
+      </if>
+      <if test="message != null">
+        #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="dealUrl != null">
+        #{dealUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="errorUrl != null">
+        #{errorUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.xiaobais.xiaobai.model.NoticeExample" resultType="java.lang.Long">
+    select count(*) from notice
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update notice
+    <set>
+      <if test="record.noticeId != null">
+        notice_id = #{record.noticeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.acceptId != null">
+        accept_id = #{record.acceptId,jdbcType=INTEGER},
+      </if>
+      <if test="record.submitType != null">
+        submit_type = #{record.submitType,jdbcType=INTEGER},
+      </if>
+      <if test="record.acceptType != null">
+        accept_type = #{record.acceptType,jdbcType=BIT},
+      </if>
+      <if test="record.nodeId != null">
+        node_id = #{record.nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.suggestId != null">
+        suggest_id = #{record.suggestId,jdbcType=INTEGER},
+      </if>
+      <if test="record.iteratorId != null">
+        iterator_id = #{record.iteratorId,jdbcType=INTEGER},
+      </if>
+      <if test="record.message != null">
+        message = #{record.message,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dealUrl != null">
+        deal_url = #{record.dealUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.errorUrl != null">
+        error_url = #{record.errorUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelete != null">
+        is_delete = #{record.isDelete,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update notice
+    set notice_id = #{record.noticeId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      accept_id = #{record.acceptId,jdbcType=INTEGER},
+      submit_type = #{record.submitType,jdbcType=INTEGER},
+      accept_type = #{record.acceptType,jdbcType=BIT},
+      node_id = #{record.nodeId,jdbcType=INTEGER},
+      suggest_id = #{record.suggestId,jdbcType=INTEGER},
+      iterator_id = #{record.iteratorId,jdbcType=INTEGER},
+      message = #{record.message,jdbcType=VARCHAR},
+      deal_url = #{record.dealUrl,jdbcType=VARCHAR},
+      error_url = #{record.errorUrl,jdbcType=VARCHAR},
+      is_delete = #{record.isDelete,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.xiaobais.xiaobai.model.Notice">
+    update notice
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="acceptId != null">
+        accept_id = #{acceptId,jdbcType=INTEGER},
+      </if>
+      <if test="submitType != null">
+        submit_type = #{submitType,jdbcType=INTEGER},
+      </if>
+      <if test="acceptType != null">
+        accept_type = #{acceptType,jdbcType=BIT},
+      </if>
+      <if test="nodeId != null">
+        node_id = #{nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="suggestId != null">
+        suggest_id = #{suggestId,jdbcType=INTEGER},
+      </if>
+      <if test="iteratorId != null">
+        iterator_id = #{iteratorId,jdbcType=INTEGER},
+      </if>
+      <if test="message != null">
+        message = #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="dealUrl != null">
+        deal_url = #{dealUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="errorUrl != null">
+        error_url = #{errorUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=BIT},
+      </if>
+    </set>
+    where notice_id = #{noticeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.xiaobais.xiaobai.model.Notice">
+    update notice
+    set user_id = #{userId,jdbcType=INTEGER},
+      accept_id = #{acceptId,jdbcType=INTEGER},
+      submit_type = #{submitType,jdbcType=INTEGER},
+      accept_type = #{acceptType,jdbcType=BIT},
+      node_id = #{nodeId,jdbcType=INTEGER},
+      suggest_id = #{suggestId,jdbcType=INTEGER},
+      iterator_id = #{iteratorId,jdbcType=INTEGER},
+      message = #{message,jdbcType=VARCHAR},
+      deal_url = #{dealUrl,jdbcType=VARCHAR},
+      error_url = #{errorUrl,jdbcType=VARCHAR},
+      is_delete = #{isDelete,jdbcType=BIT}
+    where notice_id = #{noticeId,jdbcType=INTEGER}
+  </update>
+</mapper>

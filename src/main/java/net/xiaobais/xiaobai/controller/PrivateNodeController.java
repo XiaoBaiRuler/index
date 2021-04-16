@@ -284,6 +284,23 @@ public class PrivateNodeController {
         return null;
     }
 
+    @ApiOperation("获取节点内容")
+    @GetMapping("/getNodeByUserId")
+    @ResponseBody
+    public PrivateNodeVo getNodeByUserId(@RequestParam Integer nodeId, @RequestParam Integer userId,
+                                         HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        if (JwtUtils.getUserId(cookies[0].getValue()) == 1){
+            Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,userId);
+            Blog blog = blogService.findBlogById(node.getBlogId());
+            return nodeToPublicNodeVo(node,blog);
+        }
+        return null;
+    }
+
     @ApiOperation("删除节点内容")
     @Transactional(rollbackFor = Exception.class)
     @GetMapping("/deleteNode")
@@ -382,6 +399,17 @@ public class PrivateNodeController {
             return null;
         }
         return privateNodeService.getAllPrivate(JwtUtils.getUserId(cookies[0].getValue()));
+    }
+
+    @ApiOperation("获取所有公开节点")
+    @GetMapping("/getAllPublic")
+    @ResponseBody
+    public List<NodeVo> getAllPublicNode(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        return publicNodeService.getAllPublicNode();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -506,6 +534,7 @@ public class PrivateNodeController {
         nodeVo.setUsername(user.getUsername());
         nodeVo.setUserUrl("/private/user/" + node.getUserId());
         nodeVo.setAvatar(user.getUserAvatar());
+        nodeVo.setContent(blog.getBlogContent());
         return nodeVo;
     }
 

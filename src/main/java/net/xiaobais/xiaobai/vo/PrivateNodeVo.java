@@ -17,5 +17,6 @@ public class PrivateNodeVo {
     private String username;
     private String avatar;
     private String userUrl;
+    private String content;
 
 }

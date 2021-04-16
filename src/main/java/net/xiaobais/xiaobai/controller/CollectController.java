@@ -112,7 +112,7 @@ public class CollectController {
                 throw new Exception("复制节点失败");
             }
             String url = "/private/node/" + newNodeId + "/" + user.getUserId() + "?isUpdate=0";
-            // true为前置节点，false为后置节点
+            // 1为前置节点，0为后置节点
             if (flag != 1){
                 int itemId = yourNodeId;
                 yourNodeId = newNodeId;

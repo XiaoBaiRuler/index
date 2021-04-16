@@ -78,5 +78,8 @@
         <table tableName="map_config" domainObjectName="MapConfig"/>
         <table tableName="blog_config" domainObjectName="BlogConfig"/>
         <table tableName="likes" domainObjectName="Like"/>
+        <table tableName="notice" domainObjectName="Notice">
+            <generatedKey column="notice_id" sqlStatement="Mysql" identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>

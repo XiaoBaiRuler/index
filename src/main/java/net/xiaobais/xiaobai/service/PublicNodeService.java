@@ -1,6 +1,7 @@
 package net.xiaobais.xiaobai.service;
 
 import net.xiaobais.xiaobai.model.Node;
+import net.xiaobais.xiaobai.vo.NodeVo;
 
 import java.util.List;
 
@@ -122,5 +123,11 @@ public interface PublicNodeService {
      * @return Integer
      */
     Integer countCollectNodeByUserIdAndTitle(Integer userId, String title);
+
+    /**
+     * 获取所有公开节点
+     * @return List<NodeVo>
+     */
+    List<NodeVo> getAllPublicNode();
 
 }

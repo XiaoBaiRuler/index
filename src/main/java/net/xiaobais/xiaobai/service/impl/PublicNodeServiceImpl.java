@@ -6,9 +6,11 @@ import net.xiaobais.xiaobai.mapper.NodeMapper;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.NodeExample;
 import net.xiaobais.xiaobai.service.PublicNodeService;
+import net.xiaobais.xiaobai.vo.NodeVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -129,6 +131,26 @@ public class PublicNodeServiceImpl implements PublicNodeService {
     public Integer countCollectNodeByUserIdAndTitle(Integer userId, String title) {
         title = "%" + title + "%";
         return myNodeMapper.countCollectNodeByUserIdAndTitle(userId, title);
+    }
+
+    @Override
+    public List<NodeVo> getAllPublicNode() {
+        NodeExample nodeExample = new NodeExample();
+        nodeExample.createCriteria().andIsPrivateEqualTo(false);
+        List<Node> nodes = nodeMapper.selectByExample(nodeExample);
+        List<NodeVo> nodeVos = new ArrayList<>();
+        if (nodes == null || nodes.isEmpty()){
+            return nodeVos;
+        }
+        nodes.forEach(node -> {
+            NodeVo nodeVo = new NodeVo();
+            if (!node.getNodeName().contains("=>")){
+                nodeVo.setTitle(node.getNodeName());
+                nodeVo.setId(node.getNodeId());
+                nodeVos.add(nodeVo);
+            }
+        });
+        return nodeVos;
     }
 
 }

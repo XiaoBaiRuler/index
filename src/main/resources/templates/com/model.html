@@ -37,5 +37,104 @@
             </div>
         </div>
     </div>
+
+    <div class="ui submit modal" th:fragment="submitModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="description">
+                <div class="ui header">发布私有节点</div>
+                <div class="ui form">
+                    <div class="ui negative message" th:if="publicFlag">
+                        <i class="close icon"></i>
+                        <p>公开根节点不能为空</p>
+                    </div>
+                    <div class="field">
+                        <select v-model="publicId">
+                            <option value="">选择当前节点的公开根节点</option>
+                            <option v-for="node,index in publicNode" :value="node.id" :key="'a' + index">
+                                {{node.title}}</option>
+                        </select>
+                    </div>
+                    <div class="fields">
+                        <label>选择新节点和私有根节点的关系</label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="choice" v-model="choice"
+                                       checked="checked" tabindex="0" class="hidden" value="1">
+                                <label>前置节点</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="choice" v-model="choice"
+                                       tabindex="0" class="hidden" value="0">
+                                <label>后置节点</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">
+                取消
+            </div>
+            <div class="ui positive right labeled icon button">
+                发布
+            </div>
+        </div>
+    </div>
+
+    <div class="ui show modal" th:fragment="showModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="description">
+                <div class="ui center aligned header">{{node.title}}</div>
+                <div id="content"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui reject basic modal" th:fragment="rejectModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否驳回请求
+        </div>
+        <div class="ui content">
+            <div class="ui inverted form">
+                <div class="field">
+                    <label>驳回理由</label>
+                    <textarea rows="2" name="reason" v-model="reason"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="reject">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+
+    <div class="ui agree basic modal" th:fragment="agreeModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否同意请求
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="agree">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
 </body>
 </html>

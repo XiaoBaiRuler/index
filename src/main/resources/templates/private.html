@@ -152,13 +152,19 @@
                     </div>
                 </div>
             </div>
-            <div class="ui container" v-show="!isNode" style="width: 80%;">
+            <div class="ui container" v-show="!isNode" style="width: 95%;">
                 <div class="ui stacked segment">
                     <div id="mind_container"></div>
                 </div>
             </div>
         </div>
-        <br><br>
+        <div th:replace="com/model :: submitModel"></div>
+        <div class="ui container" style="width: 95%;">
+            <div class="ui raised segment">
+                <button class="fluid ui green button" @click="toSubmit">发布博客</button>
+            </div>
+        </div>
+        <br><br><br><br>
         <div th:replace="com/foot :: foot"></div>
         <div th:replace="com/Bar :: right_bar"></div>
     </div>
@@ -203,7 +209,11 @@
                 userId: "",
                 select: [],
                 deleteId: 0,
-                index: -1
+                index: -1,
+                choice: 1,
+                publicId: -1,
+                publicNode: [],
+                publicFlag: false
             },
             mounted: function(){
                 $('.ui.checkbox').checkbox();
@@ -222,7 +232,7 @@
                                     this.node = response.data
                                     this.blogDes = this.node.desc
                                     this.blogTitle = this.node.title
-                                    if (isUpdate == 1){
+                                    if (isUpdate === 1){
                                         this.changeEditor()
                                     }
                                 })
@@ -526,6 +536,34 @@
                 },
                 toTop: function(){
                     window.location.href = '#top'
+                },
+                toSubmit: function(){
+                    axios.get("/private/getAllPublic")
+                        .then(response => {
+                            this.publicNode = response.data;
+                            console.log(this.privateNode)
+                            $('.ui.submit.modal')
+                                .modal({
+                                    closable  : false,
+                                    onApprove : function() {
+                                        if (app.publicId === -1){
+                                            app.publicFlag = true
+                                            return false
+                                        }
+                                        else{
+                                            axios.get('/person/public/addPublicNodeNotice?nodeId=' + app.nodeId
+                                                + "&rootId=" + app.publicId + "&flag=" + app.choice)
+                                                .then(response => {
+                                                    alert(response.data)
+                                                })
+                                                .catch(error => console.log(error))
+                                            return true;
+                                        }
+                                    }
+                                }).modal('show');
+                            $('.ui.radio.checkbox').checkbox();
+                        })
+                        .catch(error => console.log(error))
                 }
             }
         })
@@ -552,7 +590,7 @@
                 smartypants: true,
                 xhtml: true
             });
-        hljs.initHighlightingOnLoad()
+        hljs.highlightAll()
 
         // 删除前置节点
         $(document).on('click', '#deletePreModel', function() {
@@ -566,7 +604,7 @@
                 })
                 .catch(error => console.log(error))
         })
-
+        // 删除后置节点
         $(document).on('click', '#deleteNexModel', function() {
             axios.get('/private/deleteNode?nodeId=' + app.deleteId + "&flag=false")
                 .then(response => {
@@ -578,7 +616,6 @@
                 })
                 .catch(error => console.log(error))
         })
-
 
     </script>
 </body>
