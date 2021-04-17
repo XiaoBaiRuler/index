@@ -30,4 +30,5 @@ public interface FollowService {
      * @return int
      */
     int deleteFollowByUserIdAndFollowId(Integer userId, Integer followId);
+
 }

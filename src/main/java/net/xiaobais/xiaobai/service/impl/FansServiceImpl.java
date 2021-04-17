@@ -60,4 +60,11 @@ public class FansServiceImpl implements FansService {
         }
         return -1;
     }
+
+    @Override
+    public List<Fans> getAllFansByUserId(Integer userId) {
+        FansExample example = new FansExample();
+        example.createCriteria().andUserIdEqualTo(userId);
+        return fansMapper.selectByExample(example);
+    }
 }

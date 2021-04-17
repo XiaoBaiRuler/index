@@ -1,12 +1,13 @@
 package net.xiaobais.xiaobai.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import net.xiaobais.xiaobai.mapper.IteratorMapper;
 import net.xiaobais.xiaobai.mapper.MyNoticeMapper;
+import net.xiaobais.xiaobai.mapper.NodeMapper;
 import net.xiaobais.xiaobai.mapper.NoticeMapper;
-import net.xiaobais.xiaobai.model.Notice;
-import net.xiaobais.xiaobai.model.NoticeExample;
-import net.xiaobais.xiaobai.model.User;
-import net.xiaobais.xiaobai.service.NoticeService;
-import net.xiaobais.xiaobai.service.UserService;
+import net.xiaobais.xiaobai.model.*;
+import net.xiaobais.xiaobai.service.*;
+import net.xiaobais.xiaobai.vo.IteratorNoticeVo;
 import net.xiaobais.xiaobai.vo.PublicNoticeVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,14 @@ public class NoticeServiceImpl implements NoticeService {
     private MyNoticeMapper myNoticeMapper;
     @Resource
     private UserService userService;
+    @Resource
+    private FansService fansService;
+    @Resource
+    private PublicNodeService publicNodeService;
+    @Resource
+    private NodeMapper nodeMapper;
+    @Resource
+    private IteratorMapper iteratorMapper;
 
     private static final String DEAL_PREFIX = "/person/public";
     private static final String NODE_PREFIX = "/public/node/";
@@ -84,15 +93,22 @@ public class NoticeServiceImpl implements NoticeService {
             throw new Exception("处理通知创建失败");
         }
         // 用户发给粉丝
-        notice.setUserId(userId);
-        notice.setAcceptId(-1);
-        notice.setSubmitType(0);
-        notice.setAcceptType(true);
-        notice.setMessage("你关注的用户发布了博客:" + NODE_PREFIX + newNodeId);
-        int j = noticeMapper.insertSelective(notice);
-        if (j == -1){
-            throw new Exception("发布给关注用户的通知创建失败");
-        }
+        User user = userService.getUserById(userId);
+        List<Fans> fans = fansService.getAllFansByUserId(userId);
+        fans.forEach(fan -> {
+            notice.setUserId(userId);
+            notice.setAcceptId(fan.getFansId());
+            notice.setSubmitType(0);
+            notice.setAcceptType(true);
+            notice.setMessage("你关注的用户" + user.getUsername() +"发布了博客");
+            if (noticeMapper.insertSelective(notice) == -1){
+                try {
+                    throw new Exception("发布给关注用户的通知创建失败");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         Notice changeNotice = new Notice();
         changeNotice.setNoticeId(noticeId);
         changeNotice.setIsDelete(true);
@@ -211,4 +227,128 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setIsDelete(true);
         return noticeMapper.updateByExampleSelective(notice, example) != -1;
     }
+
+    @Override
+    public boolean addIteratorNotice(Integer userId, Integer acceptId, Integer iteratorId, Integer nodeId, String message) {
+        Notice notice = new Notice();
+        notice.setUserId(userId);
+        notice.setAcceptId(acceptId);
+        notice.setNodeId(nodeId);
+        notice.setIteratorId(iteratorId);
+        notice.setMessage(message);
+        notice.setIsDelete(false);
+        notice.setSubmitType(1);
+        notice.setAcceptType(false);
+        return noticeMapper.insertSelective(notice) != -1;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean dealIteratorNotice(Integer noticeId, Integer userId, Integer acceptId, Integer iteratorId, Integer nodeId)
+            throws Exception {
+        User user = userService.getUserById(userId);
+        Notice notice = new Notice();
+        notice.setUserId(userId);
+        notice.setAcceptId(acceptId);
+        notice.setMessage(user.getUsername() + "同意了你的迭代请求");
+        notice.setSubmitType(1);
+        notice.setAcceptType(true);
+        notice.setNodeId(nodeId);
+        notice.setIteratorId(iteratorId);
+        notice.setIsDelete(false);
+        if (noticeMapper.insertSelective(notice) == -1){
+            throw new Exception("发送同意迭代请求失败");
+        }
+        Notice changeNotice = new Notice();
+        changeNotice.setNoticeId(noticeId);
+        changeNotice.setIsDelete(true);
+        if (noticeMapper.updateByPrimaryKeySelective(changeNotice) == -1){
+            throw new Exception("删除iterator通知失败");
+        }
+        // 更换
+        Node node = publicNodeService.findNodeById(nodeId);
+        Node iterator = publicNodeService.findNodeById(iteratorId);
+        node.setUserId(iterator.getUserId());
+        node.setBlogId(iterator.getBlogId());
+        node.setMapId(iterator.getMapId());
+        if (nodeMapper.updateByPrimaryKeySelective(node) == -1){
+            throw new Exception("替换迭代节点");
+        }
+        IteratorExample itExample = new IteratorExample();
+        itExample.createCriteria().andIteratorIdEqualTo(iteratorId);
+        if (iteratorMapper.deleteByExample(itExample) == -1){
+            throw new Exception("删除迭代关系失败");
+        }
+        if (nodeMapper.deleteByPrimaryKey(iteratorId) == -1){
+            throw new Exception("删除迭代节点失败");
+        }
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean errorIteratorNotice(Integer noticeId, Integer userId, Integer acceptId, Integer iteratorId, Integer nodeId) throws Exception {
+        User user = userService.getUserById(userId);
+        Notice notice = new Notice();
+        notice.setUserId(userId);
+        notice.setAcceptId(acceptId);
+        notice.setMessage(user.getUsername() + "驳回了你的迭代请求");
+        notice.setSubmitType(1);
+        notice.setAcceptType(true);
+        notice.setNodeId(nodeId);
+        notice.setIteratorId(iteratorId);
+        notice.setIsDelete(false);
+        if (noticeMapper.insertSelective(notice) == -1){
+            throw new Exception("发送驳回迭代请求失败");
+        }
+        Notice changeNotice = new Notice();
+        changeNotice.setNoticeId(noticeId);
+        changeNotice.setIsDelete(true);
+        if (noticeMapper.updateByPrimaryKeySelective(changeNotice) == -1){
+            throw new Exception("删除iterator通知失败");
+        }
+        return false;
+    }
+
+    @Override
+    public long getAllIteratorNoticeCount(Integer userId, String message) {
+        NoticeExample example = new NoticeExample();
+        NoticeExample.Criteria criteria = example.createCriteria().andAcceptIdEqualTo(userId)
+                .andSubmitTypeEqualTo(1);
+        if (!"".equals(message)){
+            criteria.andMessageLike( "%" + message + "%");
+        }
+        return noticeMapper.countByExample(example);
+    }
+
+    @Override
+    public List<IteratorNoticeVo> getAllIteratorNotice(Integer pageNumber, Integer pageSize, Integer userId, String message) {
+
+        NoticeExample example = new NoticeExample();
+        NoticeExample.Criteria criteria = example.createCriteria().andAcceptIdEqualTo(userId)
+                .andSubmitTypeEqualTo(1).andIsDeleteEqualTo(false);
+        if (!"".equals(message)){
+            criteria.andMessageLike("%" + message + "%");
+        }
+        PageHelper.startPage(pageNumber, pageSize);
+        List<Notice> notices = noticeMapper.selectByExample(example);
+        List<IteratorNoticeVo> list = new ArrayList<>();
+        notices.forEach(notice -> {
+            IteratorNoticeVo noticeVo = new IteratorNoticeVo();
+            noticeVo.setNoticeId(notice.getNoticeId());
+            noticeVo.setReply(notice.getAcceptType());
+            noticeVo.setMessage(notice.getMessage());
+            noticeVo.setIteratorId(notice.getIteratorId());
+            noticeVo.setNodeId(notice.getNodeId());
+            list.add(noticeVo);
+        });
+        return list;
+    }
+
+    @Override
+    public Notice getNoticeByNoticeId(Integer noticeId) {
+        return noticeMapper.selectByPrimaryKey(noticeId);
+    }
+
+
 }

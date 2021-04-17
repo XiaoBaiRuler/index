@@ -5,8 +5,10 @@ import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Map;
 import net.xiaobais.xiaobai.model.Node;
+import net.xiaobais.xiaobai.model.Notice;
 import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.utils.JwtUtils;
+import net.xiaobais.xiaobai.vo.IteratorNoticeVo;
 import net.xiaobais.xiaobai.vo.PublicNoticeVo;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import net.xiaobais.xiaobai.vo.UserVo;
@@ -175,7 +177,59 @@ public class NoticeController {
         return noticeService.dealReplyNotice(noticeId, userId) ? "确认成功" : "#确认失败";
     }
 
+    @ApiOperation("获取所有迭代通知的个数")
+    @GetMapping("/getIteratorNoticeCount")
+    @ResponseBody
+    public long getIteratorNoticeCount(String message, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return 0;
+        }
+        long c = noticeService.getAllIteratorNoticeCount(
+                JwtUtils.getUserId(cookies[0].getValue()), message);
+        return c % 5 == 0 ? c / 5 : c / 5 + 1;
+    }
 
+    @ApiOperation("获取所有迭代通知")
+    @GetMapping("/getIteratorNotice")
+    @ResponseBody
+    public List<IteratorNoticeVo> getIteratorNotice(Integer pageNumber, Integer pageSize,
+                                                    String message, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        return noticeService.getAllIteratorNotice(pageNumber, pageSize,
+                JwtUtils.getUserId(cookies[0].getValue()), message);
+    }
+
+    @ApiOperation("处理迭代通知")
+    @GetMapping("/dealIteratorNotice")
+    @ResponseBody
+    public String dealIteratorNotice(Integer noticeId, HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return "#未登录";
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Notice notice = noticeService.getNoticeByNoticeId(noticeId);
+        return noticeService.dealIteratorNotice(noticeId, userId, notice.getUserId(), notice.getIteratorId(), notice.getNodeId())
+                ? "处理成功" : "#处理失败";
+    }
+
+    @ApiOperation("驳回迭代通知")
+    @GetMapping("/errorIteratorNotice")
+    @ResponseBody
+    public String errorIteratorNotice(Integer noticeId, HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return "#未登录";
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Notice notice = noticeService.getNoticeByNoticeId(noticeId);
+        return noticeService.errorIteratorNotice(noticeId, userId, notice.getUserId(), notice.getIteratorId(), notice.getNodeId())
+                ? "处理成功" : "#处理失败";
+    }
 
 
     @Transactional(rollbackFor = Exception.class)

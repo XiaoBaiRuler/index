@@ -153,5 +153,47 @@
             </div>
         </div>
     </div>
+
+    <div class="ui rej basic modal" th:fragment="rejModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否驳回请求
+        </div>
+        <div class="ui content">
+            <div class="ui inverted form">
+                <div class="field">
+                    <label>驳回理由</label>
+                    <textarea rows="2" name="reason" v-model="reason"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="rejButton">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+
+    <div class="ui agr basic modal" th:fragment="agrModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否同意请求
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="agrButton">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
 </body>
 </html>

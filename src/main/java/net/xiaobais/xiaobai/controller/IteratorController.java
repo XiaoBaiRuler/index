@@ -6,10 +6,7 @@ import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Iterator;
 import net.xiaobais.xiaobai.model.Map;
 import net.xiaobais.xiaobai.model.Node;
-import net.xiaobais.xiaobai.service.BlogService;
-import net.xiaobais.xiaobai.service.IteratorService;
-import net.xiaobais.xiaobai.service.MapService;
-import net.xiaobais.xiaobai.service.PublicNodeService;
+import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +35,8 @@ public class IteratorController {
     private MapService mapService;
     @Resource
     private IteratorService iteratorService;
+    @Resource
+    private NoticeService noticeService;
 
     private static final int SIZE = 1000;
 
@@ -67,6 +66,7 @@ public class IteratorController {
                             String map, String username,
                             String reason, Integer userId) throws Exception {
         Node node = nodeService.findNodeById(nodeId);
+        Integer nextId = node.getUserId();
         // 新建一个blog
         Blog blog = blogService.findBlogById(node.getBlogId());
         blog.setBlogId(null);
@@ -102,6 +102,11 @@ public class IteratorController {
         int l = iteratorService.insertIterator(iterator);
         if (l == -1){
             throw new Exception("添加迭代关系失败");
+        }
+        // 添加迭代通知
+        String message = username + "想迭代节点" + node.getNodeName() + ",理由:" + reason;
+        if (!noticeService.addIteratorNotice(userId, nextId, k, nodeId, message)){
+            throw new Exception("迭代通知创建失败");
         }
     }
 

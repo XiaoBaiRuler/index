@@ -1,6 +1,6 @@
 package net.xiaobais.xiaobai;
 
-import net.xiaobais.xiaobai.service.CommentService;
+import net.xiaobais.xiaobai.service.NoticeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -10,12 +10,12 @@ import javax.annotation.Resource;
 class XiaobaiApplicationTests {
 
     @Resource
-    private CommentService commentService;
+    private NoticeService noticeService;
 
     @Test
     void contextLoads() {
 
-        System.out.println(commentService.getAllComments(1));
+        System.out.println(noticeService.getAllIteratorNotice(2, 2, 6, ""));
     }
 
 }
