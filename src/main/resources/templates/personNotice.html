@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: head"></span>
+    <title>个人信息管理</title>
+    <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
+    <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
+    <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
+    <style type="text/css">
+        table{
+            border: 1px solid skyblue;
+            border-collapse:collapse;
+        }
+        thead{
+            color: #0C9A9A;
+        }
+        th{
+            border: 1px solid skyblue;
+        }
+        td{
+            border: 1px solid skyblue;
+        }
+        blockquote{
+            border-left: 1px solid skyblue;
+        }
+        #content_container{
+            height: 1000px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <input type="number" id="userId" th:value="${userId}" hidden="hidden">
+    <div th:replace="com/menu :: publicUserMenu"></div>
+    <br><br><br><br>
+    <div class="ui fluid container" id="content_container">
+        <div class="ui container" style="width: 85%;">
+            <div class="ui fluid action input">
+                <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
+                <button class="ui icon button" @click="searchNotice">
+                    <i class="search icon"></i>
+                </button>
+            </div>
+            <div class="ui fluid raised segment">
+                <table class="ui celled table">
+                    <thead>
+                    <tr>
+                        <th>请求编号</th>
+                        <th>发送者</th>
+                        <th>请求类型</th>
+                        <th>请求信息</th>
+                        <th>相关节点</th>
+                        <th>
+                            操作
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(notice,index) in notices" :key="'no' + index">
+                        <td>{{index}}</td>
+                        <td>{{notice.username}}</td>
+                        <td>{{notice.type}}</td>
+                        <td>{{notice.message}}</td>
+                        <td>
+                            <button class="ui yellow inverted button" @click="toShow(notice.nodeId, notice.userId)">展现节点</button>
+                        </td>
+                        <td>
+                            <button class="ui red inverted button" @click="toReject(index, notice.nodeId, notice.userId, notice.noticeId)">
+                                驳回</button>
+                            <button class="ui green inverted button" @click="toAgree(index, notice.dealUrl)">同意</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="7">
+                            <div class="ui right floated pagination menu">
+                                <a class="icon item" @click="toPrePage">
+                                    <i class="left chevron icon"></i>
+                                </a>
+                                <a class="disabled item">{{pageNumber + 1}}</a>
+                                <a class="icon item" @click="toNexPage">
+                                    <i class="right chevron icon"></i>
+                                </a>
+                            </div>
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br><br><br>
+    <div th:replace="com/model :: showModel"></div>
+    <div th:replace="com/model :: agreeModel"></div>
+    <div th:replace="com/model :: rejectModel"></div>
+    <div th:replace="com/foot :: foot"></div>
+    <div class="ui left demo vertical inverted sidebar labeled icon menu">
+        <a class="item" th:href="@{'/private/user/' + ${userId}}">
+            <i class="user icon"></i>
+            个人信息
+        </a>
+        <a class="item" th:href="@{'/private/user/' + ${userId} + '#privateCollect'}">
+            <i class="star icon"></i>
+            收藏博客
+        </a>
+        <a class="item">
+            <i class="paper plane icon" th:href="@{'/private/user/' + ${userId} + '#public'}"></i>
+            发布博客
+        </a>
+        <a class="item" th:href="@{/person/public/toImage}">
+            <i class="image icon"></i>
+            图片管理
+        </a>
+        <a class="item" th:href="@{/person/public/toNotice}">
+            <i class="comment alternate icon"></i>
+            通知管理
+        </a>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    let app = new Vue({
+        el: '#app',
+        data: {
+            userVo: {},
+            userId: -1,
+            isLogin: false,
+            str: "",
+            size: 0,
+            notices: [],
+            pageNumber: 0,
+            pageSize: 5,
+            message: "",
+            node: {},
+            index: -1,
+            url: "",
+            nodeId: -1,
+            whoId: -1,
+            reason: "",
+            noticeId: -1
+        },
+        mounted: function() {
+            this.userId = document.getElementById('userId').value
+            this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                    }else{
+                        this.isLogin = false
+                    }
+                })
+                .catch(error => console.log(error))
+            axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
+                .then(response => {
+                    this.size = response.data
+                })
+                .catch(error => console.log(error))
+        },
+        methods: {
+            toReject: function(index, nodeId, userId, noticeId){
+                this.index = index
+                this.nodeId = nodeId
+                this.whoId = userId
+                this.noticeId = noticeId
+                $('.ui.reject.basic.modal').modal('show');
+            },
+            toAgree: function(index, dealUrl){
+                this.index = index
+                this.url = dealUrl
+                $('.ui.agree.basic.modal').modal('show');
+            },
+            toShow: function(nodeId, userId){
+                axios.get("/private/getNodeByUserId?nodeId=" + nodeId + "&userId=" + userId)
+                    .then(response => {
+                        this.node = response.data
+                        document.getElementById('content').innerHTML = marked(this.node.content
+                            , {
+                                baseUrl: null,
+                                breaks: true,
+                                gfm: true,
+                                headerIds: true,
+                                headerPrefix: '',
+                                highlight: function(code, language){
+                                    const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+                                    return hljs.highlight(validLanguage, code).value;
+                                },
+                                langPrefix: 'language-',
+                                mangle: true,
+                                pedantic: false,
+                                renderer: new marked.Renderer(),
+                                silent: false,
+                                smartLists: true,
+                                smartypants: true,
+                                xhtml: true
+                            });
+                        hljs.highlightAll()
+                        $('.ui.show.modal').modal('show');
+                    })
+                    .catch(error => console.log(error))
+            },
+            searchNotice: function(){
+                axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
+                    .then(response => {
+                        this.size = response.data
+                    })
+                    .catch(error => console.log(error))
+                this.preparePage(userId, 0, 5, this.message)
+            },
+            preparePage: function(userId, pageNumber, pageSize, message) {
+                if (this.userId === "1"){
+                    axios.get("/person/public/getPublicNotice?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&message=" + message)
+                        .then(response => {
+                            if (response.data !== null){
+                                this.notices = response.data
+                            }
+                        })
+                        .catch(error => console.log(error))
+                }
+            },
+            toPrePage: function() {
+                if (this.pageNumber > 0) {
+                    this.pageNumber -= 1
+                    this.preparePage(this.userId, this.pageNumber, this.pageSize, this.message)
+                }
+            },
+            toNexPage: function() {
+                let all = this.size - (this.pageNumber + 1) * this.pageSize
+                if (all > 0) {
+                    this.pageNumber += 1
+                    all = all > this.pageSize ? this.pageSize : all
+                    this.preparePage(this.userId, this.pageNumber, all, this.message)
+                }
+            },
+            toMenu: function() {
+                $('.ui.labeled.icon.sidebar').sidebar('toggle');
+            },
+            logout: function(){
+                axios.get("/private/logout")
+                    .then(response => {
+                        this.isLogin = response.data !== 1;
+                    })
+                    .catch(error => console.log(error))
+            },
+            search: function() {
+                if (this.str === "") {
+                    alert("请输入搜索内容")
+                } else {
+                    console.log(this.str)
+                }
+            }
+        }
+    })
+    $(document).on('click', '#reject', function() {
+        let vo = new FormData()
+        vo.append("nodeId", app.nodeId)
+        vo.append("userId", app.whoId)
+        vo.append("message", app.reason)
+        vo.append("noticeId", app.noticeId)
+        axios.post('/person/public/errorPublicNodeNotice', vo,
+            {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+            .then(response => {
+                let msg = response.data
+                if (!msg.includes("#")){
+                    app.notices.splice(app.index, 1)
+                }
+                alert(response.data)})
+            .catch(error => console.log(error))
+    })
+    $(document).on('click', '#agree', function() {
+        axios.get('/person/public/' + app.url)
+            .then(response => {
+                let msg = response.data
+                if (!msg.includes("#")){
+                    app.notices.splice(app.index, 1)
+                }
+                alert(msg)
+            })
+            .catch(error => console.log(error))
+    })
+</script>
+</body>
+</html>

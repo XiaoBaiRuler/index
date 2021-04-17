@@ -49,6 +49,7 @@
                             <th>发送者</th>
                             <th>请求类型</th>
                             <th>请求信息</th>
+                            <th>公开节点</th>
                             <th>相关节点</th>
                             <th>
                                 操作
@@ -61,13 +62,14 @@
                                 <td>{{notice.username}}</td>
                                 <td>{{notice.type}}</td>
                                 <td>{{notice.message}}</td>
+                                <th>
+                                    <a :href="notice.dealUrl" v-if="notice.dealUrl !== ''">相关链接</a>
+                                </th>
                                 <td>
-                                    <button class="ui yellow inverted button" @click="toShow(notice.nodeId, notice.userId)">展现节点</button>
+                                    <button class="ui yellow inverted button" @click="toShow(notice.nodeId)">展现节点</button>
                                 </td>
                                 <td>
-                                    <button class="ui red inverted button" @click="toReject(index, notice.nodeId, notice.userId, notice.noticeId)">
-                                        驳回</button>
-                                    <button class="ui green inverted button" @click="toAgree(index, notice.dealUrl)">同意</button>
+                                    <button class="ui green inverted button" @click="toYes(index, notice.noticeId)">确认</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -92,8 +94,7 @@
         </div>
         <br><br><br>
         <div th:replace="com/model :: showModel"></div>
-        <div th:replace="com/model :: agreeModel"></div>
-        <div th:replace="com/model :: rejectModel"></div>
+        <div th:replace="com/model :: yesModel"></div>
         <div th:replace="com/foot :: foot"></div>
         <div class="ui left demo vertical inverted sidebar labeled icon menu">
             <a class="item" th:href="@{'/private/user/' + ${userId}}">
@@ -143,7 +144,6 @@
             },
             mounted: function() {
                 this.userId = document.getElementById('userId').value
-                this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
                 axios.get("/user/getUserInfo")
                     .then(response => {
                         if (response.data !== ""){
@@ -154,27 +154,21 @@
                         }
                     })
                     .catch(error => console.log(error))
-                axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
+                axios.get("/person/public/getPersonNoticeCount?message=" + this.message)
                     .then(response => {
                         this.size = response.data
                     })
                     .catch(error => console.log(error))
+                this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
             },
             methods: {
-                toReject: function(index, nodeId, userId, noticeId){
+                toYes: function(index, noticeId){
                     this.index = index
-                    this.nodeId = nodeId
-                    this.whoId = userId
                     this.noticeId = noticeId
-                    $('.ui.reject.basic.modal').modal('show');
+                    $('.ui.yes.basic.modal').modal('show');
                 },
-                toAgree: function(index, dealUrl){
-                    this.index = index
-                    this.url = dealUrl
-                    $('.ui.agree.basic.modal').modal('show');
-                },
-                toShow: function(nodeId, userId){
-                    axios.get("/private/getNodeByUserId?nodeId=" + nodeId + "&userId=" + userId)
+                toShow: function(nodeId){
+                    axios.get("/private/getNodeByUserId?nodeId=" + nodeId + "&userId=" + app.userId)
                         .then(response => {
                             this.node = response.data
                             document.getElementById('content').innerHTML = marked(this.node.content
@@ -203,7 +197,7 @@
                         .catch(error => console.log(error))
                 },
                 searchNotice: function(){
-                    axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
+                    axios.get("/person/public/getPersonNoticeCount?message=" + this.message)
                         .then(response => {
                             this.size = response.data
                         })
@@ -211,8 +205,8 @@
                     this.preparePage(userId, 0, 5, this.message)
                 },
                 preparePage: function(userId, pageNumber, pageSize, message) {
-                    if (this.userId === "1"){
-                        axios.get("/person/public/getPublicNotice?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&message=" + message)
+                    if (this.userId !== "1"){
+                        axios.get("/person/public/getPersonNotice?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&message=" + message)
                             .then(response => {
                                 if (response.data !== null){
                                     this.notices = response.data
@@ -254,24 +248,8 @@
                 }
             }
         })
-        $(document).on('click', '#reject', function() {
-            let vo = new FormData()
-            vo.append("nodeId", app.nodeId)
-            vo.append("userId", app.whoId)
-            vo.append("message", app.reason)
-            vo.append("noticeId", app.noticeId)
-            axios.post('/person/public/errorPublicNodeNotice', vo,
-                {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
-                .then(response => {
-                    let msg = response.data
-                    if (!msg.includes("#")){
-                        app.notices.splice(app.index, 1)
-                    }
-                    alert(response.data)})
-                .catch(error => console.log(error))
-        })
-        $(document).on('click', '#argee', function() {
-            axios.get('/person/public/' + app.url)
+        $(document).on('click', '#yesButton', function() {
+            axios.get('/person/public/dealReplyNotice/' + app.noticeId)
                 .then(response => {
                     let msg = response.data
                     if (!msg.includes("#")){

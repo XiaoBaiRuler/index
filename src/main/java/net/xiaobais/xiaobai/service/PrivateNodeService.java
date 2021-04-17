@@ -20,6 +20,13 @@ public interface PrivateNodeService {
      */
     Node findNodeByNodeIdAndIsPrivateAndUserId(Integer nodeId, Integer userId);
 
+    /**
+     * 管理员查找用户的私有节点
+     * @param nodeId nodeId
+     * @return Node
+     */
+    Node findNodeByNodeId(Integer nodeId);
+
 
     /**
      * 添加node

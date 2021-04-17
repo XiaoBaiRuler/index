@@ -56,10 +56,29 @@ public class NoticeController {
         if (cookies == null){
             return "redirect:/toLogin";
         }
-        model.addAttribute("userId", JwtUtils.getUserId(cookies[0].getValue()));
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        model.addAttribute("userId", userId);
         model.addAttribute("mostCollect", nodeToSimpleNodeVo(publicNodeService.findNodeByTopCollect(5)));
         model.addAttribute("mostStar", nodeToSimpleNodeVo(publicNodeService.findNodeByTopStar(5)));
-        return "privateNotice";
+        return userId == 1 ? "personNotice" : "privateNotice";
+    }
+
+    @ApiOperation("获取所有发布通知的个数")
+    @GetMapping("/getPublicNoticeCount")
+    @ResponseBody
+    public Integer getPublicNoticeCount(@RequestParam String message){
+        return noticeService.getAllPublicNoticeCount(message);
+    }
+
+    @ApiOperation("获取所有返回通知的个数")
+    @GetMapping("/getPersonNoticeCount")
+    @ResponseBody
+    public Integer getPersonNoticeCount(@RequestParam String message, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return 0;
+        }
+        return noticeService.getPersonNoticeCount(message, JwtUtils.getUserId(cookies[0].getValue()));
     }
 
     @ApiOperation("获取所有发布通知")
@@ -80,11 +99,22 @@ public class NoticeController {
         return null;
     }
 
-    @ApiOperation("获取所有发布通知的个数")
-    @GetMapping("/getPublicNoticeCount")
+    @ApiOperation("获取所有返回通知")
+    @GetMapping("/getPersonNotice")
     @ResponseBody
-    public Integer getPublicNoticeCount(@RequestParam String message){
-        return noticeService.getAllPublicNoticeCount(message);
+    public List<PublicNoticeVo> getAllPersonNotice(@RequestParam Integer pageNumber,
+                                             @RequestParam Integer pageSize,
+                                             @RequestParam String message,
+                                             HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        UserVo user = JwtUtils.getUserVo(cookies[0].getValue());
+        if (user.getUserId() != 1){
+            return noticeService.getAllPersonNotice(pageNumber, pageSize, message, user.getUserId());
+        }
+        return null;
     }
 
     @ApiOperation("发送发布节点通知")
@@ -104,11 +134,15 @@ public class NoticeController {
     }
 
     @ApiOperation("处理发布节点通知")
+    @Transactional(rollbackFor = Exception.class)
     @GetMapping("/dealPublicNodeNotice/{noticeId}/{nodeId}/{userId}/{rootId}/{flag}")
     @ResponseBody
-    public String dealPublicNodeNotice(@PathVariable Integer noticeId, @PathVariable Integer nodeId,
-                                       @PathVariable Integer userId, @PathVariable Integer rootId,
-                                       @PathVariable Integer flag, HttpServletRequest request) throws Exception {
+    public String dealPublicNodeNotice(@PathVariable Integer noticeId,
+                                       @PathVariable Integer nodeId,
+                                       @PathVariable Integer userId,
+                                       @PathVariable Integer rootId,
+                                       @PathVariable Integer flag,
+                                       HttpServletRequest request) throws Exception {
         Cookie[] cookies = request.getCookies();
         if (cookies == null){
             return "#用户未登录";
@@ -123,16 +157,30 @@ public class NoticeController {
     @ApiOperation("驳回发布节点通知")
     @PostMapping("/errorPublicNodeNotice")
     @ResponseBody
-    public String errorPublicNodeNotice(Integer nodeId, Integer userId, String message, Integer noticeId)
-            throws Exception {
+    public String errorPublicNodeNotice(Integer nodeId, Integer userId,
+                                        String message, Integer noticeId) throws Exception {
         return noticeService.errorPublicNodeNotice(nodeId, message, userId, noticeId) ?
                 "驳回发布请求成功" : "#驳回发布请求失败";
     }
 
+    @ApiOperation("处理返回节点通知")
+    @GetMapping("/dealReplyNotice/{noticeId}")
+    @ResponseBody
+    public String dealReplyNotice(@PathVariable Integer noticeId, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return "#未登录";
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        return noticeService.dealReplyNotice(noticeId, userId) ? "确认成功" : "#确认失败";
+    }
+
+
 
 
     @Transactional(rollbackFor = Exception.class)
-    public Integer copyPrivateNodeToPublicNode(Integer nodeId, Integer userId, Integer rootId, Integer flag) throws Exception {
+    public Integer copyPrivateNodeToPublicNode(Integer nodeId, Integer userId,
+                                               Integer rootId, Integer flag) throws Exception {
         Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
         synchronized (this){
             // 创建一个博客

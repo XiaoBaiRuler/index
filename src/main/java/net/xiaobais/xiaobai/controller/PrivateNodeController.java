@@ -293,9 +293,16 @@ public class PrivateNodeController {
         if (cookies == null){
             return null;
         }
+        Node node;
+        Blog blog;
         if (JwtUtils.getUserId(cookies[0].getValue()) == 1){
-            Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,userId);
-            Blog blog = blogService.findBlogById(node.getBlogId());
+            node = privateNodeService.findNodeByNodeId(nodeId);
+            blog = blogService.findBlogById(node.getBlogId());
+            return nodeToPublicNodeVo(node, blog);
+        }
+        if (JwtUtils.getUserId(cookies[0].getValue()).equals(userId)){
+            node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,userId);
+            blog = blogService.findBlogById(node.getBlogId());
             return nodeToPublicNodeVo(node,blog);
         }
         return null;

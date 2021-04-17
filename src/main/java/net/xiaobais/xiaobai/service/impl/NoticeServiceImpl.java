@@ -3,6 +3,7 @@ package net.xiaobais.xiaobai.service.impl;
 import net.xiaobais.xiaobai.mapper.MyNoticeMapper;
 import net.xiaobais.xiaobai.mapper.NoticeMapper;
 import net.xiaobais.xiaobai.model.Notice;
+import net.xiaobais.xiaobai.model.NoticeExample;
 import net.xiaobais.xiaobai.model.User;
 import net.xiaobais.xiaobai.service.NoticeService;
 import net.xiaobais.xiaobai.service.UserService;
@@ -75,18 +76,19 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setSubmitType(0);
         notice.setAcceptType(true);
         notice.setMessage(message);
-        notice.setNodeId(nodeId);
+        notice.setNodeId(newNodeId);
+        notice.setDealUrl(NODE_PREFIX + newNodeId);
         notice.setIsDelete(false);
         int i = noticeMapper.insertSelective(notice);
         if (i == -1){
             throw new Exception("处理通知创建失败");
         }
+        // 用户发给粉丝
         notice.setUserId(userId);
         notice.setAcceptId(-1);
         notice.setSubmitType(0);
         notice.setAcceptType(true);
-        notice.setMessage("你关注的用户发布了博客:" + NODE_PREFIX + nodeId);
-        notice.setNodeId(newNodeId);
+        notice.setMessage("你关注的用户发布了博客:" + NODE_PREFIX + newNodeId);
         int j = noticeMapper.insertSelective(notice);
         if (j == -1){
             throw new Exception("发布给关注用户的通知创建失败");
@@ -160,5 +162,53 @@ public class NoticeServiceImpl implements NoticeService {
             message = "%" + message + "%";
             return myNoticeMapper.findPublicNoticeByMessageCount(message);
         }
+    }
+
+    @Override
+    public Integer getPersonNoticeCount(String message, Integer userId) {
+        if ("".equals(message)){
+            return myNoticeMapper.findPersonNoticeCount(userId);
+        }
+        else{
+            message = "%" + message + "%";
+            return myNoticeMapper.findPersonNoticeCountByMessage(userId, message);
+        }
+    }
+
+    @Override
+    public List<PublicNoticeVo> getAllPersonNotice(Integer pageNumber, Integer pageSize, String message, Integer userId) {
+        pageNumber = pageNumber == 0 ? pageNumber : pageNumber * SIZE;
+        List<Notice> notices;
+        if ("".equals(message)){
+            notices = myNoticeMapper.findPersonNotice(pageNumber, pageSize, userId);
+        }
+        else{
+            message = "%" + message + "%";
+            notices = myNoticeMapper.findPersonNoticeByMessage(pageNumber, pageSize, message, userId);
+        }
+        List<PublicNoticeVo> lists = new ArrayList<>();
+        notices.forEach(notice -> {
+            PublicNoticeVo publicNoticeVo = new PublicNoticeVo();
+            User user = userService.getUserById(notice.getUserId());
+            publicNoticeVo.setNoticeId(notice.getNoticeId());
+            publicNoticeVo.setUsername(user.getUsername());
+            publicNoticeVo.setType("反馈通知");
+            publicNoticeVo.setMessage(notice.getMessage());
+            publicNoticeVo.setNodeId(notice.getNodeId());
+            publicNoticeVo.setUserId(notice.getUserId());
+            publicNoticeVo.setDealUrl(notice.getDealUrl());
+            lists.add(publicNoticeVo);
+        });
+        return lists;
+    }
+
+    @Override
+    public boolean dealReplyNotice(Integer noticeId, Integer userId) {
+        NoticeExample example = new NoticeExample();
+        example.createCriteria().andNoticeIdEqualTo(noticeId)
+                .andAcceptIdEqualTo(userId);
+        Notice notice = new Notice();
+        notice.setIsDelete(true);
+        return noticeMapper.updateByExampleSelective(notice, example) != -1;
     }
 }

@@ -43,496 +43,496 @@
     </style>
 </head>
 <body>
-    <div id="app">
-        <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
-        <div th:replace="com/menu :: menu"></div>
-        <br><br><br>
-        <div id="top"></div>
-        <div class="ui fluid container" v-show="isNode">
-            <div class="ui three column grid">
-                <div :class="left" v-show="isLeft">
-                    <div class="ui fluid container">
-                        <br>
-                        <div class="ui stacked left aligned segment">
-                            <div class="ui action input" :style="{width: inputWidth}">
-                                <input type="text" placeholder="搜索..." name="preInput" v-model="preInput">
-                                <button class="ui icon button" @click.prevent="preSearch">
-                                    <i class="search icon"></i>
-                                </button>
-                            </div>
+<div id="app">
+    <input type="number" hidden="hidden" id="nodeId" th:value="${nodeId}">
+    <div th:replace="com/menu :: menu"></div>
+    <br><br><br>
+    <div id="top"></div>
+    <div class="ui fluid container" v-show="isNode">
+        <div class="ui three column grid">
+            <div :class="left" v-show="isLeft">
+                <div class="ui fluid container">
+                    <br>
+                    <div class="ui stacked left aligned segment">
+                        <div class="ui action input" :style="{width: inputWidth}">
+                            <input type="text" placeholder="搜索..." name="preInput" v-model="preInput">
+                            <button class="ui icon button" @click.prevent="preSearch">
+                                <i class="search icon"></i>
+                            </button>
                         </div>
-                        <div th:replace="com/card :: iteratorCard"></div>
-                        <div th:replace="com/card :: publicPreCard"></div>
-                        <div class="ui stacked right aligned segment" v-show="prePage">
-                            <div class="ui four bottom attached buttons">
-                                <div class="ui teal button" @click.prevent="toPrePage(true)">上一页</div>
-                                <div class="ui button active">第{{nowPreNum}}页</div>
-                                <div class="ui button active">共{{preSize}}条</div>
-                                <div class="ui teal button" @click.prevent="toNexPage(true)">下一页</div>
-                            </div>
+                    </div>
+                    <div th:replace="com/card :: iteratorCard"></div>
+                    <div th:replace="com/card :: publicPreCard"></div>
+                    <div class="ui stacked right aligned segment" v-show="prePage">
+                        <div class="ui four bottom attached buttons">
+                            <div class="ui teal button" @click.prevent="toPrePage(true)">上一页</div>
+                            <div class="ui button active">第{{nowPreNum}}页</div>
+                            <div class="ui button active">共{{preSize}}条</div>
+                            <div class="ui teal button" @click.prevent="toNexPage(true)">下一页</div>
                         </div>
                     </div>
                 </div>
-                <div :class="middle">
-                    <div class="ui container" :style="{width: middleWidth}">
-                        <div th:replace="com/card :: showPublicCard"></div>
-                        <div class="ui piled segment" v-show="isBlog">
-                            <textarea hidden="hidden" th:text="${html}" id="html" style="white-space: pre-line"></textarea>
-                            <div id="content"></div>
-                            <span th:if="${flag}">
+            </div>
+            <div :class="middle">
+                <div class="ui container" :style="{width: middleWidth}">
+                    <div th:replace="com/card :: showPublicCard"></div>
+                    <div class="ui piled segment" v-show="isBlog">
+                        <textarea hidden="hidden" th:text="${html}" id="html" style="white-space: pre-line"></textarea>
+                        <div id="content"></div>
+                        <span th:if="${flag}">
                                 <br><br><br><br><br><br><br><br><br><br>
                                 <br><br><br><br><br><br><br><br><br><br>
                                 <br><br><br><br><br><br><br><br><br><br>
                                 <br><br><br><br><br><br><br><br><br><br>
                                 <br><br><br><br><br><br><br><br><br><br>
                             </span>
-                        </div>
-                        <div class="ui raised segment" v-show="!isBlog">
-                            <div id="jsmind_container"></div>
-                        </div>
                     </div>
-                </div>
-                <div :class="right" v-show="isRight">
-                    <div class="ui fluid container">
-                        <br>
-                        <div class="ui stacked left aligned segment">
-                            <div class="ui action input" :style="{width: inputWidth}">
-                                <input type="text" placeholder="搜索..." name="nexInput" v-model="nexInput">
-                                <button class="ui icon button" @click.prevent="nexSearch">
-                                    <i class="search icon"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div th:replace="com/card :: suggestCard"></div>
-                        <div th:replace="com/card :: publicNexCard"></div>
-                        <div class="ui stacked right aligned segment" v-show="nexPage">
-                            <div class="ui four bottom attached buttons">
-                                <div class="ui teal button" @click.prevent="toPrePage(false)">上一页</div>
-                                <div class="ui button active">第{{nowNexNum}}页</div>
-                                <div class="ui button active">共{{nexSize}}条</div>
-                                <div class="ui teal button" @click.prevent="toNexPage(false)">下一页</div>
-                            </div>
-                        </div>
+                    <div class="ui raised segment" v-show="!isBlog">
+                        <div id="jsmind_container"></div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="ui container" v-show="!isNode" style="width: 80%;">
-            <div class="ui stacked segment">
-                <div id="mind_container"></div>
-            </div>
-        </div>
-        <div th:replace="com/comment :: comment"></div>
-        <br><br>
-        <div th:replace="com/foot :: foot"></div>
-        <div id="toolbar" class="right_bar">
-            <div class="ui vertical icon buttons">
-                <a class="ui teal button" @click="toComment">评论</a>
-                <div class="ui teal icon button" @click="toTop"><i class="chevron up icon"></i></div>
+            <div :class="right" v-show="isRight">
+                <div class="ui fluid container">
+                    <br>
+                    <div class="ui stacked left aligned segment">
+                        <div class="ui action input" :style="{width: inputWidth}">
+                            <input type="text" placeholder="搜索..." name="nexInput" v-model="nexInput">
+                            <button class="ui icon button" @click.prevent="nexSearch">
+                                <i class="search icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div th:replace="com/card :: suggestCard"></div>
+                    <div th:replace="com/card :: publicNexCard"></div>
+                    <div class="ui stacked right aligned segment" v-show="nexPage">
+                        <div class="ui four bottom attached buttons">
+                            <div class="ui teal button" @click.prevent="toPrePage(false)">上一页</div>
+                            <div class="ui button active">第{{nowNexNum}}页</div>
+                            <div class="ui button active">共{{nexSize}}条</div>
+                            <div class="ui teal button" @click.prevent="toNexPage(false)">下一页</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <div class="ui container" v-show="!isNode" style="width: 80%;">
+        <div class="ui stacked segment">
+            <div id="mind_container"></div>
+        </div>
+    </div>
+    <div th:replace="com/comment :: comment"></div>
+    <br><br>
+    <div th:replace="com/foot :: foot"></div>
+    <div id="toolbar" class="right_bar">
+        <div class="ui vertical icon buttons">
+            <a class="ui teal button" @click="toComment">评论</a>
+            <div class="ui teal icon button" @click="toTop"><i class="chevron up icon"></i></div>
+        </div>
+    </div>
+</div>
 
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        let app = new Vue({
-            el: '#app',
-            data: {
-                isLeft: false,
-                isRight: false,
-                isBlog: true,
-                isNode: true,
-                isLogin: false,
-                left: 'five wide column',
-                middle: 'sixteen wide column',
-                right: 'five wide column',
-                middleWidth: '95%',
-                inputWidth: '75%',
-                str: '',
-                html: '',
-                mind: [],
-                preNodes: [],
-                nexNodes: [],
-                nowPreNum: 0,
-                nowNexNum: 0,
-                preSize: 0,
-                nexSize: 0,
-                nodeId: 0,
-                prePage: true,
-                nexPage: true,
-                preInput: "",
-                nexInput: "",
-                userVo: {},
-                node: {},
-                comments: {},
-                commentContent: "",
-                username: "",
-                commentId: 0,
-                i: -1,
-                j: -1
-            },
-            mounted: function(){
-                let nodeId = document.getElementById('nodeId').value
-                this.nodeId = nodeId
-                this.preparePage(nodeId, "", "", 0, 0)
-                axios.get("/user/getUserInfo")
-                    .then(response => {
-                        if (response.data !== ""){
-                            this.isLogin = true
-                            this.userVo = response.data
-                            this.username = this.userVo.username
-                        }else{
-                            this.isLogin = false
-                        }
+    let app = new Vue({
+        el: '#app',
+        data: {
+            isLeft: false,
+            isRight: false,
+            isBlog: true,
+            isNode: true,
+            isLogin: false,
+            left: 'five wide column',
+            middle: 'sixteen wide column',
+            right: 'five wide column',
+            middleWidth: '95%',
+            inputWidth: '75%',
+            str: '',
+            html: '',
+            mind: [],
+            preNodes: [],
+            nexNodes: [],
+            nowPreNum: 0,
+            nowNexNum: 0,
+            preSize: 0,
+            nexSize: 0,
+            nodeId: 0,
+            prePage: true,
+            nexPage: true,
+            preInput: "",
+            nexInput: "",
+            userVo: {},
+            node: {},
+            comments: {},
+            commentContent: "",
+            username: "",
+            commentId: 0,
+            i: -1,
+            j: -1
+        },
+        mounted: function(){
+            let nodeId = document.getElementById('nodeId').value
+            this.nodeId = nodeId
+            this.preparePage(nodeId, "", "", 0, 0)
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                        this.username = this.userVo.username
+                    }else{
+                        this.isLogin = false
+                    }
+                })
+                .catch(error => console.log(error))
+
+            axios.get("/public/getNode?nodeId=" + nodeId)
+                .then(response => {
+                    this.node = response.data
+                    this.reply = this.node.email
+                })
+                .catch(error => console.log(error))
+
+            axios.get("/public/getMind?nodeId=" + nodeId)
+                .then(response => {
+                    let options = {
+                        mode: 'full',
+                        container: 'jsmind_container',
+                        editable: true,
+                        theme:'orange',
+                        support_html: true,
+                        view:{
+                            engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                            hmargin:100,        // 思维导图距容器外框的最小水平距离
+                            vmargin:200,         // 思维导图距容器外框的最小垂直距离
+                            line_width:3,       // 思维导图线条的粗细
+                            line_color:'#555'   // 思维导图线条的颜色
+                        },
+                        layout:{
+                            hspace:100,          // 节点之间的水平间距
+                            vspace:200,          // 节点之间的垂直间距
+                            pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                        },
+                    }
+                    let m = response.data
+                    let res = []
+                    m.forEach((item) =>{
+                        let obj = {}
+                        obj.id = item.id
+                        obj.parentid = item.parentid
+                        obj.isroot = item.isroot
+                        obj.topic = item.topic
+                        obj.direction = item.direction
+                        obj.expanded = item.expanded
+                        res.push(obj)
                     })
-                    .catch(error => console.log(error))
+                    let mind = {
+                        "meta":{
+                            "name":"测试",
+                            "author":"xiaobai",
+                            "version":"1.0",
+                        },
+                        "format":"node_array",
+                        "data": res
+                    }
+                    let jm = new jsMind(options)
+                    jm.show(mind)
+                })
+                .catch(error => console.log(error))
 
-                axios.get("/public/getNode?nodeId=" + nodeId)
-                    .then(response => {
-                        this.node = response.data
-                        this.reply = this.node.email
+            axios.get('/public/getNodeMind?nodeId=' + nodeId + "&level=3")
+                .then(response => {
+                    let options = {
+                        mode: 'full',
+                        container: 'mind_container',
+                        editable: true,
+                        theme:'orange',
+                        support_html: true,
+                        view:{
+                            engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+                            hmargin:50,        // 思维导图距容器外框的最小水平距离
+                            vmargin:50,         // 思维导图距容器外框的最小垂直距离
+                            line_width:3,       // 思维导图线条的粗细
+                            line_color:'#555'   // 思维导图线条的颜色
+                        },
+                        layout:{
+                            hspace:400,          // 节点之间的水平间距
+                            vspace:200,          // 节点之间的垂直间距
+                            pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                        },
+                    }
+                    let m = response.data
+                    let res = []
+                    m.forEach((item) =>{
+                        let obj = {}
+                        obj.id = item.id
+                        obj.parentid = item.parentid
+                        obj.isroot = item.isroot
+                        obj.topic = item.topic
+                        obj.direction = item.direction
+                        obj.expanded = item.expanded
+                        res.push(obj)
                     })
-                    .catch(error => console.log(error))
-
-                axios.get("/public/getMind?nodeId=" + nodeId)
-                    .then(response => {
-                        let options = {
-                            mode: 'full',
-                            container: 'jsmind_container',
-                            editable: true,
-                            theme:'orange',
-                            support_html: true,
-                            view:{
-                                engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
-                                hmargin:100,        // 思维导图距容器外框的最小水平距离
-                                vmargin:200,         // 思维导图距容器外框的最小垂直距离
-                                line_width:3,       // 思维导图线条的粗细
-                                line_color:'#555'   // 思维导图线条的颜色
-                            },
-                            layout:{
-                                hspace:100,          // 节点之间的水平间距
-                                vspace:200,          // 节点之间的垂直间距
-                                pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
-                            },
-                        }
-                        let m = response.data
-                        let res = []
-                        m.forEach((item) =>{
-                            let obj = {}
-                            obj.id = item.id
-                            obj.parentid = item.parentid
-                            obj.isroot = item.isroot
-                            obj.topic = item.topic
-                            obj.direction = item.direction
-                            obj.expanded = item.expanded
-                            res.push(obj)
-                        })
-                        let mind = {
-                            "meta":{
-                                "name":"测试",
-                                "author":"xiaobai",
-                                "version":"1.0",
-                            },
-                            "format":"node_array",
-                            "data": res
-                        }
-                        let jm = new jsMind(options)
-                        jm.show(mind)
-                    })
-                    .catch(error => console.log(error))
-
-                axios.get('/public/getNodeMind?nodeId=' + nodeId + "&level=3")
-                    .then(response => {
-                        let options = {
-                            mode: 'full',
-                            container: 'mind_container',
-                            editable: true,
-                            theme:'orange',
-                            support_html: true,
-                            view:{
-                                engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
-                                hmargin:50,        // 思维导图距容器外框的最小水平距离
-                                vmargin:50,         // 思维导图距容器外框的最小垂直距离
-                                line_width:3,       // 思维导图线条的粗细
-                                line_color:'#555'   // 思维导图线条的颜色
-                            },
-                            layout:{
-                                hspace:400,          // 节点之间的水平间距
-                                vspace:200,          // 节点之间的垂直间距
-                                pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
-                            },
-                        }
-                        let m = response.data
-                        let res = []
-                        m.forEach((item) =>{
-                            let obj = {}
-                            obj.id = item.id
-                            obj.parentid = item.parentid
-                            obj.isroot = item.isroot
-                            obj.topic = item.topic
-                            obj.direction = item.direction
-                            obj.expanded = item.expanded
-                            res.push(obj)
-                        })
-                        let mind = {
-                            "meta":{
-                                "name":"测试",
-                                "author":"xiaobai",
-                                "version":"1.0",
-                            },
-                            "format":"node_array",
-                            "data": res
-                        }
-                        let jm = new jsMind(options)
-                        jm.show(mind)
-                    })
-                    .catch(error => console.log(error))
-
-                axios.get("/public/getAllComments?nodeId=" + nodeId)
-                    .then(response =>{ this.comments = response.data})
-                    .catch(error => console.log(error))
-
-            },
-            methods: {
-                changeSize: function() {
-                    if (this.isLeft && this.isRight) {
-                        this.middleWidth = '100%'
-                        this.left = 'three wide column'
-                        this.middle = 'ten wide column'
-                        this.right = 'three wide column'
-                    } else if (!this.isLeft && this.isRight) {
-                        this.middleWidth = '95%'
-                        this.middle = 'eleven wide column'
-                        this.right = 'five wide column'
-                    } else if (this.isLeft && !this.isRight) {
-                        this.middleWidth = '95%'
-                        this.left = 'five wide column'
-                        this.middle = 'eleven wide column'
-                        this.right = 'three wide column'
-                    } else {
-                        this.middleWidth = '80%'
-                        this.left = 'three wide column'
-                        this.middle = 'sixteen wide column'
-                        this.right = 'three wide column'
+                    let mind = {
+                        "meta":{
+                            "name":"测试",
+                            "author":"xiaobai",
+                            "version":"1.0",
+                        },
+                        "format":"node_array",
+                        "data": res
                     }
-                },
-                showPreNode: function() {
-                    this.isLeft = !this.isLeft
-                    this.changeSize()
-                },
-                showNextNode: function() {
-                    this.isRight = !this.isRight
-                    this.changeSize()
-                },
-                changeBlog: function() {
-                    this.isBlog = !this.isBlog
-                },
-                changeNode: function() {
-                    this.isNode = !this.isNode
-                },
-                logout: function() {
-                    axios.get("/private/logout")
-                        .then(response => {
-                            this.isLogin = response.data !== 1;
-                        })
-                        .catch(error => console.log(error))
-                },
-                search: function() {
-                    if (this.str === "") {
-                        alert("请输入搜索内容")
-                    } else {
-                        console.log(this.str)
-                    }
-                },
-                countLike: function(nodeId, index, flag){
-                    axios.get("/person/public/addNodeLike?nodeId=" + nodeId)
-                        .then(response => {
-                            if(response.data == "1"){
-                                if (index === -1){
-                                    this.node.like += 1
-                                }
-                                else{
-                                    flag
-                                        ? this.preNodes[index].like += 1
-                                        : this.nexNodes[index].like += 1
-                                }
-                            }
-                        })
-                        .catch(error => console.log(error))
-                },
-                countStar: function(nodeId, index, flag){
-                    axios.get("/person/public/addNodeStar?nodeId=" + nodeId)
-                        .then(response => {
-                            if(response.data == "1"){
-                                if(index === -1){
-                                    this.node.collect += 1
-                                }
-                                else{
-                                    flag
-                                        ? this.preNodes[index].collect += 1
-                                        : this.nexNodes[index].collect += 1
-                                }
-                            }
-                        })
-                        .catch(error => console.log(error))
-                },
-                toPrePage: function(flag){
-                    if (flag && this.nowPreNum > 0){
-                        this.nowPreNum -= 1
-                        this.getPreNode(this.nowPreNum, 6, this.nodeId, this.preInput)
-                    }
-                    if (!flag && this.nowNexNum > 0){
-                        this.nowNexNum -= 1
-                        this.getNexNode(this.nowNexNum, 6, this.nodeId, this.nexInput)
-                    }
-                },
-                toNexPage: function(flag){
-                    let pre = this.preSize - (this.nowPreNum + 1) * 6
-                    if (flag && pre > 0){
-                        this.nowPreNum += 1
-                        pre = pre > 6 ? 6 : pre
-                        this.getPreNode(this.nowPreNum, pre, this.nodeId, this.preInput)
-                    }
+                    let jm = new jsMind(options)
+                    jm.show(mind)
+                })
+                .catch(error => console.log(error))
 
-                    let nex = this.nexSize - (this.nowNexNum + 1) * 6
-                    if (!flag && nex > 0){
-                        this.nowNexNum += 1
-                        nex = nex > 6 ? 6 : nex
-                        this.getNexNode(this.nowNexNum, nex, this.nodeId, this.nexInput)
-                    }
-                },
-                getPreNode: function(pageNumber, pageSize, nodeId, title){
-                    axios.get("/public/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
-                        .then(response => this.preNodes = response.data)
-                        .catch(error => console.log(error))
-                },
-                getNexNode: function(pageNumber, pageSize, nodeId, title){
-                    axios.get("/public/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
-                        .then(response => this.nexNodes = response.data)
-                        .catch(error => console.log(error))
-                },
-                preSearch: function(){
-                    this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
-                },
-                nexSearch: function(){
-                    this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
-                },
-                preparePage: function(nodeId, preInput, nexInput, pageSize, pageNumber){
-                    // 前置节点
-                    axios.get("/public/getPreCount?nodeId=" + nodeId + "&title=" + preInput)
-                        .then(response => {
-                            this.preSize = response.data
-                            if(this.preSize > 6){
-                                pageSize = 6
-                                this.prePage = true
-                            }
-                            else{
-                                pageSize = this.preSize
-                                this.prePage = false
-                            }
-                            this.getPreNode(pageNumber, pageSize, this.nodeId, preInput)
-                        })
-                        .catch(error => console.log(error))
+            axios.get("/public/getAllComments?nodeId=" + nodeId)
+                .then(response =>{ this.comments = response.data})
+                .catch(error => console.log(error))
 
-                    // 后置节点
-                    axios.get("/public/getNexCount?nodeId=" + nodeId + "&title=" + nexInput)
-                        .then(response => {
-                            this.nexSize = response.data
-                            if(this.nexSize > 6){
-                                pageSize = 6
-                                this.nexPage = true
-                            }
-                            else{
-                                pageSize = this.nexSize
-                                this.nexPage = false
-                            }
-                            this.getNexNode(pageNumber, pageSize, this.nodeId, nexInput)
-                        })
-                        .catch(error => console.log(error))
-
-                },
-                replyOne: function(username, commentId, i, j) {
-                    window.location.href = '#reply'
-                    this.username = username
-                    this.commentId = commentId
-                    console.log(this.commentId)
-                    this.i = i;
-                    this.j = j;
-                },
-                submitReply: function(){
-                    let item = {
-                        commentId: this.commentId,
-                        userId: this.userVo.userId,
-                        nodeId: this.nodeId,
-                        avatar: this.userVo.img,
-                        userUrl: "/public/user/" + this.userVo.userId,
-                        username: this.userVo.username,
-                        time: "今天",
-                        comment: this.commentContent,
-                        userEmail: this.userVo.email,
-                        flag: false,
-                        children: []
-                    }
-                    let comment = new FormData()
-                    comment.append("parentId", this.commentId)
-                    comment.append("userId", this.userVo.userId)
-                    comment.append("nodeId", this.nodeId)
-                    comment.append("content", this.commentContent)
-
-                    axios.post('/person/public/addComment', comment,
-                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
-                        .then(response => {
-                            item.commentId = response.data
-                            if (this.commentId === 0){
-                                this.comments.push(item)
-                            }
-                            else{
-                                if (this.i !== -1 && this.j === -1){
-                                    this.comments[this.i].flag = true
-                                    this.comments[this.i].children.push(item)
-                                }
-                                if (this.i !== -1 && this.j !== -1){
-                                    this.comments[this.i].children[this.j].flag = true
-                                    this.comments[this.i].children[this.j].children.push(item)
-                                }
-                            }
-                            window.location.href = '#comment'
-                            this.commentContent = ""
-                        })
-                        .catch(error => console.log(error))
-                },
-                toComment: function(){
-                    window.location.href = '#comment'
-                },
-                toTop: function(){
-                    window.location.href = '#top'
+        },
+        methods: {
+            changeSize: function() {
+                if (this.isLeft && this.isRight) {
+                    this.middleWidth = '100%'
+                    this.left = 'three wide column'
+                    this.middle = 'ten wide column'
+                    this.right = 'three wide column'
+                } else if (!this.isLeft && this.isRight) {
+                    this.middleWidth = '95%'
+                    this.middle = 'eleven wide column'
+                    this.right = 'five wide column'
+                } else if (this.isLeft && !this.isRight) {
+                    this.middleWidth = '95%'
+                    this.left = 'five wide column'
+                    this.middle = 'eleven wide column'
+                    this.right = 'three wide column'
+                } else {
+                    this.middleWidth = '80%'
+                    this.left = 'three wide column'
+                    this.middle = 'sixteen wide column'
+                    this.right = 'three wide column'
                 }
             },
-        })
+            showPreNode: function() {
+                this.isLeft = !this.isLeft
+                this.changeSize()
+            },
+            showNextNode: function() {
+                this.isRight = !this.isRight
+                this.changeSize()
+            },
+            changeBlog: function() {
+                this.isBlog = !this.isBlog
+            },
+            changeNode: function() {
+                this.isNode = !this.isNode
+            },
+            logout: function() {
+                axios.get("/private/logout")
+                    .then(response => {
+                        this.isLogin = response.data !== 1;
+                    })
+                    .catch(error => console.log(error))
+            },
+            search: function() {
+                if (this.str === "") {
+                    alert("请输入搜索内容")
+                } else {
+                    console.log(this.str)
+                }
+            },
+            countLike: function(nodeId, index, flag){
+                axios.get("/person/public/addNodeLike?nodeId=" + nodeId)
+                    .then(response => {
+                        if(response.data == "1"){
+                            if (index === -1){
+                                this.node.like += 1
+                            }
+                            else{
+                                flag
+                                    ? this.preNodes[index].like += 1
+                                    : this.nexNodes[index].like += 1
+                            }
+                        }
+                    })
+                    .catch(error => console.log(error))
+            },
+            countStar: function(nodeId, index, flag){
+                axios.get("/person/public/addNodeStar?nodeId=" + nodeId)
+                    .then(response => {
+                        if(response.data == "1"){
+                            if(index === -1){
+                                this.node.collect += 1
+                            }
+                            else{
+                                flag
+                                    ? this.preNodes[index].collect += 1
+                                    : this.nexNodes[index].collect += 1
+                            }
+                        }
+                    })
+                    .catch(error => console.log(error))
+            },
+            toPrePage: function(flag){
+                if (flag && this.nowPreNum > 0){
+                    this.nowPreNum -= 1
+                    this.getPreNode(this.nowPreNum, 6, this.nodeId, this.preInput)
+                }
+                if (!flag && this.nowNexNum > 0){
+                    this.nowNexNum -= 1
+                    this.getNexNode(this.nowNexNum, 6, this.nodeId, this.nexInput)
+                }
+            },
+            toNexPage: function(flag){
+                let pre = this.preSize - (this.nowPreNum + 1) * 6
+                if (flag && pre > 0){
+                    this.nowPreNum += 1
+                    pre = pre > 6 ? 6 : pre
+                    this.getPreNode(this.nowPreNum, pre, this.nodeId, this.preInput)
+                }
 
-        let html = document.getElementById('html').value;
-        app.html = html;
-        document.getElementById('content').innerHTML = marked(html
-            , {
-                baseUrl: null,
-                breaks: true,
-                gfm: true,
-                headerIds: true,
-                headerPrefix: '',
-                highlight: function(code, language){
-                    const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-                    return hljs.highlight(validLanguage, code).value;
-                },
-                langPrefix: 'language-',
-                mangle: true,
-                pedantic: false,
-                renderer: new marked.Renderer(),
-                silent: false,
-                smartLists: true,
-                smartypants: true,
-                xhtml: true
-            });
-        hljs.highlightAll()
-    </script>
+                let nex = this.nexSize - (this.nowNexNum + 1) * 6
+                if (!flag && nex > 0){
+                    this.nowNexNum += 1
+                    nex = nex > 6 ? 6 : nex
+                    this.getNexNode(this.nowNexNum, nex, this.nodeId, this.nexInput)
+                }
+            },
+            getPreNode: function(pageNumber, pageSize, nodeId, title){
+                axios.get("/public/getPreNode?nodeId=" + nodeId + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
+                    .then(response => this.preNodes = response.data)
+                    .catch(error => console.log(error))
+            },
+            getNexNode: function(pageNumber, pageSize, nodeId, title){
+                axios.get("/public/getNexNode?nodeId=" + nodeId+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&title=" + title)
+                    .then(response => this.nexNodes = response.data)
+                    .catch(error => console.log(error))
+            },
+            preSearch: function(){
+                this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
+            },
+            nexSearch: function(){
+                this.preparePage(this.nodeId, this.preInput, this.nexInput, 0, 0);
+            },
+            preparePage: function(nodeId, preInput, nexInput, pageSize, pageNumber){
+                // 前置节点
+                axios.get("/public/getPreCount?nodeId=" + nodeId + "&title=" + preInput)
+                    .then(response => {
+                        this.preSize = response.data
+                        if(this.preSize > 6){
+                            pageSize = 6
+                            this.prePage = true
+                        }
+                        else{
+                            pageSize = this.preSize
+                            this.prePage = false
+                        }
+                        this.getPreNode(pageNumber, pageSize, this.nodeId, preInput)
+                    })
+                    .catch(error => console.log(error))
+
+                // 后置节点
+                axios.get("/public/getNexCount?nodeId=" + nodeId + "&title=" + nexInput)
+                    .then(response => {
+                        this.nexSize = response.data
+                        if(this.nexSize > 6){
+                            pageSize = 6
+                            this.nexPage = true
+                        }
+                        else{
+                            pageSize = this.nexSize
+                            this.nexPage = false
+                        }
+                        this.getNexNode(pageNumber, pageSize, this.nodeId, nexInput)
+                    })
+                    .catch(error => console.log(error))
+
+            },
+            replyOne: function(username, commentId, i, j) {
+                window.location.href = '#reply'
+                this.username = username
+                this.commentId = commentId
+                console.log(this.commentId)
+                this.i = i;
+                this.j = j;
+            },
+            submitReply: function(){
+                let item = {
+                    commentId: this.commentId,
+                    userId: this.userVo.userId,
+                    nodeId: this.nodeId,
+                    avatar: this.userVo.img,
+                    userUrl: "/public/user/" + this.userVo.userId,
+                    username: this.userVo.username,
+                    time: "今天",
+                    comment: this.commentContent,
+                    userEmail: this.userVo.email,
+                    flag: false,
+                    children: []
+                }
+                let comment = new FormData()
+                comment.append("parentId", this.commentId)
+                comment.append("userId", this.userVo.userId)
+                comment.append("nodeId", this.nodeId)
+                comment.append("content", this.commentContent)
+
+                axios.post('/person/public/addComment', comment,
+                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                    .then(response => {
+                        item.commentId = response.data
+                        if (this.commentId === 0){
+                            this.comments.push(item)
+                        }
+                        else{
+                            if (this.i !== -1 && this.j === -1){
+                                this.comments[this.i].flag = true
+                                this.comments[this.i].children.push(item)
+                            }
+                            if (this.i !== -1 && this.j !== -1){
+                                this.comments[this.i].children[this.j].flag = true
+                                this.comments[this.i].children[this.j].children.push(item)
+                            }
+                        }
+                        window.location.href = '#comment'
+                        this.commentContent = ""
+                    })
+                    .catch(error => console.log(error))
+            },
+            toComment: function(){
+                window.location.href = '#comment'
+            },
+            toTop: function(){
+                window.location.href = '#top'
+            }
+        },
+    })
+
+    let html = document.getElementById('html').value;
+    app.html = html;
+    document.getElementById('content').innerHTML = marked(html
+        , {
+            baseUrl: null,
+            breaks: true,
+            gfm: true,
+            headerIds: true,
+            headerPrefix: '',
+            highlight: function(code, language){
+                const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+                return hljs.highlight(validLanguage, code).value;
+            },
+            langPrefix: 'language-',
+            mangle: true,
+            pedantic: false,
+            renderer: new marked.Renderer(),
+            silent: false,
+            smartLists: true,
+            smartypants: true,
+            xhtml: true
+        });
+    hljs.highlightAll()
+</script>
 </body>
 </html>

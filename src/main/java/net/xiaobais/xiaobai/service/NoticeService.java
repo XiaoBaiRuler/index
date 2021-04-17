@@ -65,4 +65,29 @@ public interface NoticeService {
      */
     Integer getAllPublicNoticeCount(String message);
 
+    /**
+     * 根据message获取所有返回通知的博客个数
+     * @param message message
+     * @param userId userId
+     * @return integer
+     */
+    Integer getPersonNoticeCount(String message, Integer userId);
+
+    /**
+     * 获取所有申请发布博客的通知
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param message message
+     * @param userId userId
+     * @return List<PublicNoticeVo>
+     */
+    List<PublicNoticeVo> getAllPersonNotice(Integer pageNumber, Integer pageSize, String message, Integer userId);
+
+    /**
+     * 确认返回通知
+     * @param noticeId noticeId
+     * @param userId userId
+     * @return boolean
+     */
+    boolean dealReplyNotice(Integer noticeId, Integer userId);
 }

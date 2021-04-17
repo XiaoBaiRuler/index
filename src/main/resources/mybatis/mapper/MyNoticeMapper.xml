@@ -37,4 +37,44 @@
           and is_delete = 0
           and message like #{message}
     </select>
+
+    <select id="findPersonNoticeCount" parameterType="integer" resultType="integer">
+        select count(*)
+        from notice
+        where accept_id = #{userId}
+          and submit_type = 0
+          and accept_type = 1
+          and is_delete = 0
+    </select>
+
+    <select id="findPersonNoticeCountByMessage" resultType="integer">
+        select count(*)
+        from notice
+        where accept_id = #{userId}
+          and submit_type = 0
+          and accept_type = 1
+          and is_delete = 0
+          and message like #{message}
+    </select>
+
+    <select id="findPersonNotice" parameterType="integer" resultType="net.xiaobais.xiaobai.model.Notice">
+        select *
+        from notice
+        where accept_id = #{userId}
+          and submit_type = 0
+          and accept_type = 1
+          and is_delete = 0
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="findPersonNoticeByMessage" resultType="net.xiaobais.xiaobai.model.Notice">
+        select *
+        from notice
+        where accept_id = #{userId}
+          and submit_type = 0
+          and accept_type = 1
+          and is_delete = 0
+          and message like #{message}
+        limit #{pageNumber}, #{pageSize}
+    </select>
 </mapper>

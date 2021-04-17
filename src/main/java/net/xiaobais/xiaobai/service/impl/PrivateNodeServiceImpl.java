@@ -36,6 +36,15 @@ public class PrivateNodeServiceImpl implements PrivateNodeService {
     }
 
     @Override
+    public Node findNodeByNodeId(Integer nodeId) {
+        NodeExample nodeExample = new NodeExample();
+        NodeExample.Criteria criteria = nodeExample.createCriteria()
+                .andNodeIdEqualTo(nodeId);
+        List<Node> nodes = nodeMapper.selectByExample(nodeExample);
+        return !nodes.isEmpty() ? nodes.get(0) : null;
+    }
+
+    @Override
     public int insertNode(Node node) {
         int insert = nodeMapper.insert(node);
         return insert != -1 ? node.getNodeId() : -1;
