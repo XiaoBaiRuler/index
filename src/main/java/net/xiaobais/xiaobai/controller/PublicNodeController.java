@@ -177,6 +177,19 @@ public class PublicNodeController {
         return publicNodeService.countCollectNodeByUserIdAndTitle(userId, title);
     }
 
+    @ApiOperation("全局查询公开节点")
+    @GetMapping("/public/searchNodes")
+    @ResponseBody
+    public List<PublicNodeVo> getNodeByStr(Integer pageNumber,Integer pageSize, String str){
+        List<PublicNodeVo> list = new ArrayList<>();
+        List<Node> nodes = publicNodeService.getNodeByTitle(pageNumber, pageSize, str);
+        nodes.forEach(node ->{
+            Blog blog = blogService.findBlogById(node.getBlogId());
+            list.add(nodeToPublicNodeVo(node, blog));
+        });
+        return list;
+    }
+
     /**
      * 前后置节点的卡片信息
      * @param node node
@@ -264,6 +277,7 @@ public class PublicNodeController {
         nodeVo.setUserUrl("/public/user/" + node.getUserId());
         nodeVo.setAvatar(user.getUserAvatar());
         nodeVo.setEmail(user.getUserEmail());
+        nodeVo.setUrl("/public/node/" + node.getNodeId());
         return nodeVo;
     }
 }

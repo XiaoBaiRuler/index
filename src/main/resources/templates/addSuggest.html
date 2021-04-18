@@ -209,7 +209,7 @@
                 if (this.str === "") {
                     alert("请输入搜索内容")
                 } else {
-                    console.log(this.str)
+                    window.location.href = "/public/search/?pageNumber=1&pageSize=6&str=" + this.str
                 }
             },
             submitSuggest: function(){

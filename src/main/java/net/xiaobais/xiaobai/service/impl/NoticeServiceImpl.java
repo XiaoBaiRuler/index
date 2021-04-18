@@ -9,6 +9,7 @@ import net.xiaobais.xiaobai.model.*;
 import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.IteratorNoticeVo;
 import net.xiaobais.xiaobai.vo.PublicNoticeVo;
+import net.xiaobais.xiaobai.vo.SuggestNoticeVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -314,7 +315,7 @@ public class NoticeServiceImpl implements NoticeService {
     public long getAllIteratorNoticeCount(Integer userId, String message) {
         NoticeExample example = new NoticeExample();
         NoticeExample.Criteria criteria = example.createCriteria().andAcceptIdEqualTo(userId)
-                .andSubmitTypeEqualTo(1);
+                .andSubmitTypeEqualTo(1).andIsDeleteEqualTo(false);
         if (!"".equals(message)){
             criteria.andMessageLike( "%" + message + "%");
         }
@@ -348,6 +349,55 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public Notice getNoticeByNoticeId(Integer noticeId) {
         return noticeMapper.selectByPrimaryKey(noticeId);
+    }
+
+    @Override
+    public boolean addSuggestNotice(Integer userId, Integer acceptId, Integer nodeId, Integer suggestId) {
+        Notice notice = new Notice();
+        notice.setUserId(userId);
+        notice.setAcceptId(acceptId);
+        notice.setNodeId(nodeId);
+        notice.setSubmitType(2);
+        notice.setAcceptType(false);
+        notice.setIsDelete(false);
+        notice.setSuggestId(suggestId);
+        notice.setMessage("用户发起了建议请求");
+        return noticeMapper.insertSelective(notice) != -1;
+    }
+
+    @Override
+    public long getAllSuggestNoticeCount(Integer userId, String message) {
+        NoticeExample example = new NoticeExample();
+        NoticeExample.Criteria criteria = example.createCriteria().andAcceptIdEqualTo(userId)
+                .andSubmitTypeEqualTo(2);
+        if (!"".equals(message)){
+            criteria.andMessageLike( "%" + message + "%");
+        }
+        return noticeMapper.countByExample(example);
+    }
+
+    @Override
+    public List<SuggestNoticeVo> getAllSuggestNotice(Integer pageNumber, Integer pageSize, Integer userId, String message) {
+        NoticeExample example = new NoticeExample();
+        NoticeExample.Criteria criteria = example.createCriteria().andAcceptIdEqualTo(userId)
+                .andSubmitTypeEqualTo(2).andIsDeleteEqualTo(false);
+        if (!"".equals(message)){
+            criteria.andMessageLike("%" + message + "%");
+        }
+        PageHelper.startPage(pageNumber, pageSize);
+        List<Notice> notices = noticeMapper.selectByExample(example);
+        List<SuggestNoticeVo> list = new ArrayList<>();
+        notices.forEach(notice -> {
+            SuggestNoticeVo noticeVo = new SuggestNoticeVo();
+            noticeVo.setNoticeId(notice.getNoticeId());
+            noticeVo.setSuggestId(notice.getSuggestId());
+            noticeVo.setNodeId(notice.getNodeId());
+            noticeVo.setSuggestId(notice.getSuggestId());
+            noticeVo.setMessage(notice.getMessage());
+            noticeVo.setReply(notice.getAcceptType());
+            list.add(noticeVo);
+        });
+        return list;
     }
 
 

@@ -1,5 +1,6 @@
 package net.xiaobais.xiaobai.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import net.xiaobais.xiaobai.mapper.NodeMapper;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.NodeExample;
@@ -81,6 +82,32 @@ public class PrivateNodeServiceImpl implements PrivateNodeService {
             nodeVos.add(nodeVo);
         });
         return nodeVos;
+    }
+
+    @Override
+    public List<Node> getPrivateNodeByStr(Integer pageNumber, Integer pageSize,
+                                          String title, Integer userId) {
+        NodeExample example = new NodeExample();
+        NodeExample.Criteria criteria = example.createCriteria().andIsPrivateEqualTo(userId != 1)
+                .andNodeNameLike("%" + title + "%");
+        if (userId != 1){
+            criteria.andUserIdEqualTo(userId);
+        }
+        PageHelper.startPage(pageNumber, pageSize);
+        return nodeMapper.selectByExample(example);
+    }
+
+    @Override
+    public Long getPrivateNodeCountByStr(String title, Integer userId,
+                                         Integer pageSize) {
+        NodeExample example = new NodeExample();
+        NodeExample.Criteria criteria = example.createCriteria().andIsPrivateEqualTo(userId != 1)
+                .andNodeNameLike("%" + title + "%");
+        if (userId != 1){
+            criteria.andUserIdEqualTo(userId);
+        }
+        long l = nodeMapper.countByExample(example);
+        return l % pageSize == 0 ? l / pageSize : l / pageSize + 1;
     }
 
 

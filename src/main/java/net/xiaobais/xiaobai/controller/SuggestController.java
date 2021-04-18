@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -75,7 +74,7 @@ public class SuggestController {
     @ApiOperation("添加建议节点")
     @PostMapping("/person/public/addSuggest")
     @ResponseBody
-    public Integer addSuggest(SuggestWithBLOBs suggestWb) throws UnsupportedEncodingException {
+    public Integer addSuggest(SuggestWithBLOBs suggestWb) throws Exception {
         return suggestService.addSuggest(suggestWb);
     }
 

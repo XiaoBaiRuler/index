@@ -279,7 +279,7 @@ public class PrivateNodeController {
         if (id.equals(userId)){
             Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,userId);
             Blog blog = blogService.findBlogById(node.getBlogId());
-            return nodeToPublicNodeVo(node,blog);
+            return nodeToPublicNodeVo(node,blog, id);
         }
         return null;
     }
@@ -299,19 +299,19 @@ public class PrivateNodeController {
             node = privateNodeService.findNodeByNodeId(nodeId);
             if (node != null){
                 blog = blogService.findBlogById(node.getBlogId());
-                return nodeToPublicNodeVo(node, blog);
+                return nodeToPublicNodeVo(node, blog, 1);
             }
         }
         if (JwtUtils.getUserId(cookies[0].getValue()).equals(userId)){
             node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,userId);
             if (node != null){
                 blog = blogService.findBlogById(node.getBlogId());
-                return nodeToPublicNodeVo(node,blog);
+                return nodeToPublicNodeVo(node,blog, userId);
             }
         }
         node = publicNodeService.findNodeById(nodeId);
         blog = blogService.findBlogById(node.getBlogId());
-        return nodeToPublicNodeVo(node, blog);
+        return nodeToPublicNodeVo(node, blog, userId);
     }
 
     @ApiOperation("删除节点内容")
@@ -425,6 +425,24 @@ public class PrivateNodeController {
         return publicNodeService.getAllPublicNode();
     }
 
+    @ApiOperation("全局查询公开节点")
+    @GetMapping("/searchNodes")
+    @ResponseBody
+    public List<PrivateNodeVo> getNodeByStr(Integer pageNumber,Integer pageSize, String str, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        List<PrivateNodeVo> list = new ArrayList<>();
+        List<Node> nodes = privateNodeService.getPrivateNodeByStr(pageNumber, pageSize, str, userId);
+        nodes.forEach(node ->{
+            Blog blog = blogService.findBlogById(node.getBlogId());
+            list.add(nodeToPublicNodeVo(node, blog, userId));
+        });
+        return list;
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteNode(Integer nodeId, Integer mapId, Integer blogId) throws Exception {
         synchronized (this){
@@ -512,7 +530,7 @@ public class PrivateNodeController {
      * @param blog blog
      * @return PublicNodeVo
      */
-    private PrivateNodeVo nodeToPublicNodeVo(Node node, Blog blog){
+    private PrivateNodeVo nodeToPublicNodeVo(Node node, Blog blog, Integer userId){
         PrivateNodeVo nodeVo = new PrivateNodeVo();
         nodeVo.setTitle(node.getNodeName());
         nodeVo.setDesc(blog.getBlogDes());
@@ -548,6 +566,7 @@ public class PrivateNodeController {
         nodeVo.setUserUrl("/private/user/" + node.getUserId());
         nodeVo.setAvatar(user.getUserAvatar());
         nodeVo.setContent(blog.getBlogContent());
+        nodeVo.setUrl("/private/node/" + node.getNodeId() + "/" + userId + "?isUpdate=0");
         return nodeVo;
     }
 

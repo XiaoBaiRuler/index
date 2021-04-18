@@ -378,5 +378,34 @@
                 </span>
         </div>
     </div>
+
+    <!--公开搜索信息卡片-->
+    <div class="ui yellow inverted stacked right aligned segment" th:fragment="publicSearCard"
+         v-for="node,index in nodes">
+        <div class="ui fluid card">
+            <div class="content">
+                <a :href="node.userUrl">
+                    <img class="ui red right floated avatar image" :src="node.avatar">
+                </a>
+                <div class="center aligned header"><a :href="node.url">{{node.title}}</a></div>
+                <div class="center aligned description">
+                    <p>和下一个节点的关系: {{node.desc}}</p>
+                </div>
+                <div class="meta">
+                    <a>{{node.time}}</a>
+                </div>
+            </div>
+            <div class="extra content">
+                <span class="left floated like">
+                    <i class="like icon" @click.once="countLike(node.id, index)"></i>
+                    {{node.like}}点赞
+                </span>
+                <span class="right floated star">
+                    <i class="star icon" @click.once="countStar(node.id, index)"></i>
+                    {{node.collect}}收藏
+                </span>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

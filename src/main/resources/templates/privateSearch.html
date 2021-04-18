@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: head"></span>
+    <title>查询:[[${str}]]</title>
+</head>
+<body>
+<div id="app">
+    <input type="number" id="pageNumber" th:value="${pageNumber}">
+    <input type="number" id="pageSize" th:value="${pageSize}">
+    <input type="number" id="size" th:value="${size}">
+    <input type="str" id="str" th:value="${str}">
+    <div th:replace="com/menu :: searchMenu"></div>
+    <br><br><br>
+    <div class="ui fluid container">
+        <div class="ui raised segment">
+            <div th:replace="com/card :: publicSearCard"></div>
+            <div class="ui stacked right aligned segment" v-show="size > 1">
+                <div class="ui four bottom attached buttons">
+                    <div class="ui teal button" @click.prevent="toPre">上一页</div>
+                    <div class="ui button active">第{{number}}页</div>
+                    <div class="ui button active">共{{size}}页</div>
+                    <div class="ui teal button" @click.prevent="toNex">下一页</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    let app = new Vue({
+        el: '#app',
+        data: {
+            isLogin: false,
+            userVo: {},
+            str: "",
+            size: 0,
+            number: 1,
+            pageSize: 0,
+            nodes: []
+        },
+        mounted: function(){
+            this.number = document.getElementById('pageNumber').value;
+            this.pageSize = document.getElementById('pageSize').value;
+            this.size = document.getElementById('size').value;
+            this.str = document.getElementById('str').value;
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                        this.username = this.userVo.username
+                    }else{
+                        this.isLogin = false
+                    }
+                })
+                .catch(error => console.log(error))
+            axios.get("/private/searchNodes?pageNumber=" + this.number
+                + "&pageSize=" + this.pageSize + "&str=" + this.str)
+                .then(response => {
+                    this.nodes = response.data
+                })
+                .catch(error => console.log(error))
+        },
+        methods: {
+            countLike: function(nodeId, index){
+                axios.get("/person/public/addNodeLike?nodeId=" + nodeId)
+                    .then(response => {
+                        if(response.data == "1"){
+                            this.nodes[index].like += 1
+                        }
+                    })
+                    .catch(error => console.log(error))
+            },
+            countStar: function(nodeId, index){
+                axios.get("/person/public/addNodeStar?nodeId=" + nodeId)
+                    .then(response => {
+                        if(response.data == "1"){
+                            this.nodes[index].collect += 1
+                        }
+                    })
+                    .catch(error => console.log(error))
+            },
+            logout: function() {
+                axios.get("/private/logout")
+                    .then(response => {
+                        this.isLogin = response.data !== 1;
+                    })
+                    .catch(error => console.log(error))
+            },
+            search: function() {
+                if (this.str === "") {
+                    alert("请输入搜索内容")
+                } else {
+                    window.location.href = "/private/search/?pageNumber=1&pageSize=6&str=" + this.str
+                }
+            },
+            toPre: function(){
+                if (this.number > 1){
+                    this.number --
+                    axios.get("/private/searchNodes?pageNumber=" + this.number
+                        + "&pageSize=" + this.pageSize + "&str=" + this.str)
+                        .then(response => {
+                            this.nodes = response.data
+                        })
+                        .catch(error => console.log(error))
+                }
+            },
+            toNex: function(){
+                if (this.number < this.size){
+                    this.number ++
+                    axios.get("/private/searchNodes?pageNumber=" + this.number
+                        + "&pageSize=" + this.pageSize + "&str=" + this.str)
+                        .then(response => {
+                            this.nodes = response.data
+                        })
+                        .catch(error => console.log(error))
+                }
+            }
+        }
+    })
+</script>
+</body>
+</html>

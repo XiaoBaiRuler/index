@@ -130,4 +130,21 @@ public interface PublicNodeService {
      */
     List<NodeVo> getAllPublicNode();
 
+    /**
+     * 根据标题查找node
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param title title
+     * @return List<Node>
+     */
+    List<Node> getNodeByTitle(Integer pageNumber, Integer pageSize, String title);
+
+    /**
+     * 根据标题查找node页数
+     * @param title title
+     * @param pageSize pageSize
+     * @return long
+     */
+    Long getNodeCountByTitle(String title, Integer pageSize);
+
 }

@@ -56,4 +56,23 @@ public interface PrivateNodeService {
      * @return List<NodeVo>
      */
     List<NodeVo> getAllPrivate(Integer userId);
+
+    /**
+     * 通过标题查询私有节点
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param title title
+     * @param userId userId
+     * @return List<Node>
+     */
+    List<Node> getPrivateNodeByStr(Integer pageNumber, Integer pageSize, String title, Integer userId);
+
+    /**
+     * 按title查询私有节点个数
+     * @param title title
+     * @param userId userId
+     * @param pageSize pageSize
+     * @return long
+     */
+    Long getPrivateNodeCountByStr(String title, Integer userId, Integer pageSize);
 }

@@ -16,8 +16,9 @@ public interface SuggestService {
      * 添加建议节点
      * @param suggestWb suggest with BLOBs
      * @return int
+     * @exception Exception 事务管理
      */
-    int addSuggest(SuggestWithBLOBs suggestWb);
+    int addSuggest(SuggestWithBLOBs suggestWb) throws Exception;
 
     /**
      * 通过suggestId获取suggest

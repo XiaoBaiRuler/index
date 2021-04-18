@@ -3,6 +3,7 @@ package net.xiaobais.xiaobai.service;
 import net.xiaobais.xiaobai.model.Notice;
 import net.xiaobais.xiaobai.vo.IteratorNoticeVo;
 import net.xiaobais.xiaobai.vo.PublicNoticeVo;
+import net.xiaobais.xiaobai.vo.SuggestNoticeVo;
 
 import java.util.List;
 
@@ -161,5 +162,34 @@ public interface NoticeService {
      * @return Notice
      */
     Notice getNoticeByNoticeId(Integer noticeId);
+
+    /**
+     * 添加建议通知
+     * @param userId userId
+     * @param acceptId acceptId
+     * @param nodeId nodeId
+     * @param suggestId suggestId
+     * @return boolean
+     */
+    boolean addSuggestNotice(Integer userId, Integer acceptId, Integer nodeId, Integer suggestId);
+
+
+    /**
+     * 查找所有建议通知的个数
+     * @param userId userId
+     * @param message message
+     * @return long
+     */
+    long getAllSuggestNoticeCount(Integer userId, String message);
+
+    /**
+     * 查找所有建议通知
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param userId userId
+     * @param message message
+     * @return List<SuggestNoticeVo>
+     */
+    List<SuggestNoticeVo> getAllSuggestNotice(Integer pageNumber, Integer pageSize, Integer userId, String message);
 
 }

@@ -36,20 +36,20 @@
     <div class="ui fluid container" id="content_container">
         <div class="ui container" style="width: 85%;">
             <div class="ui pointing menu">
-                <a :class="itemActive" @click="toReply">
+                <a :class="aItemActive" @click="toReply">
                     反馈通知
                 </a>
-                <a :class="item" @click="toIterator">
+                <a :class="bItemActive" @click="toIterator">
                     迭代通知
                 </a>
-                <a :class="item" >
+                <a :class="cItemActive" @click="toSuggest">
                     建议通知
                 </a>
             </div>
             <div class="ui segment" v-if="isReply">
                 <div class="ui fluid action input">
                     <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
-                    <button class="ui icon button" @click="searchNotice">
+                    <button class="ui icon button" @click="searchNotice(false)">
                         <i class="search icon"></i>
                     </button>
                 </div>
@@ -101,10 +101,10 @@
                     </table>
                 </div>
             </div>
-            <div class="ui segment" v-if="!isReply">
+            <div class="ui segment" v-if="isIterator">
                 <div class="ui fluid action input">
                     <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
-                    <button class="ui icon button" @click="searchNit">
+                    <button class="ui icon button" @click="searchNit(false)">
                         <i class="search icon"></i>
                     </button>
                 </div>
@@ -152,11 +152,66 @@
                         <tr>
                             <th colspan="7">
                                 <div class="ui right floated pagination menu">
-                                    <a class="icon item" @click="toPre">
+                                    <a class="icon item" @click="toPre(false)">
                                         <i class="left chevron icon"></i>
                                     </a>
                                     <a class="disabled item">{{nitNumber}}</a>
-                                    <a class="icon item" @click="toNex">
+                                    <a class="icon item" @click="toNex(false)">
+                                        <i class="right chevron icon"></i>
+                                    </a>
+                                </div>
+                            </th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="ui segment" v-if="isSuggest">
+                <div class="ui fluid action input">
+                    <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
+                    <button class="ui icon button" @click="searchNit(true)">
+                        <i class="search icon"></i>
+                    </button>
+                </div>
+                <div class="ui fluid raised segment">
+                    <table class="ui celled table">
+                        <thead>
+                        <tr>
+                            <th>请求编号</th>
+                            <th>请求信息</th>
+                            <th>相关节点</th>
+                            <th>请求类型</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(notice,index) in sit" :key="'sit' + index">
+                            <td>{{index}}</td>
+                            <td>{{notice.message}}</td>
+                            <td>
+                                <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">当前节点</button>
+                            </td>
+                            <td>
+                                <a v-show="!notice.isReply">建议通知</a>
+                                <a v-show="notice.isReply">反馈通知</a>
+                            </td>
+                            <td>
+                                <button class="ui green inverted button"
+                                        v-show="notice.isReply" @click="toYes(index, notice.noticeId)">确认</button>
+                                <button class="ui green inverted button"
+                                        v-show="!notice.isReply" @click="toChange(notice.noticeId)">修改</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="7">
+                                <div class="ui right floated pagination menu">
+                                    <a class="icon item" @click="toPre(true)">
+                                        <i class="left chevron icon"></i>
+                                    </a>
+                                    <a class="disabled item">{{nitNumber}}</a>
+                                    <a class="icon item" @click="toNex(true)">
                                         <i class="right chevron icon"></i>
                                     </a>
                                 </div>
@@ -221,12 +276,16 @@
             whoId: -1,
             reason: "",
             noticeId: -1,
-            itemActive: "active item",
-            item: "item",
+            aItemActive: "active item",
+            bItemActive: "item",
+            cItemActive: "item",
             isReply: true,
+            isIterator: false,
+            isSuggest: false,
             number: 0,
             nitNumber: 1,
-            nit: []
+            nit: [],
+            sit: []
         },
         mounted: function() {
             this.userId = document.getElementById('userId').value
@@ -249,9 +308,12 @@
         },
         methods: {
             toReply: function(){
-                this.itemActive = "active item"
-                this.item = "item"
+                this.aItemActive = "active item"
+                this.bItemActive = "item"
+                this.cItemActive = "item"
                 this.isReply = true
+                this.isIterator = false
+                this.isSuggest = false
                 axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
                     .then(response => {
                         this.size = response.data
@@ -260,44 +322,83 @@
                 this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
             },
             toIterator: function(){
-                this.itemActive = "item"
-                this.item = "active item"
+                this.aItemActive = "item"
+                this.bItemActive = "active item"
+                this.cItemActive = "item"
                 this.isReply = false
+                this.isIterator = true
+                this.isSuggest = false
                 axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
                     .then(response => {
                         this.nubmer = response.data
+                        this.nitNumber = 1
                     })
                     .catch(error => console.log(error))
-                this.prepare()
+                this.prepare(false)
             },
-            toPre: function(){
+            toSuggest: function(){
+                this.aItemActive = "item"
+                this.bItemActive = "item"
+                this.cItemActive = "active item"
+                this.isReply = false
+                this.isIterator = false
+                this.isSuggest = true
+                axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
+                    .then(response => {
+                        this.nubmer = response.data
+                        this.nitNumber = 1
+                    })
+                    .catch(error => console.log(error))
+                this.prepare(true)
+            },
+            toPre: function(flag){
                 if (this.nitNumber > 1){
                     this.nitNumber --;
-                    this.prepare()
+                    this.prepare(flag)
                 }
             },
-            toNex: function(){
+            toNex: function(flag){
                 if (this.nitNumber < this.number){
                     this.nitNumber ++;
-                    this.prepare()
+                    this.prepare(flag)
                 }
             },
-            prepare: function(){
-                axios.get("/person/public/getIteratorNotice?pageNumber=" + this.nitNumber + "&pageSize=" + this.pageSize
-                    + "&message=" + this.message)
-                    .then(response => {
-                        this.nit = response.data
-                        console.log(this.nit)
-                    })
-                    .catch(error => console.log(error))
+            prepare: function(flag){
+                if (flag){
+                    axios.get("/person/public/getSuggestNotice?pageNumber=" + this.nitNumber + "&pageSize=" + this.pageSize
+                        + "&message=" + this.message)
+                        .then(response => {
+                            this.sit = response.data
+                        })
+                        .catch(error => console.log(error))
+                }
+                else{
+                    axios.get("/person/public/getIteratorNotice?pageNumber=" + this.nitNumber + "&pageSize=" + this.pageSize
+                        + "&message=" + this.message)
+                        .then(response => {
+                            this.nit = response.data
+                        })
+                        .catch(error => console.log(error))
+                }
+
             },
-            searchNit: function(){
-                axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
-                    .then(response => {
-                        this.nubmer = response.data
-                        this.prepare()
-                    })
-                    .catch(error => console.log(error))
+            searchNit: function(flag){
+                if (flag){
+                    axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
+                        .then(response => {
+                            this.nubmer = response.data
+                            this.prepare(true)
+                        })
+                        .catch(error => console.log(error))
+                }
+                else{
+                    axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
+                        .then(response => {
+                            this.nubmer = response.data
+                            this.prepare(false)
+                        })
+                        .catch(error => console.log(error))
+                }
             },
             toRej: function(index, noticeId, url){
                 this.index = index
@@ -405,8 +506,11 @@
                 if (this.str === "") {
                     alert("请输入搜索内容")
                 } else {
-                    console.log(this.str)
+                    window.location.href = "/private/search/?pageNumber=1&pageSize=6&str=" + this.str
                 }
+            },
+            toChange: function(noticeId){
+                window.location.href = "/private/node/change/" + noticeId;
             }
         }
     })

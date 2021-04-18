@@ -8,10 +8,7 @@ import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.Notice;
 import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.utils.JwtUtils;
-import net.xiaobais.xiaobai.vo.IteratorNoticeVo;
-import net.xiaobais.xiaobai.vo.PublicNoticeVo;
-import net.xiaobais.xiaobai.vo.SimpleNodeVo;
-import net.xiaobais.xiaobai.vo.UserVo;
+import net.xiaobais.xiaobai.vo.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -231,6 +228,31 @@ public class NoticeController {
                 ? "处理成功" : "#处理失败";
     }
 
+    @ApiOperation("获取所有迭代通知的个数")
+    @GetMapping("/getSuggestNoticeCount")
+    @ResponseBody
+    public long getSuggestNoticeCount(String message, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return 0;
+        }
+        long count = noticeService.getAllSuggestNoticeCount(JwtUtils.getUserId(cookies[0].getValue()),
+                message);
+        return count % 5 == 0 ? count / 5 : count / 5 + 1;
+    }
+
+    @ApiOperation("获取所有迭代通知")
+    @GetMapping("/getSuggestNotice")
+    @ResponseBody
+    public List<SuggestNoticeVo> getSuggestNotice(Integer pageNumber, Integer pageSize, String message,
+                                                  HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        return noticeService.getAllSuggestNotice(pageNumber, pageSize, userId, message);
+    }
 
     @Transactional(rollbackFor = Exception.class)
     public Integer copyPrivateNodeToPublicNode(Integer nodeId, Integer userId,

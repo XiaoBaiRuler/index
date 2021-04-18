@@ -130,23 +130,24 @@
     </if>
   </delete>
   <insert id="insert" parameterType="net.xiaobais.xiaobai.model.SuggestWithBLOBs">
-    insert into suggest (suggest_id, node_id, user_id, 
-      choice, question, extend, 
-      previous_question, next_question, suggest, 
-      extend_suggest, previous_suggest, 
-      next_suggest)
-    values (#{suggestId,jdbcType=INTEGER}, #{nodeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
-      #{choice,jdbcType=VARCHAR}, #{question,jdbcType=VARCHAR}, #{extend,jdbcType=VARCHAR}, 
-      #{previousQuestion,jdbcType=VARCHAR}, #{nextQuestion,jdbcType=VARCHAR}, #{suggest,jdbcType=LONGVARCHAR}, 
-      #{extendSuggest,jdbcType=LONGVARCHAR}, #{previousSuggest,jdbcType=LONGVARCHAR}, 
-      #{nextSuggest,jdbcType=LONGVARCHAR})
+    <selectKey keyProperty="suggestId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into suggest (node_id, user_id, choice, 
+      question, extend, previous_question, 
+      next_question, suggest, extend_suggest, 
+      previous_suggest, next_suggest)
+    values (#{nodeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{choice,jdbcType=VARCHAR}, 
+      #{question,jdbcType=VARCHAR}, #{extend,jdbcType=VARCHAR}, #{previousQuestion,jdbcType=VARCHAR}, 
+      #{nextQuestion,jdbcType=VARCHAR}, #{suggest,jdbcType=LONGVARCHAR}, #{extendSuggest,jdbcType=LONGVARCHAR}, 
+      #{previousSuggest,jdbcType=LONGVARCHAR}, #{nextSuggest,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.SuggestWithBLOBs">
+    <selectKey keyProperty="suggestId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into suggest
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="suggestId != null">
-        suggest_id,
-      </if>
       <if test="nodeId != null">
         node_id,
       </if>
@@ -182,9 +183,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="suggestId != null">
-        #{suggestId,jdbcType=INTEGER},
-      </if>
       <if test="nodeId != null">
         #{nodeId,jdbcType=INTEGER},
       </if>

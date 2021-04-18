@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.BlogService;
+import net.xiaobais.xiaobai.service.PrivateNodeService;
 import net.xiaobais.xiaobai.service.PublicNodeService;
 import net.xiaobais.xiaobai.service.UserService;
 import net.xiaobais.xiaobai.utils.JwtUtils;
@@ -39,6 +40,8 @@ public class PrivateController {
     private BlogService blogService;
     @Resource
     private UserService userService;
+    @Resource
+    private PrivateNodeService privateNodeService;
 
     @ApiOperation("用户个人根节点")
     @GetMapping("/node/{indexId}/{userId}")
@@ -67,6 +70,20 @@ public class PrivateController {
     }
 
 
+    @ApiOperation("全局查询私有节点")
+    @GetMapping("/search")
+    public String getNodeByStr(Integer pageNumber, Integer pageSize, String str, Model model, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return "/error/403";
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        model.addAttribute("str", str);
+        model.addAttribute("pageNumber", pageNumber);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("size", privateNodeService.getPrivateNodeCountByStr(str, userId, pageSize));
+        return "privateSearch";
+    }
 
     private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){
         List<SimpleNodeVo> simpleNodeVos = new ArrayList<>(nodes.size());

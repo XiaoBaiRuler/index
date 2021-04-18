@@ -153,4 +153,22 @@ public class PublicNodeServiceImpl implements PublicNodeService {
         return nodeVos;
     }
 
+    @Override
+    public List<Node> getNodeByTitle(Integer pageNumber, Integer pageSize, String title) {
+        NodeExample example = new NodeExample();
+        example.createCriteria().andNodeNameLike("%" + title + "%")
+                .andIsPrivateEqualTo(false);
+        PageHelper.startPage(pageNumber, pageSize);
+        return nodeMapper.selectByExample(example);
+    }
+
+    @Override
+    public Long getNodeCountByTitle(String title, Integer pageSize) {
+        NodeExample example = new NodeExample();
+        example.createCriteria().andNodeNameLike("%" + title + "%")
+                .andIsPrivateEqualTo(false);
+        long l = nodeMapper.countByExample(example);
+        return l % pageSize == 0 ? l / pageSize : l / pageSize + 1;
+    }
+
 }

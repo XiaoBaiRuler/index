@@ -71,6 +71,16 @@ public class IndexController {
         return "index";
     }
 
+    @ApiOperation("全局查询公开节点")
+    @GetMapping("/public/search")
+    public String getNodeByStr(Integer pageNumber,Integer pageSize, String str, Model model){
+        model.addAttribute("str", str);
+        model.addAttribute("pageNumber", pageNumber);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("size", nodeService.getNodeCountByTitle(str, pageSize));
+        return "publicSearch";
+    }
+
     @ApiOperation("是否登录")
     @GetMapping("/user/getUserInfo")
     @ResponseBody
