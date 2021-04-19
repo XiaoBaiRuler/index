@@ -41,6 +41,8 @@ public class PublicNodeController {
     private PublicNodeService publicNodeService;
     @Resource
     private BlogService blogService;
+    @Resource
+    private CacheService cacheService;
 
     @ApiOperation("获取非私有前置节点")
     @GetMapping("/public/getPreNode")
@@ -181,13 +183,22 @@ public class PublicNodeController {
     @GetMapping("/public/searchNodes")
     @ResponseBody
     public List<PublicNodeVo> getNodeByStr(Integer pageNumber,Integer pageSize, String str){
-        List<PublicNodeVo> list = new ArrayList<>();
-        List<Node> nodes = publicNodeService.getNodeByTitle(pageNumber, pageSize, str);
-        nodes.forEach(node ->{
-            Blog blog = blogService.findBlogById(node.getBlogId());
-            list.add(nodeToPublicNodeVo(node, blog));
-        });
-        return list;
+        String key = pageNumber + "#" + pageSize + "#" + str;
+        List<PublicNodeVo> cacheList = cacheService.getPublicNodeVoListByKey(key);
+        if (cacheList == null){
+            List<PublicNodeVo> list = new ArrayList<>();
+            List<Node> nodes = publicNodeService.getNodeByTitle(pageNumber, pageSize, str);
+            nodes.forEach(node ->{
+                Blog blog = blogService.findBlogById(node.getBlogId());
+                list.add(nodeToPublicNodeVo(node, blog));
+            });
+            cacheService.setPublicNodeVoListByKey(key, list);
+            return list;
+        }
+        else{
+            return cacheList;
+        }
+
     }
 
     /**

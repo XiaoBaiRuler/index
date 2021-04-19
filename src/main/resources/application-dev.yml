@@ -67,8 +67,10 @@ redis:
   key:
     prefix:
       authCode: "auth:"
+      cache: "cache:"
     expire:
       authCode: 120
+      cache: 4320
 
 mail:
   prefixUrl: "http://localhost:8080/verifyCode"
