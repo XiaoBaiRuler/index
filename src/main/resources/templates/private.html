@@ -159,7 +159,9 @@
             </div>
         </div>
         <div th:replace="com/model :: submitModel"></div>
-        <div class="ui container" style="width: 95%;">
+        <div th:replace="com/model :: showIndexBlogModel"></div>
+        <div th:replace="com/model :: showIndexMapModel"></div>
+        <div class="ui container" style="width: 95%;" v-if="userVo.userId != 1">
             <div class="ui raised segment">
                 <button class="fluid ui green button" @click="toSubmit">发布博客</button>
             </div>
@@ -170,7 +172,6 @@
     </div>
 
     <script type="text/javascript">
-
         let app = new Vue({
             el: '#app',
             data: {
@@ -213,32 +214,31 @@
                 choice: 1,
                 publicId: -1,
                 publicNode: [],
-                publicFlag: false
+                publicFlag: false,
+                showNode: {},
+                ajm: {}
             },
             mounted: function(){
-                $('.ui.checkbox').checkbox();
-                let isUpdate = document.getElementById("isUpdate").value
+                this.isUpdate = document.getElementById("isUpdate").value
                 this.editorHtml = document.getElementById('editor_html').value
-                let nodeId = document.getElementById('nodeId').value
-                this.nodeId = nodeId
-                this.isUpdate = isUpdate
+                this.nodeId = document.getElementById('nodeId').value
                 axios.get("/user/getUserInfo")
                     .then(response => {
                         if (response.data !== ""){
                             this.isLogin = true
                             this.userVo = response.data
-                            axios.get("/private/getNode?nodeId=" + nodeId + "&userId=" + this.userVo.userId)
+                            axios.get("/private/getNode?nodeId=" + this.nodeId)
                                 .then(response => {
                                     this.node = response.data
                                     this.blogDes = this.node.desc
                                     this.blogTitle = this.node.title
-                                    if (isUpdate === 1){
+                                    if (this.isUpdate === 1){
                                         this.changeEditor()
                                     }
                                 })
                                 .catch(error => console.log(error))
                             this.prepareMind()
-                            this.preparePage(nodeId, "", "", 0, 0)
+                            this.preparePage(this.nodeId, "", "", 0, 0)
                         }else{
                             this.isLogin = false
                         }
@@ -401,9 +401,9 @@
                                     line_color:'#555'   // 思维导图线条的颜色
                                 },
                                 layout:{
-                                    hspace:400,          // 节点之间的水平间距
+                                    hspace:600,          // 节点之间的水平间距
                                     vspace:200,          // 节点之间的垂直间距
-                                    pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                                    pspace:3           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
                                 },
                             }
                             let m = response.data
@@ -433,7 +433,7 @@
                         .catch(error => console.log(error))
                 },
                 prepareEditorMind: function(isEditor, container){
-                    axios.get("/private/getMind?nodeId=" + this.nodeId + "&userId=" + this.userVo.userId.toString())
+                    axios.get("/private/getMind?nodeId=" + this.nodeId)
                         .then(response => {
                             let options = {
                                 mode: 'full',
@@ -451,7 +451,7 @@
                                 layout:{
                                     hspace:100,          // 节点之间的水平间距
                                     vspace:200,          // 节点之间的垂直间距
-                                    pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+                                    pspace:3           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
                                 },
                             }
                             let m = response.data
@@ -567,56 +567,7 @@
                 }
             }
         })
-
-        let html = document.getElementById('html').value;
-        app.html = html;
-        document.getElementById('content').innerHTML = marked(html
-            , {
-                baseUrl: null,
-                breaks: true,
-                gfm: true,
-                headerIds: true,
-                headerPrefix: '',
-                highlight: function(code, language){
-                    const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-                    return hljs.highlight(validLanguage, code).value;
-                },
-                langPrefix: 'language-',
-                mangle: true,
-                pedantic: false,
-                renderer: new marked.Renderer(),
-                silent: false,
-                smartLists: true,
-                smartypants: true,
-                xhtml: true
-            });
-        hljs.highlightAll()
-
-        // 删除前置节点
-        $(document).on('click', '#deletePreModel', function() {
-            axios.get('/private/deleteNode?nodeId=' + app.deleteId + "&flag=true")
-                .then(response => {
-                    let msg = response.data
-                    if (msg.includes("成功")){
-                        app.preNodes.splice(app.index, 1)
-                    }
-                    alert(msg)
-                })
-                .catch(error => console.log(error))
-        })
-        // 删除后置节点
-        $(document).on('click', '#deleteNexModel', function() {
-            axios.get('/private/deleteNode?nodeId=' + app.deleteId + "&flag=false")
-                .then(response => {
-                    let msg = response.data
-                    if (msg.includes("成功")){
-                        app.nexNodes.splice(app.index, 1)
-                    }
-                    alert(msg)
-                })
-                .catch(error => console.log(error))
-        })
-
     </script>
+    <script type="text/javascript" th:src="@{/js/showPrivate.js}"></script>
 </body>
 </html>

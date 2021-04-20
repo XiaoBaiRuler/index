@@ -14,7 +14,7 @@
     <script type="text/javascript" th:src="@{/js/wangEditor.min.js}"></script>
     <style type="text/css">
         table{
-            border: 1px solid skyblue;
+            border: 1px solid #87ceeb;
             border-collapse:collapse;
         }
         thead{
@@ -190,6 +190,10 @@
         },
         methods: {
             changeBlog: function() {
+                if (!this.hasContent){
+                    alert("需要先切换为博客节点内容才能查看")
+                    return;
+                }
                 this.isBlog = !this.isBlog
             },
             closeContent: function(){

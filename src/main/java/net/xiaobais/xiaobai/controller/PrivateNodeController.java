@@ -269,19 +269,29 @@ public class PrivateNodeController {
     @ApiOperation("获取节点内容")
     @GetMapping("/getNode")
     @ResponseBody
-    public PrivateNodeVo getNode(@RequestParam Integer nodeId, @RequestParam Integer userId,
-                                HttpServletRequest request){
+    public PrivateNodeVo getNode(@RequestParam Integer nodeId, HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
         if (cookies == null){
             return null;
         }
         Integer id = JwtUtils.getUserId(cookies[0].getValue());
-        if (id.equals(userId)){
-            Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,userId);
-            Blog blog = blogService.findBlogById(node.getBlogId());
-            return nodeToPublicNodeVo(node,blog, id);
+        Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,id);
+        Blog blog = blogService.findBlogById(node.getBlogId());
+        return nodeToPublicNodeVo(node,blog, id);
+    }
+
+    @ApiOperation("获取节点内容")
+    @GetMapping("/getNodeById")
+    @ResponseBody
+    public PrivateNodeVo getNodeById(@RequestParam Integer id, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
         }
-        return null;
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(id, userId);
+        Blog blog = blogService.findBlogById(node.getBlogId());
+        return nodeToPublicNodeVo(node, blog, userId);
     }
 
     @ApiOperation("获取节点内容")

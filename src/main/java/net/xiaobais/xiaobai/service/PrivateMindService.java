@@ -19,12 +19,4 @@ public interface PrivateMindService {
      * @return List<MindVo>
      */
      List<MindVo> getPrivateMindVoByLevel(Integer level, Integer nodeId, Integer userId);
-
-    /**
-     * 查找当前节点的所有迭代节点
-     * @param nodeId nodeId
-     * @param userId userId
-     * @return List<MindVo>
-     */
-    List<MindVo> getIteratorMindVoByNodeId(Integer nodeId, Integer userId);
 }

@@ -37,12 +37,14 @@ public class MemberUserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
+        UserEntity userEntity = new UserEntity();
+
         // 1. 根据用户名查询数据库是否存在
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUsernameEqualTo(username);
         List<User> users = userMapper.selectByExample(userExample);
-        if (users == null){
-            return null;
+        if (users == null || users.isEmpty()){
+            return userEntity;
         }
         // 2. 查询对应的用户权限
         List<Authority> authorityList = userAuthorityMapper.findAuthorityByUsername(username);
@@ -53,10 +55,11 @@ public class MemberUserDetailsServiceImpl implements UserDetailsService {
         });
         log.info(">>>authorities:{}<<<", authorities);
         // 3. 将该权限添加到security
-        UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(users.get(0), userEntity);
         userEntity.setAuthorities(authorities);
         log.info("userEntity:{}",userEntity);
         return userEntity;
     }
+
+
 }

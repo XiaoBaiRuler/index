@@ -4,9 +4,12 @@
     <span th:replace="com/head :: head"></span>
     <title>个人信息管理</title>
     <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+    <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
     <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
     <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
     <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+    <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
+    <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
 </head>
 <body>
     <div id="app">
@@ -114,7 +117,7 @@
         <div class="ui collect fullscreen modal">
             <div class="content">
                 <h2 class="ui center aligned header">{{user.username}}最新收藏的8个博客</h2>
-                <div class="ui container">
+                <div class="ui container" style="width: 80%;">
                     <div class="ui stacked segment">
                         <div id="collect_container"></div>
                     </div>
@@ -125,7 +128,7 @@
         <div class="ui public fullscreen modal">
             <div class="content">
                 <h2 class="ui center aligned header">{{user.username}}最新发布的8个博客</h2>
-                <div class="ui container">
+                <div class="ui container" style="width: 80%;">
                     <div class="ui stacked segment">
                         <div id="public_container"></div>
                     </div>
@@ -244,6 +247,8 @@
                 <div class="ui right floated button cancel">取消操作</div>
             </div>
         </div>
+        <div th:replace="com/model :: showIndexMapModel"></div>
+        <div th:replace="com/model :: showIndexBlogModel"></div>
     </div>
 
     <script type="text/javascript">
@@ -274,7 +279,9 @@
                 collectId: -1,
                 choice: 1,
                 privateId: -1,
-                privateNode: []
+                privateNode: [],
+                jm: {},
+                showNode: {}
             },
             mounted: function() {
                 this.userId = document.getElementById('userId').value
@@ -567,47 +574,7 @@
                 }
             }
         })
-
-        // 更新头像
-        $(document).on('click', '#updateAvatar', function() {
-            let myFile = document.getElementById('uploadFile')
-            if (myFile.files[0] === undefined) {
-                alert('未上传任何文件！');
-            } else {
-                let f = new FormData()
-                f.append("file", myFile.files[0])
-                axios.post('/person/public/file/uploadAvatar', f,
-                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
-                    .then(response => {
-                        let msg = response.data
-                        if (!msg.includes("#")){
-                            app.user.avatar = msg
-                        }
-                        else{
-                            alert(msg)
-                        }
-                    })
-                    .catch(error => console.log(error))
-            }
-        })
-        $(document).on('click', '#changePrivateButton', function() {
-            let ctp = new FormData()
-            ctp.append("nodeId", app.collectId)
-            ctp.append("yourNodeId", app.privateId)
-            ctp.append("flag", app.choice)
-            axios.post('/person/public/collectToPrivate', ctp,
-                {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
-                .then(response => {
-                    let msg = response.data
-                    if (!msg.includes("#")){
-                        window.location.href = msg
-                    }
-                    else{
-                        alert(msg)
-                    }
-                })
-                .catch(error => console.log(error))
-        })
     </script>
+    <script type="text/javascript" th:src="@{/js/privateUser.js}"></script>
 </body>
 </html>

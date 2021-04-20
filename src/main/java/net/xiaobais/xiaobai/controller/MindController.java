@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.model.Map;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.*;
+import net.xiaobais.xiaobai.utils.HtmlUtils;
+import net.xiaobais.xiaobai.utils.JwtUtils;
 import net.xiaobais.xiaobai.vo.MindVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,20 +43,33 @@ public class MindController {
 
     private static final String NOTHING = "[]";
     private static final String PREFIX_URL = "/public/node/";
-    private static final String PRIVATE_URL = "/private/node/";
+    private static final String ROOT = "root";
+
+    @ApiOperation("通过mindId获取Mind数据(public)")
+    @GetMapping("/public/getMindById")
+    @ResponseBody
+    public List<MindVo> findMindByMindId(@RequestParam Integer mindId){
+        Map map = mapService.findMapById(mindId);
+        if (map == null || NOTHING.equals(map.getMapData())){
+            List<MindVo> list = new ArrayList<>();
+            MindVo mindVo = new MindVo("root", null, true, "这个节点没有导图呢", null, true);
+            list.add(mindVo);
+            return list;
+        }
+        return JSONObject.parseArray(map.getMapData(), MindVo.class);
+    }
 
     @ApiOperation("通过nodeId获取Mind数据(public)")
     @GetMapping("/public/getMind")
     @ResponseBody
     public List<MindVo> findMindByNodeId(@RequestParam Integer nodeId){
 
-        Map map = mapService.findMapById(nodeId);
         Node node = publicNodeService.findNodeById(nodeId);
+        Map map = mapService.findMapById(node.getMapId());
         if (map == null || NOTHING.equals(map.getMapData())){
             List<MindVo> list = new ArrayList<>();
-            MindVo mindVo = new MindVo("root" + nodeId, null, true,
-                    "<a href='" + PREFIX_URL + nodeId + "'>" + node.getNodeName() + "</a>",
-                    null, true);
+            MindVo mindVo = new MindVo(ROOT + nodeId, null, true,
+                    HtmlUtils.publicSimpleHtmlToString(nodeId, node.getNodeName()), null, true);
             list.add(mindVo);
             return list;
         }
@@ -78,15 +95,18 @@ public class MindController {
     @ApiOperation("通过nodeId和userId获取Mind数据(private)")
     @GetMapping("/private/getMind")
     @ResponseBody
-    public List<MindVo> findPrivateMindByNodeId(@RequestParam Integer nodeId,
-                                                @RequestParam Integer userId){
+    public List<MindVo> findPrivateMindByNodeId(@RequestParam Integer nodeId, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
         Map map = mapService.findMapById(nodeId);
         Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
         if (map == null || NOTHING.equals(map.getMapData())){
             List<MindVo> list = new ArrayList<>();
-            MindVo mindVo = new MindVo("root" + nodeId, null, true,
-                    "<a href='" + PRIVATE_URL + nodeId + "/" + userId + "'>"
-                            + node.getNodeName() + "</a>",
+            MindVo mindVo = new MindVo(ROOT + nodeId, null, true,
+                    HtmlUtils.privateSimpleHtmlToString(node.getNodeId(),userId, node.getNodeName()),
                     null, true);
             list.add(mindVo);
             return list;
@@ -102,15 +122,6 @@ public class MindController {
                                                                  @RequestParam Integer level){
         return privateMindService.getPrivateMindVoByLevel(level, nodeId, userId);
     }
-
-    @ApiOperation("通过nodeId获取所有迭代节点")
-    @GetMapping("/private/getIteratorMind")
-    @ResponseBody
-    public List<MindVo> findPrivateIteratorMindByNodeId(@RequestParam Integer nodeId,
-                                                 @RequestParam Integer userId){
-        return privateMindService.getIteratorMindVoByNodeId(nodeId, userId);
-    }
-
 
     @CrossOrigin
     @ApiOperation("通过userID获取用户的最新8个公开节点")

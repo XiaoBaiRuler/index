@@ -21,4 +21,5 @@ public class PublicNodeVo {
     private Integer collect;
     private String email;
     private String url;
+    private String content;
 }

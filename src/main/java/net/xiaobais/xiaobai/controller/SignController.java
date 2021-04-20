@@ -47,8 +47,18 @@ public class SignController {
     @ApiOperation("注册处理")
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/sign")
+    @ResponseBody
     public String sign(String username, String email, String password) throws Exception {
         synchronized (this){
+            if (userService.hasUser(username)){
+                return "用户名已经存在";
+            }
+            if (!email.contains("@")){
+                return "邮箱格式不对";
+            }
+            if (username.length() < 6 || password.length() < 6){
+                return "用户名或密码不够字数";
+            }
             //1. 添加用户
             int userId = userService.addUser(username, email, password);
             if (userId == -1){
@@ -77,7 +87,7 @@ public class SignController {
                 throw new Exception("创建图片文件夹失败");
             }
         }
-        return "redirect:/index";
+        return "#";
     }
 
     @CrossOrigin

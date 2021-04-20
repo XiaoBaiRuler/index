@@ -47,7 +47,7 @@ public class LoginController {
                 userVo.getPassword());
     }
 
-    @ApiOperation("检测密码是否正确")
+    @ApiOperation("退出登录")
     @GetMapping("/private/logout")
     @ResponseBody
     public Integer logout(HttpServletRequest request, HttpServletResponse response){

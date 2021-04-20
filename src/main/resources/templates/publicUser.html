@@ -4,9 +4,13 @@
 		<span th:replace="com/head :: head"></span>
 		<title >publicUser</title>
 		<link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+		<link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
 		<script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
 		<script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
 		<script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+		<script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
+		<script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
+		<script type="text/javascript" th:src="@{/js/showPublic.js}"></script>
 	</head>
 	<body>
 		<div id="app">
@@ -92,7 +96,7 @@
 			<div class="ui collect fullscreen modal">
 				<div class="content">
 					<h2 class="ui center aligned header">{{user.username}}最新收藏的8个博客</h2>
-					<div class="ui container">
+					<div class="ui container" style="width: 80%;">
 						<div class="ui stacked segment">
 							<div id="collect_container"></div>
 						</div>
@@ -102,14 +106,15 @@
 			<div class="ui public fullscreen modal">
 				<div class="content">
 					<h2 class="ui center aligned header">{{user.username}}最新发布的8个博客</h2>
-					<div class="ui container">
+					<div class="ui container" style="width: 80%;">
 						<div class="ui stacked segment">
 							<div id="public_container"></div>
 						</div>
 					</div>
 				</div>
 			</div>
-
+			<div th:replace="com/model :: showIndexBlogModel"></div>
+			<div th:replace="com/model :: showIndexMapModel"></div>
 			<div th:replace="com/foot :: foot"></div>
 		</div>
 		<script type="text/javascript">
@@ -132,9 +137,32 @@
 					collectFlag: false,
 					publicFlag: false,
 					userVo: {},
-					str: ""
+					str: "",
+					jm: {},
+					showNode: {}
 				},
 				mounted: function() {
+
+					let options = {
+						mode: 'full',
+						container: 'mapContainer',
+						editable: true,
+						theme:'orange',
+						support_html: true,
+						view:{
+							engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
+							hmargin:100,        // 思维导图距容器外框的最小水平距离
+							vmargin:200,         // 思维导图距容器外框的最小垂直距离
+							line_width:3,       // 思维导图线条的粗细
+							line_color:'#555'   // 思维导图线条的颜色
+						},
+						layout:{
+							hspace:150,          // 节点之间的水平间距
+							vspace:200,          // 节点之间的垂直间距
+							pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+						},
+					}
+					this.jm = new jsMind(options)
 
 					this.userId = document.getElementById('userId').value
 					axios.get('/public/getPublicUserVo/' + this.userId)

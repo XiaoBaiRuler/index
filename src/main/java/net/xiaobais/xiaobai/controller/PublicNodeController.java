@@ -201,6 +201,15 @@ public class PublicNodeController {
 
     }
 
+    @ApiOperation("全局查询公开节点")
+    @GetMapping("/public/getNodeById")
+    @ResponseBody
+    public PublicNodeVo getNodeById(@RequestParam Integer id){
+        Node node = publicNodeService.findNodeById(id);
+        Blog blog = blogService.findBlogById(node.getBlogId());
+        return nodeToPublicNodeVo(node, blog);
+    }
+
     /**
      * 前后置节点的卡片信息
      * @param node node
@@ -289,6 +298,7 @@ public class PublicNodeController {
         nodeVo.setAvatar(user.getUserAvatar());
         nodeVo.setEmail(user.getUserEmail());
         nodeVo.setUrl("/public/node/" + node.getNodeId());
+        nodeVo.setContent(blog.getBlogContent());
         return nodeVo;
     }
 }

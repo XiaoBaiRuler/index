@@ -60,8 +60,7 @@ public class PreviousServiceImpl implements PreviousService {
         previousExample.createCriteria().andNodeIdEqualTo(nodeId);
         List<Previous> previous = previousMapper.selectByExample(previousExample);
         List<Node> nodes = new ArrayList<>();
-        previous.forEach(p ->
-                nodes.add(privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(p.getPreviousId(), userId)));
+        previous.forEach(p -> nodes.add(privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(p.getPreviousId(), userId)));
         return nodes;
     }
 

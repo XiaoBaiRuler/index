@@ -72,6 +72,8 @@
             </div>
         </div>
         <br><br>
+        <div th:replace="com/model :: showIndexMapModel"></div>
+        <div th:replace="com/model :: showIndexBlogModel"></div>
         <div th:replace="com/foot :: foot"></div>
         <div th:replace="com/Bar :: right_bar"></div>
     </div>
@@ -87,11 +89,12 @@
                 str: '',
                 html: '',
                 nodeId: 0,
-                userVo: {}
+                userVo: {},
+                jm: {},
+                showNode: {}
             },
             mounted: function(){
-                let nodeId = document.getElementById('nodeId').value
-                this.nodeId = nodeId
+                this.nodeId = document.getElementById('nodeId').value
                 axios.get("/user/getUserInfo")
                     .then(response => {
                         if (response.data !== ""){
@@ -103,7 +106,7 @@
                     })
                     .catch(error => console.log(error))
 
-                axios.get("/public/getMind?nodeId=" + nodeId)
+                axios.get("/public/getMind?nodeId=" + this.nodeId)
                     .then(response => {
                         let options = {
                             mode: 'full',
@@ -150,7 +153,7 @@
                     })
                     .catch(error => console.log(error))
 
-                axios.get('/person/public/getIteratorMind?nodeId=' + nodeId)
+                axios.get('/person/public/getIteratorMind?nodeId=' + this.nodeId)
                     .then(response => {
                         let options = {
                             mode: 'full',
@@ -166,7 +169,7 @@
                                 line_color:'#555'   // 思维导图线条的颜色
                             },
                             layout:{
-                                hspace:400,          // 节点之间的水平间距
+                                hspace:550,          // 节点之间的水平间距
                                 vspace:200,          // 节点之间的垂直间距
                                 pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
                             },
@@ -196,7 +199,6 @@
                         jm.show(mind)
                     })
                     .catch(error => console.log(error))
-
             },
             methods: {
                 changeBlog: function() {
@@ -224,30 +226,7 @@
                 }
             },
         })
-
-        let html = document.getElementById('html').value;
-        app.html = html;
-        document.getElementById('content').innerHTML = marked(html
-            , {
-                baseUrl: null,
-                breaks: true,
-                gfm: true,
-                headerIds: true,
-                headerPrefix: '',
-                highlight: function(code, language){
-                    const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-                    return hljs.highlight(validLanguage, code).value;
-                },
-                langPrefix: 'language-',
-                mangle: true,
-                pedantic: false,
-                renderer: new marked.Renderer(),
-                silent: false,
-                smartLists: true,
-                smartypants: true,
-                xhtml: true
-            });
-        hljs.initHighlightingOnLoad()
     </script>
+    <script type="text/javascript" th:src="@{/js/showPublic.js}"></script>
 </body>
 </html>

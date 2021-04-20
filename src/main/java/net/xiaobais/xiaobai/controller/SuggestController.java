@@ -12,10 +12,7 @@ import net.xiaobais.xiaobai.service.UserService;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -126,6 +123,13 @@ public class SuggestController {
             return "publicSuggest";
         }
         return "/error/404";
+    }
+
+    @ApiOperation("获取建议节点信息")
+    @GetMapping("/person/public/getSuggest")
+    @ResponseBody
+    public SuggestWithBLOBs getSuggestBySuggestId(@RequestParam Integer suggestId){
+        return suggestService.getSuggestBySuggestId(suggestId);
     }
 
     private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){

@@ -1,9 +1,8 @@
 package net.xiaobais.xiaobai.service.impl;
 
-import javafx.util.Pair;
 import net.xiaobais.xiaobai.model.Node;
-import net.xiaobais.xiaobai.model.Suggest;
 import net.xiaobais.xiaobai.service.*;
+import net.xiaobais.xiaobai.utils.HtmlUtils;
 import net.xiaobais.xiaobai.vo.MindVo;
 import org.springframework.stereotype.Service;
 
@@ -27,18 +26,10 @@ public class PrivateMindServiceImpl implements PrivateMindService {
     private NextService nextService;
     @Resource
     private PrivateNodeService privateNodeService;
-    @Resource
-    private PublicNodeService publicNodeService;
-    @Resource
-    private SuggestService suggestService;
-    @Resource
-    private UserService userService;
-    @Resource
-    private IteratorService iteratorService;
 
-    private static final String PREFIX_URL = "/private/node/";
-    private static final String PREFIX_ITERATOR = "/private/iterator/";
-    private static final String PREFIX_SUG = "/private/suggest/";
+    private static final String ROOT = "root";
+    private static final String LEFT = "left";
+    private static final String RIGHT = "right";
 
     @Override
     public List<MindVo> getPrivateMindVoByLevel(Integer level, Integer nodeId, Integer userId){
@@ -47,51 +38,43 @@ public class PrivateMindServiceImpl implements PrivateMindService {
             return null;
         }
         List<MindVo> lists = new ArrayList<>();
-        Queue<Pair<String, Integer>> parent = new LinkedList<>();
+        Queue<ArrayList<String>> parent = new LinkedList<>();
 
         // 根节点
         List<Node> previous;
         int count  = 0;
-        MindVo mindVo = new MindVo("root" + nodeId, null, true,
-                "<a href='" + PREFIX_URL + nodeId + "/" + userId + "?isUpdate=0" + "'>"
-                        + node.getNodeName() + "</a>",
-                null, true);
+        MindVo mindVo = new MindVo(ROOT + nodeId, null, true,
+                HtmlUtils.privateSimpleHtmlToString(nodeId, userId, node.getNodeName())
+                , null, true);
         lists.add(mindVo);
-
-        // 迭代节点
-        MindVo iterator = new MindVo("iterator" + nodeId,
-                "root" + nodeId, false,
-                "迭代节点",
-                "left", true);
-        lists.add(iterator);
-        List<Node> iterators = iteratorService.getIteratorByNodeId(nodeId);
-        iterators.forEach(it -> {
-            MindVo mv = new MindVo("left" + it.getNodeId(),
-                    "iterator" + nodeId,false,
-                    "<a href='" + PREFIX_ITERATOR + it.getNodeId() + "'>" + it.getNodeName() + "</a>",
-                    "left", true);
-            lists.add(mv);
-        });
 
         // 前置节点
         previous = previousService.findPrivatePreviousByNodeIdAndUserId(nodeId, userId);
         Queue<Node> queue = new LinkedList<>(previous);
-        parent.add(new Pair("root" + nodeId, previous.size()));
+
+        ArrayList<String> pItem = new ArrayList<>(2);
+        pItem.add(ROOT + nodeId);
+        pItem.add("" + previous.size());
+        parent.add(pItem);
         while (count < level){
             while (!queue.isEmpty()){
                 for (int i = 0; i < parent.size(); i++) {
-                    Pair<String, Integer> item = parent.poll();
-                    for (int j = 0; j < item.getValue(); j++) {
+                    ArrayList<String> item = parent.poll();
+                    for (int j = 0; j < Integer.parseInt(item.get(1)); j++) {
                         Node remove = queue.poll();
                         if (remove != null){
                             previous = previousService.findPrivatePreviousByNodeIdAndUserId(remove.getNodeId(), userId);
-                            parent.add(new Pair("left" + remove.getNodeId(), previous.size()));
+
+                            ArrayList<String> newItem = new ArrayList<>();
+                            newItem.add(LEFT + remove.getNodeId());
+                            newItem.add("" + previous.size());
+                            parent.add(newItem);
                             queue.addAll(previous);
-                            MindVo mv = new MindVo("left" + remove.getNodeId(),
-                                    item.getKey(), false,
-                                    "<a href='" + PREFIX_URL + remove.getNodeId() + "/" + userId + "?isUpdate=0" + "'>"
-                                            + remove.getNodeName() + "</a>",
-                                    "left", true);
+                            MindVo mv = new MindVo(LEFT + remove.getNodeId(),
+                                    item.get(0), false,
+                                    HtmlUtils.privateHtmlToString(remove.getNodeId(), userId,
+                                            remove.getNodeName(), LEFT + remove.getNodeId()),
+                                    LEFT, true);
                             lists.add(mv);
                         }
                     }
@@ -99,44 +82,37 @@ public class PrivateMindServiceImpl implements PrivateMindService {
             }
             count ++;
         }
-
-        // 建议节点
-        MindVo suggest = new MindVo("suggest" + nodeId,
-                "root" + nodeId, false,
-                "建议节点",
-                "right", true);
-        lists.add(suggest);
-        List<Suggest> suggests = suggestService.getSuggestsByNodeId(nodeId);
-        suggests.forEach(s -> {
-            MindVo mv = new MindVo("suggestNode" + s.getSuggestId(),
-                    "suggest" + nodeId, false,
-                    "<a href='" + PREFIX_SUG + s.getSuggestId() + "'>" +
-                            userService.getUserById(s.getUserId()).getUsername() + "的建议" + "</a>",
-                    "right", true);
-            lists.add(mv);
-        });
 
         // 后置节点
         List<Node> next;
         count = 0;
         next = nextService.findPrivateNextByNodeIdAndUserId(nodeId, userId);
-        Queue<Pair<String, Integer>> nextParent = new LinkedList<>();
+        Queue<ArrayList<String>> nextParent = new LinkedList<>();
         queue.addAll(next);
-        nextParent.add(new Pair("root" + nodeId, next.size()));
+
+        ArrayList<String> nItem = new ArrayList<>(2);
+        nItem.add(ROOT + nodeId);
+        nItem.add("" + next.size());
+        nextParent.add(nItem);
+
         while (count < level){
             while (!queue.isEmpty()){
                 for (int i = 0; i < nextParent.size(); i++) {
-                    Pair<String, Integer> item = nextParent.poll();
-                    for (int j = 0; j < item.getValue(); j++) {
+                    ArrayList<String> item = nextParent.poll();
+                    for (int j = 0; j < Integer.parseInt(item.get(1)); j++) {
                         Node remove = queue.poll();
                         if (remove != null){
                             next = nextService.findPrivateNextByNodeIdAndUserId(remove.getNodeId(), userId);
-                            nextParent.add(new Pair("right" + remove.getNodeId(), next.size()));
+
+                            ArrayList<String> newItem = new ArrayList<>();
+                            newItem.add(RIGHT + remove.getNodeId());
+                            newItem.add("" + next.size());
+                            nextParent.add(newItem);
+
                             queue.addAll(next);
-                            MindVo mv = new MindVo("right" + remove.getNodeId(), item.getKey(), false,
-                                    "<a href='" + PREFIX_URL + remove.getNodeId() + "/" + userId + "?isUpdate=0" + "'>"
-                                            + remove.getNodeName() + "</a>",
-                                    "right", true);
+                            MindVo mv = new MindVo(RIGHT + remove.getNodeId(), item.get(0), false,
+                                    HtmlUtils.privateHtmlToString(remove.getNodeId(), userId, remove.getNodeName(), RIGHT + remove.getNodeId()),
+                                    RIGHT, true);
                             lists.add(mv);
                         }
                     }
@@ -144,27 +120,6 @@ public class PrivateMindServiceImpl implements PrivateMindService {
             }
             count ++;
         }
-        return lists;
-    }
-
-    @Override
-    public List<MindVo> getIteratorMindVoByNodeId(Integer nodeId, Integer userId) {
-
-        List<MindVo> lists = new ArrayList<>();
-
-        Node node = iteratorService.getNodeByIteratorId(nodeId);
-        MindVo mindVo = new MindVo("root" + node.getNodeId(), null, true,
-                "<a href='" + PREFIX_URL + node.getNodeId() + "/" + userId + "?isUpdate=0" + "'>"
-                        + node.getNodeName() + "</a>",
-                null, true);
-        lists.add(mindVo);
-
-        Node iterator = publicNodeService.findNodeById(nodeId);
-        MindVo mv = new MindVo("left" + iterator.getNodeId(),
-                "root" + node.getNodeId(),false,
-                "<a href='" + PREFIX_ITERATOR + iterator.getNodeId() + "'>" + iterator.getNodeName() + "</a>",
-                "left", true);
-        lists.add(mv);
         return lists;
     }
 }
