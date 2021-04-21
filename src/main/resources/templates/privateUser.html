@@ -89,29 +89,7 @@
             <div th:replace="com/card :: publicCard"></div>
         </div>
         <div th:replace="com/foot :: foot"></div>
-
-        <div class="ui left demo vertical inverted sidebar labeled icon menu">
-            <a class="item" th:href="@{'/private/user/' + ${userId}}">
-                <i class="user icon"></i>
-                个人信息
-            </a>
-            <a class="item" th:href="@{'/private/user/' + ${userId} + '#privateCollect'}">
-                <i class="star icon"></i>
-                收藏博客
-            </a>
-            <a class="item">
-                <i class="paper plane icon" th:href="@{'/private/user/' + ${userId} + '#public'}"></i>
-                发布博客
-            </a>
-            <a class="item" th:href="@{/person/public/toImage}">
-                <i class="image icon"></i>
-                图片管理
-            </a>
-            <a class="item" th:href="@{/person/public/toNotice}">
-                <i class="comment alternate icon"></i>
-                通知管理
-            </a>
-        </div>
+        <div th:replace="com/menu :: privateBarMenu"></div>
 
         <!--收藏博客思维导图-->
         <div class="ui collect fullscreen modal">
@@ -256,8 +234,10 @@
             el: '#app',
             data: {
                 userVo: {},
-                userId: -1,
+                topStar: [],
+                topCollect: [],
                 isLogin: false,
+                userId: -1,
                 user: {},
                 email: "",
                 code: "",
@@ -283,8 +263,32 @@
                 jm: {},
                 showNode: {}
             },
-            mounted: function() {
+            beforeMount: function(){
                 this.userId = document.getElementById('userId').value
+                // 个人信息
+                axios.get("/user/getUserInfo")
+                    .then(response => {
+                        if (response.data !== ""){
+                            this.isLogin = true
+                            this.userVo = response.data
+                        }else{
+                            this.isLogin = false
+                        }
+                    })
+                    .catch(error => console.log(error))
+                // 最高点赞
+                axios.get("/public/getTopStar?n=5")
+                    .then(response => {
+                        this.topStar = response.data
+                    })
+                    .catch(error => console.log(error))
+                // 最高收藏
+                axios.get("/public/getTopCollect?n=5")
+                    .then(response => {
+                        this.topCollect = response.data
+                    })
+                    .catch(error => console.log(error))
+                // 公开信息
                 axios.get('/public/getPublicUserVo/' + this.userId)
                     .then(response => {
                         this.user = response.data
@@ -296,18 +300,10 @@
                     .catch(function(error) {
                         console.log(error);
                     });
+            },
+            mounted: function() {
                 this.preparePage(true, this.userId, 0, this.size)
                 this.preparePage(false, this.userId, 0, this.size)
-                axios.get("/user/getUserInfo")
-                    .then(response => {
-                        if (response.data !== ""){
-                            this.isLogin = true
-                            this.userVo = response.data
-                        }else{
-                            this.isLogin = false
-                        }
-                    })
-                    .catch(error => console.log(error))
             },
             methods: {
                 exchangeAvatar: function(){

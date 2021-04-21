@@ -15,10 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author xiaobai
@@ -62,9 +59,6 @@ public class SuggestController {
         else {
             model.addAttribute("flag", true);
         }
-        model.addAttribute("mostCollect", nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
-        model.addAttribute("mostStar", nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
-
         return "addSuggest";
     }
 
@@ -133,14 +127,16 @@ public class SuggestController {
     }
 
     private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){
+        if (nodes == null || nodes.size() == 0){
+            return new ArrayList<>();
+        }
         List<SimpleNodeVo> simpleNodeVos = new ArrayList<>(nodes.size());
-        nodes.forEach(node -> {
-                    SimpleNodeVo vo = new SimpleNodeVo();
-                    vo.setUrl("/public/node/" + node.getNodeId());
-                    vo.setTitle(node.getNodeName());
-                    simpleNodeVos.add(vo);
-                }
-        );
+        nodes.stream().filter(Objects::nonNull).forEach(node -> {
+            SimpleNodeVo vo = new SimpleNodeVo();
+            vo.setUrl("/public/node/" + node.getNodeId());
+            vo.setTitle(node.getNodeName());
+            simpleNodeVos.add(vo);
+        });
         return simpleNodeVos;
     }
 }

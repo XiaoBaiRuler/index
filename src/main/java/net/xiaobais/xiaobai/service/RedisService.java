@@ -39,6 +39,12 @@ public interface RedisService {
     void remove(String key);
 
     /**
+     * 删除所有以preKey为前缀的值
+     * @param preKey preKey
+     */
+    void removeAll(String preKey);
+
+    /**
      * 自增操作
      * @param key key
      * @param delta delta

@@ -192,4 +192,23 @@ public interface NoticeService {
      */
     List<SuggestNoticeVo> getAllSuggestNotice(Integer pageNumber, Integer pageSize, Integer userId, String message);
 
+    /**
+     * 处理建议通知
+     * @param noticeId noticeId
+     * @param userId userId
+     * @return int
+     * @exception Exception 事务管理
+     */
+    int dealSuggestNotice(Integer noticeId, Integer userId) throws Exception;
+
+    /**
+     * 驳回建议请求
+     * @param noticeId noticeId
+     * @param userId userId
+     * @param message message
+     * @return int
+     * @exception Exception 事务管理
+     */
+    int errorSuggestNotice(Integer noticeId, Integer userId, String message) throws Exception;
+
 }

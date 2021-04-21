@@ -73,7 +73,7 @@ public class PrivateMindServiceImpl implements PrivateMindService {
                             MindVo mv = new MindVo(LEFT + remove.getNodeId(),
                                     item.get(0), false,
                                     HtmlUtils.privateHtmlToString(remove.getNodeId(), userId,
-                                            remove.getNodeName(), LEFT + remove.getNodeId()),
+                                            remove.getNodeName(), LEFT + remove.getNodeId(), "true"),
                                     LEFT, true);
                             lists.add(mv);
                         }
@@ -111,7 +111,8 @@ public class PrivateMindServiceImpl implements PrivateMindService {
 
                             queue.addAll(next);
                             MindVo mv = new MindVo(RIGHT + remove.getNodeId(), item.get(0), false,
-                                    HtmlUtils.privateHtmlToString(remove.getNodeId(), userId, remove.getNodeName(), RIGHT + remove.getNodeId()),
+                                    HtmlUtils.privateHtmlToString(remove.getNodeId(), userId,
+                                            remove.getNodeName(), RIGHT + remove.getNodeId(), "false"),
                                     RIGHT, true);
                             lists.add(mv);
                         }

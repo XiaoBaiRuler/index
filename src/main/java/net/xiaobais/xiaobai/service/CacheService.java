@@ -1,6 +1,7 @@
 package net.xiaobais.xiaobai.service;
 
 import net.xiaobais.xiaobai.vo.PublicNodeVo;
+import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 
 import java.util.List;
 
@@ -24,4 +25,24 @@ public interface CacheService {
      * @param list publicNodeVo的列表
      */
     void setPublicNodeVoListByKey(String key, List<PublicNodeVo> list);
+
+    /**
+     * 通过键值查询SimpleNode
+     * @param key key
+     * @return List<SimpleNodeVo>
+     */
+    List<SimpleNodeVo> getSimpleNodeVoListByKey(String key);
+
+    /**
+     * 通过键值key设置SimpleNodeVo列表
+     * @param key key
+     * @param list list
+     */
+    void setSimpleNodeVoListByKey(String key, List<SimpleNodeVo> list);
+
+    /**
+     * 通过键值前缀删除key删除缓存
+     * @param preKey preKey
+     */
+    void deleteAllSimpleNodeVoList(String preKey);
 }

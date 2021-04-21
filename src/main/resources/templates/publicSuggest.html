@@ -34,12 +34,16 @@
     let app = new Vue({
         el: '#app',
         data: {
-            str: '',
-            isLogin: false,
-            nodeId: 0,
             userVo: {},
+            topStar: [],
+            topCollect: [],
+            isLogin: false,
+            str: '',
+            nodeId: 0,
+            show: false
         },
-        mounted: function(){
+        beforeMount: function(){
+            // 个人信息
             axios.get("/user/getUserInfo")
                 .then(response => {
                     if (response.data !== ""){
@@ -48,6 +52,18 @@
                     }else{
                         this.isLogin = false
                     }
+                })
+                .catch(error => console.log(error))
+            // 最高点赞
+            axios.get("/public/getTopStar?n=5")
+                .then(response => {
+                    this.topStar = response.data
+                })
+                .catch(error => console.log(error))
+            // 最高收藏
+            axios.get("/public/getTopCollect?n=5")
+                .then(response => {
+                    this.topCollect = response.data
                 })
                 .catch(error => console.log(error))
         },

@@ -3,9 +3,15 @@
 <head>
     <span th:replace="com/head :: head"></span>
     <title>个人信息管理</title>
+    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+    <link rel="stylesheet" th:href="@{/item/editormd/css/editormd.css}">
     <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
     <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
     <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
+    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+    <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
     <style type="text/css">
         table{
             border: 1px solid skyblue;
@@ -24,237 +30,244 @@
             border-left: 1px solid skyblue;
         }
         #content_container{
-            height: 1000px;
+            height: 1200px;
         }
     </style>
 </head>
 <body>
-<div id="app">
-    <input type="number" id="userId" th:value="${userId}" hidden="hidden">
-    <div th:replace="com/menu :: publicUserMenu"></div>
-    <br><br><br><br>
-    <div class="ui fluid container" id="content_container">
-        <div class="ui container" style="width: 85%;">
-            <div class="ui pointing menu">
-                <a :class="aItemActive" @click="toReply">
-                    反馈通知
-                </a>
-                <a :class="bItemActive" @click="toIterator">
-                    迭代通知
-                </a>
-                <a :class="cItemActive" @click="toSuggest">
-                    建议通知
-                </a>
-            </div>
-            <div class="ui segment" v-if="isReply">
-                <div class="ui fluid action input">
-                    <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
-                    <button class="ui icon button" @click="searchNotice(false)">
-                        <i class="search icon"></i>
-                    </button>
+    <div id="app">
+        <input type="number" id="userId" th:value="${userId}" hidden="hidden">
+        <div th:replace="com/menu :: publicUserMenu"></div>
+        <br><br><br><br>
+        <div class="ui fluid container" id="content_container">
+            <div class="ui container" style="width: 85%;">
+                <div class="ui pointing menu">
+                    <a :class="aItemActive" @click="toReply">
+                        反馈通知
+                    </a>
+                    <a :class="bItemActive" @click="toIterator">
+                        迭代通知
+                    </a>
+                    <a :class="cItemActive" @click="toSuggest">
+                        建议通知
+                    </a>
                 </div>
-                <div class="ui fluid raised segment">
-                    <table class="ui celled table">
-                        <thead>
-                        <tr>
-                            <th>请求编号</th>
-                            <th>发送者</th>
-                            <th>请求类型</th>
-                            <th>请求信息</th>
-                            <th>相关节点</th>
-                            <th>
-                                操作
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="(notice,index) in notices" :key="'no' + index">
-                            <td>{{index}}</td>
-                            <td>{{notice.username}}</td>
-                            <td>{{notice.type}}</td>
-                            <td>{{notice.message}}</td>
-                            <td>
-                                <button class="ui yellow inverted button" @click="toShow(notice.nodeId, notice.userId)">展现节点</button>
-                            </td>
-                            <td>
-                                <button class="ui red inverted button" @click="toReject(index, notice.nodeId, notice.userId, notice.noticeId)">
-                                    驳回</button>
-                                <button class="ui green inverted button" @click="toAgree(index, notice.dealUrl)">同意</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <th colspan="7">
-                                <div class="ui right floated pagination menu">
-                                    <a class="icon item" @click="toPrePage">
-                                        <i class="left chevron icon"></i>
-                                    </a>
-                                    <a class="disabled item">{{pageNumber + 1}}</a>
-                                    <a class="icon item" @click="toNexPage">
-                                        <i class="right chevron icon"></i>
-                                    </a>
-                                </div>
-                            </th>
-                        </tr>
-                        </tfoot>
-                    </table>
+                <div class="ui segment" v-if="isReply">
+                    <div class="ui fluid action input">
+                        <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
+                        <button class="ui icon button" @click="searchNotice(false)">
+                            <i class="search icon"></i>
+                        </button>
+                    </div>
+                    <div class="ui fluid raised segment">
+                        <table class="ui celled table">
+                            <thead>
+                            <tr>
+                                <th>请求编号</th>
+                                <th>发送者</th>
+                                <th>请求类型</th>
+                                <th>请求信息</th>
+                                <th>相关节点</th>
+                                <th>
+                                    操作
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(notice,index) in notices" :key="'no' + index">
+                                <td>{{index}}</td>
+                                <td>{{notice.username}}</td>
+                                <td>{{notice.type}}</td>
+                                <td>{{notice.message}}</td>
+                                <td>
+                                    <button class="ui yellow inverted button" @click="toShow(notice.nodeId, notice.userId)">展现节点</button>
+                                </td>
+                                <td>
+                                    <button class="ui red inverted button" @click="toReject(index, notice.nodeId, notice.userId, notice.noticeId)">
+                                        驳回</button>
+                                    <button class="ui green inverted button" @click="toAgree(index, notice.dealUrl)">同意</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th colspan="7">
+                                    <div class="ui right floated pagination menu">
+                                        <a class="icon item" @click="toPrePage">
+                                            <i class="left chevron icon"></i>
+                                        </a>
+                                        <a class="disabled item">{{pageNumber + 1}}</a>
+                                        <a class="icon item" @click="toNexPage">
+                                            <i class="right chevron icon"></i>
+                                        </a>
+                                    </div>
+                                </th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <div class="ui segment" v-if="isIterator">
-                <div class="ui fluid action input">
-                    <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
-                    <button class="ui icon button" @click="searchNit(false)">
-                        <i class="search icon"></i>
-                    </button>
+                <div class="ui segment" v-if="isIterator">
+                    <div class="ui fluid action input">
+                        <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
+                        <button class="ui icon button" @click="searchNit(false)">
+                            <i class="search icon"></i>
+                        </button>
+                    </div>
+                    <div class="ui fluid raised segment">
+                        <table class="ui celled table">
+                            <thead>
+                            <tr>
+                                <th>请求编号</th>
+                                <th>请求信息</th>
+                                <th>迭代节点</th>
+                                <th>当前节点</th>
+                                <th>请求类型</th>
+                                <th>
+                                    操作
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(notice,index) in nit" :key="'nit' + index">
+                                <td>{{index}}</td>
+                                <td>{{notice.message}}</td>
+                                <td>
+                                    <button class="ui yellow inverted button" @click="toShow(notice.iteratorId, userId)" v-show="notice.isReply">迭代节点</button>
+                                </td>
+                                <td>
+                                    <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">当前节点</button>
+                                </td>
+                                <td>
+                                    <a :href="notice.dealUrl" v-show="!notice.isReply">迭代通知</a>
+                                    <a :href="notice.dealUrl" v-show="notice.isReply">反馈通知</a>
+                                </td>
+                                <td>
+                                    <button class="ui green inverted button"
+                                            v-show="!notice.isReply" @click="toYes(index, notice.noticeId)">确认</button>
+                                    <button class="ui green inverted button"
+                                            v-show="notice.isReply" @click="toAgr(index, notice.noticeId)">
+                                        同意</button>
+                                    <button class="ui green inverted button"
+                                            v-show="notice.isReply" @click="toRej(index, notice.noticeId)">
+                                        驳回</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th colspan="7">
+                                    <div class="ui right floated pagination menu">
+                                        <a class="icon item" @click="toPre(false)">
+                                            <i class="left chevron icon"></i>
+                                        </a>
+                                        <a class="disabled item">{{nitNumber}}</a>
+                                        <a class="icon item" @click="toNex(false)">
+                                            <i class="right chevron icon"></i>
+                                        </a>
+                                    </div>
+                                </th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
-                <div class="ui fluid raised segment">
-                    <table class="ui celled table">
-                        <thead>
-                        <tr>
-                            <th>请求编号</th>
-                            <th>请求信息</th>
-                            <th>迭代节点</th>
-                            <th>当前节点</th>
-                            <th>请求类型</th>
-                            <th>
-                                操作
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="(notice,index) in nit" :key="'nit' + index">
-                            <td>{{index}}</td>
-                            <td>{{notice.message}}</td>
-                            <td>
-                                <button class="ui yellow inverted button" @click="toShow(notice.iteratorId, userId)" v-show="notice.isReply">迭代节点</button>
-                            </td>
-                            <td>
-                                <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">当前节点</button>
-                            </td>
-                            <td>
-                                <a :href="notice.dealUrl" v-show="!notice.isReply">迭代通知</a>
-                                <a :href="notice.dealUrl" v-show="notice.isReply">反馈通知</a>
-                            </td>
-                            <td>
-                                <button class="ui green inverted button"
-                                        v-show="!notice.isReply" @click="toYes(index, notice.noticeId)">确认</button>
-                                <button class="ui green inverted button"
-                                        v-show="notice.isReply" @click="toAgr(index, notice.noticeId)">
-                                    同意</button>
-                                <button class="ui green inverted button"
-                                        v-show="notice.isReply" @click="toRej(index, notice.noticeId)">
-                                    驳回</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <th colspan="7">
-                                <div class="ui right floated pagination menu">
-                                    <a class="icon item" @click="toPre(false)">
-                                        <i class="left chevron icon"></i>
-                                    </a>
-                                    <a class="disabled item">{{nitNumber}}</a>
-                                    <a class="icon item" @click="toNex(false)">
-                                        <i class="right chevron icon"></i>
-                                    </a>
-                                </div>
-                            </th>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            <div class="ui segment" v-if="isSuggest">
-                <div class="ui fluid action input">
-                    <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
-                    <button class="ui icon button" @click="searchNit(true)">
-                        <i class="search icon"></i>
-                    </button>
-                </div>
-                <div class="ui fluid raised segment">
-                    <table class="ui celled table">
-                        <thead>
-                        <tr>
-                            <th>请求编号</th>
-                            <th>请求信息</th>
-                            <th>相关节点</th>
-                            <th>请求类型</th>
-                            <th>操作</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="(notice,index) in sit" :key="'sit' + index">
-                            <td>{{index}}</td>
-                            <td>{{notice.message}}</td>
-                            <td>
-                                <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">当前节点</button>
-                            </td>
-                            <td>
-                                <a v-show="!notice.isReply">建议通知</a>
-                                <a v-show="notice.isReply">反馈通知</a>
-                            </td>
-                            <td>
-                                <button class="ui green inverted button"
-                                        v-show="notice.isReply" @click="toYes(index, notice.noticeId)">确认</button>
-                                <button class="ui green inverted button"
-                                        v-show="!notice.isReply" @click="toChange(notice.noticeId)">修改</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <th colspan="7">
-                                <div class="ui right floated pagination menu">
-                                    <a class="icon item" @click="toPre(true)">
-                                        <i class="left chevron icon"></i>
-                                    </a>
-                                    <a class="disabled item">{{nitNumber}}</a>
-                                    <a class="icon item" @click="toNex(true)">
-                                        <i class="right chevron icon"></i>
-                                    </a>
-                                </div>
-                            </th>
-                        </tr>
-                        </tfoot>
-                    </table>
+                <div class="ui segment" v-if="isSuggest">
+                    <div class="ui fluid action input">
+                        <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
+                        <button class="ui icon button" @click="searchNit(true)">
+                            <i class="search icon"></i>
+                        </button>
+                    </div>
+                    <div class="ui fluid raised segment">
+                        <table class="ui celled table">
+                            <thead>
+                            <tr>
+                                <th>请求编号</th>
+                                <th>请求信息</th>
+                                <th>相关节点</th>
+                                <th>建议信息</th>
+                                <th>请求类型</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(notice,index) in sit" :key="'sit' + index">
+                                <td>{{index}}</td>
+                                <td>{{notice.message}}</td>
+                                <td>
+                                    <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">当前节点</button>
+                                </td>
+                                <td>
+                                    <button class="ui yellow inverted button" @click="toShowSuggest(notice.suggestId)">建议内容</button>
+                                </td>
+                                <td>
+                                    <a v-show="!notice.isReply">建议通知</a>
+                                    <a v-show="notice.isReply">反馈通知</a>
+                                </td>
+                                <td>
+                                    <button class="ui green inverted button"
+                                            v-show="notice.isReply" @click="toYes(index, notice.noticeId)">确认</button>
+                                    <button class="ui green inverted button"
+                                            v-show="!notice.isReply" @click="toChange(notice.noticeId, notice.nodeId)">修改</button>
+                                    <button class="ui teal inverted button"
+                                            v-show="!notice.isReply" @click="toStop(notice.noticeId, notice.nodeId)">修改</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th colspan="7">
+                                    <div class="ui right floated pagination menu">
+                                        <a class="icon item" @click="toPre(true)">
+                                            <i class="left chevron icon"></i>
+                                        </a>
+                                        <a class="disabled item">{{nitNumber}}</a>
+                                        <a class="icon item" @click="toNex(true)">
+                                            <i class="right chevron icon"></i>
+                                        </a>
+                                    </div>
+                                </th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+        <br><br><br>
+        <div th:replace="com/model :: showModel"></div>
+        <div th:replace="com/model :: yesModel"></div>
+        <div th:replace="com/model :: rejModel"></div>
+        <div th:replace="com/model :: agrModel"></div>
+        <div th:replace="com/model :: agreeModel"></div>
+        <div th:replace="com/model :: rejectModel"></div>
+        <div th:replace="com/model :: showIndexSuggestModel"></div>
+        <div th:replace="com/model :: changeBlogModel"></div>
+        <div th:replace="com/foot :: foot"></div>
+        <div class="ui left demo vertical inverted sidebar labeled icon menu">
+            <a class="item" th:href="@{'/private/user/' + ${userId}}">
+                <i class="user icon"></i>
+                个人信息
+            </a>
+            <a class="item" th:href="@{'/private/user/' + ${userId} + '#privateCollect'}">
+                <i class="star icon"></i>
+                收藏博客
+            </a>
+            <a class="item">
+                <i class="paper plane icon" th:href="@{'/private/user/' + ${userId} + '#public'}"></i>
+                发布博客
+            </a>
+            <a class="item" th:href="@{/person/public/toImage}">
+                <i class="image icon"></i>
+                图片管理
+            </a>
+            <a class="item" th:href="@{/person/public/toNotice}">
+                <i class="comment alternate icon"></i>
+                通知管理
+            </a>
+        </div>
     </div>
-    <br><br><br>
-    <div th:replace="com/model :: showModel"></div>
-    <div th:replace="com/model :: yesModel"></div>
-    <div th:replace="com/model :: rejModel"></div>
-    <div th:replace="com/model :: agrModel"></div>
-    <div th:replace="com/model :: agreeModel"></div>
-    <div th:replace="com/model :: rejectModel"></div>
-    <div th:replace="com/foot :: foot"></div>
-    <div class="ui left demo vertical inverted sidebar labeled icon menu">
-        <a class="item" th:href="@{'/private/user/' + ${userId}}">
-            <i class="user icon"></i>
-            个人信息
-        </a>
-        <a class="item" th:href="@{'/private/user/' + ${userId} + '#privateCollect'}">
-            <i class="star icon"></i>
-            收藏博客
-        </a>
-        <a class="item">
-            <i class="paper plane icon" th:href="@{'/private/user/' + ${userId} + '#public'}"></i>
-            发布博客
-        </a>
-        <a class="item" th:href="@{/person/public/toImage}">
-            <i class="image icon"></i>
-            图片管理
-        </a>
-        <a class="item" th:href="@{/person/public/toNotice}">
-            <i class="comment alternate icon"></i>
-            通知管理
-        </a>
-    </div>
-
-</div>
 
 <script type="text/javascript">
     let app = new Vue({
@@ -262,6 +275,8 @@
         data: {
             userVo: {},
             userId: -1,
+            topStar: [],
+            topCollect: [],
             isLogin: false,
             str: "",
             size: 0,
@@ -285,11 +300,15 @@
             number: 0,
             nitNumber: 1,
             nit: [],
-            sit: []
+            sit: [],
+            suggest: {},
+            changeTitle: "",
+            changeDes: "",
+            editor: null,
+            showNode: {}
         },
-        mounted: function() {
-            this.userId = document.getElementById('userId').value
-            this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
+        beforeMount: function(){
+            // 用户信息
             axios.get("/user/getUserInfo")
                 .then(response => {
                     if (response.data !== ""){
@@ -300,6 +319,23 @@
                     }
                 })
                 .catch(error => console.log(error))
+            // 最高点赞
+            axios.get("/public/getTopStar?n=5")
+                .then(response => {
+                    this.topStar = response.data
+                })
+                .catch(error => console.log(error))
+            // 最高收藏
+            axios.get("/public/getTopCollect?n=5")
+                .then(response => {
+                    this.topCollect = response.data
+                })
+                .catch(error => console.log(error))
+        },
+        mounted: function() {
+
+            this.userId = document.getElementById('userId').value
+            this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
             axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
                 .then(response => {
                     this.size = response.data
@@ -427,8 +463,8 @@
                 this.url = dealUrl
                 $('.ui.agree.basic.modal').modal('show');
             },
-            toShow: function(nodeId, userId){
-                axios.get("/private/getNodeByUserId?nodeId=" + nodeId + "&userId=" + userId)
+            toShow: function(nodeId){
+                axios.get("/private/getNode?nodeId=" + nodeId)
                     .then(response => {
                         this.node = response.data
                         if (this.node.content === null){
@@ -455,7 +491,7 @@
                                 xhtml: true
                             });
                         hljs.highlightAll()
-                        $('.ui.show.modal').modal('show');
+                        $('.ui.show.fullscreen.modal').modal('show');
                     })
                     .catch(error => console.log(error))
             },
@@ -509,8 +545,11 @@
                     window.location.href = "/private/search/?pageNumber=1&pageSize=6&str=" + this.str
                 }
             },
-            toChange: function(noticeId){
-                window.location.href = "/private/node/change/" + noticeId;
+            toChange: function(noticeId, nodeId){
+                toChangeNoticeAndBlog(noticeId, nodeId)
+            },
+            toShowSuggest: function(suggestId){
+                toShowSug(suggestId)
             }
         }
     })
@@ -575,5 +614,6 @@
             .catch(error => console.log(error))
     })
 </script>
+<script type="text/javascript" th:src="@{/js/showPrivate.js}"></script>
 </body>
 </html>

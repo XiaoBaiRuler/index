@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <span th:replace="com/head :: head"></span>
-    <title >index</title>
+    <title>index</title>
     <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
     <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
     <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
@@ -126,6 +126,7 @@
     <br><br>
     <div th:replace="com/model :: showIndexBlogModel"></div>
     <div th:replace="com/model :: showIndexMapModel"></div>
+    <div th:replace="com/model :: showIndexSuggestModel"></div>
     <div th:replace="com/foot :: foot"></div>
     <div id="toolbar" class="right_bar">
         <div class="ui vertical icon buttons">
@@ -136,15 +137,17 @@
 </div>
 
 <script type="text/javascript">
-
     let app = new Vue({
         el: '#app',
         data: {
+            userVo: {},
+            topStar: [],
+            topCollect: [],
+            isLogin: false,
             isLeft: false,
             isRight: false,
             isBlog: true,
             isNode: true,
-            isLogin: false,
             left: 'five wide column',
             middle: 'sixteen wide column',
             right: 'five wide column',
@@ -164,7 +167,6 @@
             nexPage: true,
             preInput: "",
             nexInput: "",
-            userVo: {},
             node: {},
             comments: {},
             commentContent: "",
@@ -174,12 +176,11 @@
             j: -1,
             showNode: {},
             once: true,
-            jm: {}
+            jm: {},
+            suggest: {}
         },
-        mounted: function(){
-            let nodeId = document.getElementById('nodeId').value
-            this.nodeId = nodeId
-            this.preparePage(nodeId, "", "", 0, 0)
+        beforeMount: function(){
+            // 用户信息
             axios.get("/user/getUserInfo")
                 .then(response => {
                     if (response.data !== ""){
@@ -191,6 +192,23 @@
                     }
                 })
                 .catch(error => console.log(error))
+            // 最高点赞
+            axios.get("/public/getTopStar?n=5")
+                .then(response => {
+                    this.topStar = response.data
+                })
+                .catch(error => console.log(error))
+            // 最高收藏
+            axios.get("/public/getTopCollect?n=5")
+                .then(response => {
+                    this.topCollect = response.data
+                })
+                .catch(error => console.log(error))
+        },
+        mounted: function(){
+            let nodeId = document.getElementById('nodeId').value
+            this.nodeId = nodeId
+            this.preparePage(nodeId, "", "", 0, 0)
 
             axios.get("/public/getNode?nodeId=" + nodeId)
                 .then(response => {
@@ -296,28 +314,6 @@
             axios.get("/public/getAllComments?nodeId=" + nodeId)
                 .then(response =>{ this.comments = response.data})
                 .catch(error => console.log(error))
-
-            let options = {
-                mode: 'full',
-                container: 'mapContainer',
-                editable: true,
-                theme:'orange',
-                support_html: true,
-                view:{
-                    engine: 'canvas',   // 思维导图各节点之间线条的绘制引擎
-                    hmargin:100,        // 思维导图距容器外框的最小水平距离
-                    vmargin:200,         // 思维导图距容器外框的最小垂直距离
-                    line_width:3,       // 思维导图线条的粗细
-                    line_color:'#555'   // 思维导图线条的颜色
-                },
-                layout:{
-                    hspace:150,          // 节点之间的水平间距
-                    vspace:200,          // 节点之间的垂直间距
-                    pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
-                },
-            }
-            this.jm = new jsMind(options)
-
         },
         methods: {
             changeSize: function() {
@@ -537,5 +533,8 @@
     })
 </script>
 <script type="text/javascript" th:src="@{/js/showPublic.js}"></script>
+<script type="text/javascript">
+    init(false);
+</script>
 </body>
 </html>

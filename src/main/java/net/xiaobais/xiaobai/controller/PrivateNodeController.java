@@ -281,20 +281,6 @@ public class PrivateNodeController {
     }
 
     @ApiOperation("获取节点内容")
-    @GetMapping("/getNodeById")
-    @ResponseBody
-    public PrivateNodeVo getNodeById(@RequestParam Integer id, HttpServletRequest request){
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null){
-            return null;
-        }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
-        Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(id, userId);
-        Blog blog = blogService.findBlogById(node.getBlogId());
-        return nodeToPublicNodeVo(node, blog, userId);
-    }
-
-    @ApiOperation("获取节点内容")
     @GetMapping("/getNodeByUserId")
     @ResponseBody
     public PrivateNodeVo getNodeByUserId(@RequestParam Integer nodeId, @RequestParam Integer userId,
@@ -388,26 +374,23 @@ public class PrivateNodeController {
         else{
             throw new Exception("用户权限不足");
         }
+        if ("".equals(updateVo.getTitle()) || "".equals(updateVo.getDesc()) || "".equals(updateVo.getBlogContent())){
+            return;
+        }
         Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
         if (!updateVo.getTitle().equals(node.getNodeName())){
-            int i = privateNodeService.updateNodeByNodeId(nodeId, updateVo.getTitle());
-            if (i == -1){
+            if (privateNodeService.updateNodeByNodeId(nodeId, updateVo.getTitle()) == -1){
                 throw new Exception("更新标题失败");
             }
         }
         if (updateVo.getSelect().contains("1")){
-            int j = blogService.updateBlogByBlogId(node.getBlogId(),
-                    updateVo.getTitle(),
-                    updateVo.getBlogContent(),
-                    updateVo.getDesc());
-            if (j == -1){
+            if (blogService.updateBlogByBlogId(node.getBlogId(), updateVo.getTitle(),
+                    updateVo.getBlogContent(), updateVo.getDesc()) == -1){
                 throw new Exception("更新博客内容失败");
             }
         }
         if (updateVo.getSelect().contains("2")){
-            // 更新博客内容
-            int k = mapService.updateMapByMapId(node.getMapId(), updateVo.getMapData());
-            if (k == -1){
+            if (mapService.updateMapByMapId(node.getMapId(), updateVo.getMapData()) == -1){
                 throw new Exception("更新思维导图失败");
             }
         }

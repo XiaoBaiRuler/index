@@ -3,16 +3,21 @@
 <head>
     <span th:replace="com/head :: head"></span>
     <title>查询:[[${str}]]</title>
+    <style type="text/css">
+        #privateSearchContainer{
+            height: 1200px;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
-    <input type="number" id="pageNumber" th:value="${pageNumber}">
-    <input type="number" id="pageSize" th:value="${pageSize}">
-    <input type="number" id="size" th:value="${size}">
-    <input type="str" id="str" th:value="${str}">
+    <input type="number" id="pageNumber" th:value="${pageNumber}" hidden="hidden">
+    <input type="number" id="pageSize" th:value="${pageSize}" hidden="hidden">
+    <input type="number" id="size" th:value="${size}" hidden="hidden">
+    <input type="str" id="str" th:value="${str}" hidden="hidden">
     <div th:replace="com/menu :: searchMenu"></div>
     <br><br><br>
-    <div class="ui fluid container">
+    <div class="ui fluid container" id="privateSearchContainer">
         <div class="ui raised segment">
             <div th:replace="com/card :: publicSearCard"></div>
             <div class="ui stacked right aligned segment" v-show="size > 1">
@@ -25,35 +30,52 @@
             </div>
         </div>
     </div>
+    <br><br>
+    <div th:replace="com/foot :: foot"></div>
 </div>
 <script type="text/javascript">
     let app = new Vue({
         el: '#app',
         data: {
-            isLogin: false,
             userVo: {},
+            topStar: [],
+            topCollect: [],
+            isLogin: false,
             str: "",
             size: 0,
             number: 1,
             pageSize: 0,
             nodes: []
         },
-        mounted: function(){
+        beforeMount: function(){
             this.number = document.getElementById('pageNumber').value;
             this.pageSize = document.getElementById('pageSize').value;
             this.size = document.getElementById('size').value;
             this.str = document.getElementById('str').value;
+            // 个人信息
             axios.get("/user/getUserInfo")
                 .then(response => {
                     if (response.data !== ""){
                         this.isLogin = true
                         this.userVo = response.data
-                        this.username = this.userVo.username
                     }else{
                         this.isLogin = false
                     }
                 })
                 .catch(error => console.log(error))
+            // 最高点赞
+            axios.get("/public/getTopStar?n=5")
+                .then(response => {
+                    this.topStar = response.data
+                })
+                .catch(error => console.log(error))
+            // 最高收藏
+            axios.get("/public/getTopCollect?n=5")
+                .then(response => {
+                    this.topCollect = response.data
+                })
+                .catch(error => console.log(error))
+            // 查询结果
             axios.get("/private/searchNodes?pageNumber=" + this.number
                 + "&pageSize=" + this.pageSize + "&str=" + this.str)
                 .then(response => {

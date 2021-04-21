@@ -121,9 +121,12 @@
 			let app = new Vue({
 				el: '#app',
 				data: {
-					user: {},
+					userVo: {},
 					userId: -1,
+					topStar: [],
+					topCollect: [],
 					isLogin: false,
+					user: {},
 					collectNodes: [],
 					publicNodes: [],
 					isFan: false,
@@ -136,10 +139,38 @@
 					size: 4,
 					collectFlag: false,
 					publicFlag: false,
-					userVo: {},
 					str: "",
 					jm: {},
 					showNode: {}
+				},
+				beforeMount: function(){
+					// 个人信息
+					axios.get("/user/getUserInfo")
+							.then(response => {
+								if (response.data !== ""){
+									this.isLogin = true
+									this.userVo = response.data
+									axios.get("/public/isFollow?userId=" + this.userVo.userId + "&followId=" + this.userId)
+											.then(response =>{
+												this.isFan = response.data === 1
+											})
+								}else{
+									this.isLogin = false
+								}
+							})
+							.catch(error => console.log(error))
+					// 最高点赞
+					axios.get("/public/getTopStar?n=5")
+							.then(response => {
+								this.topStar = response.data
+							})
+							.catch(error => console.log(error))
+					// 最高收藏
+					axios.get("/public/getTopCollect?n=5")
+							.then(response => {
+								this.topCollect = response.data
+							})
+							.catch(error => console.log(error))
 				},
 				mounted: function() {
 
@@ -177,21 +208,6 @@
 					this.preparePage(true, this.userId, 0, this.size)
 					this.preparePage(false, this.userId, 0, this.size)
 
-					axios.get("/user/getUserInfo")
-							.then(response => {
-								if (response.data !== ""){
-									this.isLogin = true
-									this.userVo = response.data
-									axios.get("/public/isFollow?userId=" + this.userVo.userId + "&followId=" + this.userId)
-											.then(response =>{
-												console.log(response.data)
-												this.isFan = response.data === 1
-											})
-								}else{
-									this.isLogin = false
-								}
-							})
-							.catch(error => console.log(error))
 				},
 				methods: {
 					toMenu: function() {

@@ -161,6 +161,9 @@
         <div th:replace="com/model :: submitModel"></div>
         <div th:replace="com/model :: showIndexBlogModel"></div>
         <div th:replace="com/model :: showIndexMapModel"></div>
+        <div th:replace="com/model :: changeBlogModel"></div>
+        <div th:replace="com/model :: deleteBlogModel"></div>
+        <div ></div>
         <div class="ui container" style="width: 95%;" v-if="userVo.userId != 1">
             <div class="ui raised segment">
                 <button class="fluid ui green button" @click="toSubmit">发布博客</button>
@@ -175,11 +178,14 @@
         let app = new Vue({
             el: '#app',
             data: {
+                userVo: {},
+                topStar: [],
+                topCollect: [],
+                isLogin: false,
                 isLeft: false,
                 isRight: false,
                 isBlog: true,
                 isNode: true,
-                isLogin: false,
                 isEditor: false,
                 isPrepare: false,
                 left: 'five wide column',
@@ -201,7 +207,6 @@
                 nexPage: true,
                 preInput: "",
                 nexInput: "",
-                userVo: {},
                 editorHtml: '',
                 jm: {},
                 node: {},
@@ -216,12 +221,19 @@
                 publicNode: [],
                 publicFlag: false,
                 showNode: {},
-                ajm: {}
+                ajm: {},
+                changeTitle: "",
+                changeDes: "",
+                editor: null,
+                deleteNodeId: "",
+                allJm: {},
+                flag: ""
             },
-            mounted: function(){
+            beforeMount: function(){
                 this.isUpdate = document.getElementById("isUpdate").value
                 this.editorHtml = document.getElementById('editor_html').value
                 this.nodeId = document.getElementById('nodeId').value
+                // 个人信息
                 axios.get("/user/getUserInfo")
                     .then(response => {
                         if (response.data !== ""){
@@ -244,6 +256,18 @@
                         }
                     })
                     .catch(error => console.log(error))
+                // 最高点赞
+                axios.get("/public/getTopStar?n=5")
+                    .then(response => {
+                        this.topStar = response.data
+                    })
+                    .catch(error => console.log(error))
+                // 最高收藏
+                axios.get("/public/getTopCollect?n=5")
+                    .then(response => {
+                        this.topCollect = response.data
+                    })
+                    .catch(error => console.log(error))
             },
             methods: {
                 changeSize: function() {
@@ -262,7 +286,7 @@
                         this.middle = 'eleven wide column'
                         this.right = 'three wide column'
                     } else {
-                        this.middleWidth = '80%'
+                        this.middleWidth = '95%'
                         this.left = 'three wide column'
                         this.middle = 'sixteen wide column'
                         this.right = 'three wide column'
@@ -390,7 +414,7 @@
                             let options = {
                                 mode: 'full',
                                 container: 'mind_container',
-                                editable: false,
+                                editable: true,
                                 theme:'orange',
                                 support_html: true,
                                 view:{
@@ -427,8 +451,8 @@
                                 "format":"node_array",
                                 "data": res
                             }
-                            let jm = new jsMind(options)
-                            jm.show(mind)
+                            app.allJm = new jsMind(options)
+                            app.allJm.show(mind)
                         })
                         .catch(error => console.log(error))
                 },
@@ -515,6 +539,19 @@
                     }
                 },
                 edit: function(nodeId){
+                    if (this.blogTitle === ""){
+                        alert("标题不能为空")
+                        return;
+                    }
+                    if (this.blogDes === ""){
+                        alert("描述不能为空")
+                        return;
+                    }
+                    let value = document.getElementById('update_html').value;
+                    if (value === ""){
+                        alert("博客内容不能为空")
+                        return;
+                    }
                     let addNodeVo = new FormData()
                     addNodeVo.append("title", this.blogTitle)
                     addNodeVo.append("desc", this.blogDes)
@@ -569,5 +606,8 @@
         })
     </script>
     <script type="text/javascript" th:src="@{/js/showPrivate.js}"></script>
+    <script type="text/javascript">
+        init()
+    </script>
 </body>
 </html>

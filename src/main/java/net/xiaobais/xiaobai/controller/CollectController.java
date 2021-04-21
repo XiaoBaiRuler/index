@@ -7,15 +7,22 @@ import net.xiaobais.xiaobai.model.Map;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.utils.JwtUtils;
+import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import net.xiaobais.xiaobai.vo.UserVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author xiaobai
@@ -40,24 +47,27 @@ public class CollectController {
     private PreviousService previousService;
     @Resource
     private NextService nextService;
+    @Resource
+    private CacheService cacheService;
+
+    private static final String NODE_PREFIX = "/public/node/";
+    private static final String TOP_COLLECT_CACHE = "/public/getTopCollect";
 
     @ApiOperation("添加收藏")
     @GetMapping("/person/public/addNodeStar")
     @ResponseBody
     public String addNodeCount(@RequestParam Integer nodeId, HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
-        String token;
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                token = cookie.getValue();
-                Integer userId = JwtUtils.getUserId(token);
-                // 检查该用户是否点赞过该节点
-                if (!collectService.isCollect(userId, nodeId)){
-                    publicNodeService.addCount(nodeId);
-                    collectService.addCollect(userId, nodeId);
-                    return "1";
-                }
-            }
+        if (cookies == null){
+            return "0";
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        // 检查该用户是否点赞过该节点
+        if (!collectService.isCollect(userId, nodeId)){
+            publicNodeService.addCount(nodeId);
+            collectService.addCollect(userId, nodeId);
+            cacheService.deleteAllSimpleNodeVoList(TOP_COLLECT_CACHE);
+            return "1";
         }
         return "0";
     }
@@ -127,6 +137,29 @@ public class CollectController {
                 throw new Exception("复制后置关系失败");
             }
             return url;
+        }
+    }
+
+    @ApiOperation("获取最高收藏的n个博客")
+    @GetMapping("/public/getTopCollect")
+    @ResponseBody
+    public List<SimpleNodeVo> findNodeByTopCollect(Integer n){
+        String key = TOP_COLLECT_CACHE + n;
+        List<SimpleNodeVo> cacheList = cacheService.getSimpleNodeVoListByKey(key);
+        if (cacheList != null){
+            return cacheList;
+        }
+        else{
+            List<Node> nodes = publicNodeService.findNodeByTopCollect(n);
+            List<SimpleNodeVo> list = new ArrayList<>();
+            nodes.stream().filter(Objects::nonNull).forEach(node -> {
+                SimpleNodeVo item = new SimpleNodeVo();
+                item.setTitle(node.getNodeName());
+                item.setUrl(NODE_PREFIX + node.getNodeId());
+                list.add(item);
+            });
+            cacheService.setSimpleNodeVoListByKey(key, list);
+            return list;
         }
     }
 

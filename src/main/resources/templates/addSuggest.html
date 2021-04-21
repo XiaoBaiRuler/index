@@ -80,15 +80,17 @@
     let app = new Vue({
         el: '#app',
         data: {
+            userVo: {},
+            topStar: [],
+            topCollect: [],
+            isLogin: false,
             str: '',
             html: '',
             mind: [],
             isBlog: true,
-            isLogin: false,
             contentCss: "ui one column stackable grid",
             hasContent: false,
             nodeIds: 0,
-            userVo: {},
             choice: ["1", "2"],
             question1: "",
             question2: "",
@@ -100,27 +102,11 @@
             editor2: {},
             editor3: {},
             editor4: {},
-            show: true
+            show: true,
         },
         beforeMount: function(){
             this.nodeIds = document.getElementById('nodeIds').value
-            axios.get('/public/getAllPreNode?nodeId=' + this.nodeIds)
-                .then(response => {
-                    this.preNode = response.data
-                    console.log(this.preNode)
-                })
-                .catch(error => console.log(error))
-
-            axios.get('/public/getAllNexNode?nodeId=' + this.nodeIds)
-                .then(response => {
-                    this.nexNode = response.data
-                    console.log(this.nexNode)
-                })
-                .catch(error => console.log(error))
-        },
-        mounted: function(){
-
-            this.prepareEditor()
+            // 个人信息
             axios.get("/user/getUserInfo")
                 .then(response => {
                     if (response.data !== ""){
@@ -131,7 +117,34 @@
                     }
                 })
                 .catch(error => console.log(error))
-
+            // 最高点赞
+            axios.get("/public/getTopStar?n=5")
+                .then(response => {
+                    this.topStar = response.data
+                })
+                .catch(error => console.log(error))
+            // 最高收藏
+            axios.get("/public/getTopCollect?n=5")
+                .then(response => {
+                    this.topCollect = response.data
+                })
+                .catch(error => console.log(error))
+            // 所有前置节点
+            axios.get('/public/getAllPreNode?nodeId=' + this.nodeIds)
+                .then(response => {
+                    this.preNode = response.data
+                })
+                .catch(error => console.log(error))
+            // 所有后置节点
+            axios.get('/public/getAllNexNode?nodeId=' + this.nodeIds)
+                .then(response => {
+                    this.nexNode = response.data
+                })
+                .catch(error => console.log(error))
+        },
+        mounted: function(){
+            this.prepareEditor()
+            // 导图内容
             axios.get("/public/getMind?nodeId=" + this.nodeIds)
                 .then(response => {
                     let options = {
@@ -148,11 +161,12 @@
                             line_color:'#555'   // 思维导图线条的颜色
                         },
                         layout:{
-                            hspace:100,          // 节点之间的水平间距
+                            hspace:150,          // 节点之间的水平间距
                             vspace:200,          // 节点之间的垂直间距
                             pspace:2           // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
                         },
                     }
+                    let jm = new jsMind(options)
                     let m = response.data
                     let res = []
                     m.forEach((item) =>{
@@ -174,11 +188,9 @@
                         "format":"node_array",
                         "data": res
                     }
-                    let jm = new jsMind(options)
                     jm.show(mind)
                 })
                 .catch(error => console.log(error))
-
         },
         watch: {
             choice: function(){
@@ -191,9 +203,11 @@
         methods: {
             changeBlog: function() {
                 if (!this.hasContent){
+                    // 思维导图内容
                     alert("需要先切换为博客节点内容才能查看")
                     return;
                 }
+                showNode()
                 this.isBlog = !this.isBlog
             },
             closeContent: function(){
@@ -293,32 +307,12 @@
             toTop: function(){
                 window.location.href = '#top'
             }
-        },
+        }
     })
-
-    let html = document.getElementById('html').value;
-    app.html = html;
-    document.getElementById('content').innerHTML = marked(html
-        , {
-            baseUrl: null,
-            breaks: true,
-            gfm: true,
-            headerIds: true,
-            headerPrefix: '',
-            highlight: function(code, language){
-                const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-                return hljs.highlight(validLanguage, code).value;
-            },
-            langPrefix: 'language-',
-            mangle: true,
-            pedantic: false,
-            renderer: new marked.Renderer(),
-            silent: false,
-            smartLists: true,
-            smartypants: true,
-            xhtml: true
-        });
-    hljs.initHighlightingOnLoad()
+</script>
+<script type="text/javascript" th:src="@{/js/showPublic.js}"></script>
+<script type="text/javascript">
+    init(true);
 </script>
 </body>
 </html>

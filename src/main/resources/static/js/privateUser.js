@@ -63,7 +63,7 @@ $(document).on('click', '#changePrivateButton', function() {
 })
 
 function toShowBlog(nodeId){
-    axios.get("/public/getNodeById?id=" + nodeId)
+    axios.get("/private/getNodeById?id=" + nodeId)
         .then(response => {
             app.showNode = response.data
             if (app.showNode.content === null){
@@ -90,7 +90,7 @@ function toShowBlog(nodeId){
                     xhtml: true
                 });
             hljs.highlightAll()
-            $('.ui.showBlog.modal').modal('show');
+            $('.ui.showBlog.fullscreen.modal').modal('show');
         })
         .catch(error => console.log(error))
 }
@@ -120,7 +120,7 @@ function toShowMap(nodeId){
                 "data": res
             }
             app.jm.show(mind)
-            $('.ui.showMap.modal').modal('show');
+            $('.ui.showMap.fullscreen.modal').modal('show');
         })
         .catch(error => console.log(error))
 }

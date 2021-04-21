@@ -7,14 +7,14 @@
                 <div class="ui stackable inverted divided grid">
                     <div class="five wide column">
                         <h4 class="ui inverted header">收藏最多</h4>
-                        <div class="ui inverted link list" th:each="item : ${mostCollect}">
-                            <a  th:href="${item.url}" class="item">[[${item.title}]]</a>
+                        <div class="ui inverted link list">
+                            <a :href="item.url" class="item" v-for="item,index in topCollect" :key="'co' + index">{{item.title}}</a>
                         </div>
                     </div>
                     <div class="five wide column">
                         <h4 class="ui inverted header">点赞最多</h4>
-                        <div class="ui inverted link list" th:each="item : ${mostStar}">
-                            <a th:href="${item.url}" class="item">[[${item.title}]]</a>
+                        <div class="ui inverted link list" >
+                            <a :href="item.url" class="item" v-for="item,index in topStar" :key="'st' + index">{{item.title}}</a>
                         </div>
                     </div>
                     <div class="six wide column">

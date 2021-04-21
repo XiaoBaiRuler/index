@@ -98,140 +98,26 @@
         </div>
     </div>
 
-    <div class="ui createDir modal">
-        <div class="stacked segment">
-            <div class="ui form">
-                <div class="ui teal inverted field">
-                    <label>目录名</label>
-                    <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
-                </div>
-                <div class="actions">
-                    <div class="ui black deny button">取消</div>
-                    <div class="ui positive button" id="createButton">确定</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="ui updateDir modal">
-        <div class="stacked segment">
-            <div class="ui form">
-                <div class="ui teal inverted field">
-                    <label>目录名</label>
-                    <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
-                </div>
-                <div class="actions">
-                    <div class="ui black deny button">取消</div>
-                    <div class="ui positive button" id="updateButton">确定</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="ui deleteDir basic modal">
-        <div class="ui icon header">
-            <i class="archive icon"></i>
-            需要删除的文件
-        </div>
-        <div class="content">
-            <p>是否删除？</p>
-        </div>
-        <div class="actions">
-            <div class="ui red basic cancel inverted button">
-                <i class="remove icon"></i>
-                否
-            </div>
-            <div class="ui green ok inverted button" id="deleteButton">
-                <i class="checkmark icon"></i>
-                是
-            </div>
-        </div>
-    </div>
-
-    <div class="ui createFile modal">
-        <div class="stacked segment">
-            <div class="ui form">
-                <div class="ui teal inverted field">
-                    <label>目录名</label>
-                    <input type="file" id="fileUpload" placeholder="选择文件">
-                </div>
-                <div class="actions">
-                    <div class="ui black deny button">取消</div>
-                    <div class="ui positive button" id="createFileButton">确定</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="ui updateFile modal">
-        <div class="stacked segment">
-            <div class="ui form">
-                <div class="ui teal inverted field">
-                    <label>新文件名</label>
-                    <input type="text" name="newName" v-model="newName"  placeholder="选择文件">
-                </div>
-                <div class="actions">
-                    <div class="ui black deny button">取消</div>
-                    <div class="ui positive button" id="updateFileButton">确定</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="ui deleteFile basic modal">
-        <div class="ui icon header">
-            <i class="archive icon"></i>
-            需要删除的文件
-        </div>
-        <div class="content">
-            <p>是否删除？</p>
-        </div>
-        <div class="actions">
-            <div class="ui red basic cancel inverted button">
-                <i class="remove icon"></i>
-                否
-            </div>
-            <div class="ui green ok inverted button" id="deleteFileButton">
-                <i class="checkmark icon"></i>
-                是
-            </div>
-        </div>
-    </div>
-
-    <div class="ui left demo vertical inverted sidebar labeled icon menu">
-        <a class="item" th:href="@{'/private/user/' + ${userId}}">
-            <i class="user icon"></i>
-            个人信息
-        </a>
-        <a class="item" th:href="@{'/private/user/' + ${userId} + '#collect'}">
-            <i class="star icon"></i>
-            收藏博客
-        </a>
-        <a class="item" th:href="@{'/private/user/' + ${userId} + '#public'}">
-            <i class="paper plane icon"></i>
-            发布博客
-        </a>
-        <a class="item" th:href="@{/person/public/toImage/}">
-            <i class="image icon"></i>
-            图片管理
-        </a>
-        <a class="item" th:href="@{/person/public/toNotice}">
-            <i class="comment alternate icon"></i>
-            通知管理
-        </a>
-    </div>
-
+    <div th:replace="com/model :: createDirModel"></div>
+    <div th:replace="com/model :: updateDirModel"></div>
+    <div th:replace="com/model :: deleteDirModel"></div>
+    <div th:replace="com/model :: createFileModel"></div>
+    <div th:replace="com/model :: updateFileModel"></div>
+    <div th:replace="com/model :: deleteFileModel"></div>
+    <div th:replace="com/menu :: privateBarMenu"></div>
     <div th:replace="com/foot :: foot"></div>
 </div>
 <script type="text/javascript">
     let app = new Vue({
         el: '#app',
         data: {
+            userVo: {},
+            userId: -1,
+            topStar: [],
+            topCollect: [],
+            isLogin: false,
             user: {},
             allDir: [],
-            userVo: {},
-            isLogin: false,
-            userId: -1,
             str: "",
             dir: "",
             dirIndex: -1,
@@ -241,7 +127,8 @@
             oldName: "",
             fileIndex: -1
         },
-        mounted: function() {
+        beforeMount: function(){
+            // 个人信息
             this.userId = document.getElementById('userId').value
             axios.get("/user/getUserInfo")
                 .then(response => {
@@ -253,6 +140,20 @@
                     }
                 })
                 .catch(error => console.log(error))
+            // 最高点赞
+            axios.get("/public/getTopStar?n=5")
+                .then(response => {
+                    this.topStar = response.data
+                })
+                .catch(error => console.log(error))
+            // 最高收藏
+            axios.get("/public/getTopCollect?n=5")
+                .then(response => {
+                    this.topCollect = response.data
+                })
+                .catch(error => console.log(error))
+        },
+        mounted: function() {
             this.getDir()
         },
         updated: function(){

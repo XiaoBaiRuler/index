@@ -400,5 +400,63 @@ public class NoticeServiceImpl implements NoticeService {
         return list;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int dealSuggestNotice(Integer noticeId, Integer userId) throws Exception {
+
+        Notice notice = noticeMapper.selectByPrimaryKey(noticeId);
+        if (notice == null){
+            return -1;
+        }
+        Notice reply = new Notice();
+        User user = userService.getUserById(notice.getAcceptId());
+        if (notice.getAcceptId().equals(userId)){
+            Node node = publicNodeService.findNodeById(notice.getNodeId());
+            reply.setUserId(node.getUserId());
+            reply.setAcceptId(notice.getUserId());
+            reply.setNodeId(notice.getNodeId());
+            reply.setSubmitType(2);
+            reply.setAcceptType(true);
+            reply.setSuggestId(notice.getSuggestId());
+            reply.setMessage(user.getUsername() + "根据你的建议修改了博客节点");
+            if (noticeMapper.insertSelective(reply) == -1){
+                throw new Exception("添加回复建议通知失败");
+            }
+            notice.setIsDelete(true);
+            if (noticeMapper.updateByPrimaryKeySelective(notice) == -1){
+                throw new Exception("删除通知失败");
+            }
+        }
+        return reply.getNoticeId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int errorSuggestNotice(Integer noticeId, Integer userId, String message) throws Exception {
+        Notice notice = noticeMapper.selectByPrimaryKey(noticeId);
+        if (notice == null){
+            return -1;
+        }
+        User user = userService.getUserById(userId);
+        Notice reply = new Notice();
+        if (notice.getAcceptId().equals(userId)){
+            reply.setUserId(userId);
+            reply.setAcceptId(notice.getUserId());
+            reply.setNodeId(notice.getNodeId());
+            reply.setSubmitType(2);
+            reply.setAcceptType(true);
+            reply.setSuggestId(notice.getSuggestId());
+            reply.setMessage(user.getUsername() + "拒绝了你的建议请求: 理由: " + message);
+            if (noticeMapper.insertSelective(reply) == -1){
+                throw new Exception("添加回复建议通知失败");
+            }
+            notice.setIsDelete(true);
+            if (noticeMapper.updateByPrimaryKeySelective(notice) == -1){
+                throw new Exception("删除通知失败");
+            }
+        }
+        return reply.getNoticeId();
+    }
+
 
 }

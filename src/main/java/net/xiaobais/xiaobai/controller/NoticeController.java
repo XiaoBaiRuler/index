@@ -253,6 +253,29 @@ public class NoticeController {
         Integer userId = JwtUtils.getUserId(cookies[0].getValue());
         return noticeService.getAllSuggestNotice(pageNumber, pageSize, userId, message);
     }
+    @ApiOperation("处理建议通知")
+    @GetMapping("/dealSuggestNotice")
+    @ResponseBody
+    public String dealSuggestNotice(Integer noticeId, HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return "#未登录";
+        }
+        return noticeService.dealSuggestNotice(noticeId, JwtUtils.getUserId(cookies[0].getValue())) != -1
+                ? "处理成功" : "#处理失败";
+    }
+
+    @ApiOperation("驳回建议通知")
+    @PostMapping("/errorSuggestNotice")
+    @ResponseBody
+    public String errorSuggestNotice(Integer noticeId, String message, HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return "#未登录";
+        }
+        return noticeService.errorSuggestNotice(noticeId, JwtUtils.getUserId(cookies[0].getValue()), message) != -1
+                ? "驳回成功" : "#处理失败";
+    }
 
     @Transactional(rollbackFor = Exception.class)
     public Integer copyPrivateNodeToPublicNode(Integer nodeId, Integer userId,

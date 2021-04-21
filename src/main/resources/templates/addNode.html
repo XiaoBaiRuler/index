@@ -61,17 +61,19 @@
     let app = new Vue({
         el: '#app',
         data: {
-            isBlog: true,
+            userVo: {},
+            topStar: [],
+            topCollect: [],
             isLogin: false,
+            isBlog: true,
             str: '',
             jm: {},
             nodeId: 0,
-            userVo: {},
             blogTitle: "",
             blogDes: "",
             relationShip: ""
         },
-        mounted: function(){
+        beforeMount: function(){
             $(function() {
                 let editor = editormd("test-editor", {
                     width  : "100%",
@@ -79,8 +81,8 @@
                     path   : "/item/editormd/lib/"
                 });
             });
-
             this.nodeId = document.getElementById('nodeId').value
+            // 用户信息
             axios.get("/user/getUserInfo")
                 .then(response => {
                     if (response.data !== ""){
@@ -122,7 +124,18 @@
                     }
                 })
                 .catch(error => console.log(error))
-
+            // 最高点赞
+            axios.get("/public/getTopStar?n=5")
+                .then(response => {
+                    this.topStar = response.data
+                })
+                .catch(error => console.log(error))
+            // 最高收藏
+            axios.get("/public/getTopCollect?n=5")
+                .then(response => {
+                    this.topCollect = response.data
+                })
+                .catch(error => console.log(error))
         },
         methods: {
             changeBlog: function() {

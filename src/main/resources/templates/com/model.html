@@ -1,6 +1,107 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
 <body>
+    <!--创建目录-->
+    <div class="ui createDir modal" th:fragment="createDirModel">
+        <div class="stacked segment">
+            <div class="ui form">
+                <div class="ui teal inverted field">
+                    <label>目录名</label>
+                    <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">取消</div>
+                    <div class="ui positive button" id="createButton">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--更新目录-->
+    <div class="ui updateDir modal" th:fragment="updateDirModel">
+        <div class="stacked segment">
+            <div class="ui form">
+                <div class="ui teal inverted field">
+                    <label>目录名</label>
+                    <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">取消</div>
+                    <div class="ui positive button" id="updateButton">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--删除目录-->
+    <div class="ui deleteDir basic modal" th:fragment="deleteDirModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            需要删除的文件
+        </div>
+        <div class="content">
+            <p>是否删除？</p>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteButton">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+    <!--创建文件-->
+    <div class="ui createFile modal" th:fragment="createFileModel">
+        <div class="stacked segment">
+            <div class="ui form">
+                <div class="ui teal inverted field">
+                    <label>目录名</label>
+                    <input type="file" id="fileUpload" placeholder="选择文件">
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">取消</div>
+                    <div class="ui positive button" id="createFileButton">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--更新文件-->
+    <div class="ui updateFile modal" th:fragment="updateFileModel">
+        <div class="stacked segment">
+            <div class="ui form">
+                <div class="ui teal inverted field">
+                    <label>新文件名</label>
+                    <input type="text" name="newName" v-model="newName"  placeholder="选择文件">
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">取消</div>
+                    <div class="ui positive button" id="updateFileButton">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--删除文件-->
+    <div class="ui deleteFile basic modal" th:fragment="deleteFileModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            需要删除的文件
+        </div>
+        <div class="content">
+            <p>是否删除？</p>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteFileButton">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+    <!--删除前置节点-->
     <div class="ui pre modal" th:fragment="deletePreModel">
         <i class="close icon"></i>
         <div class="content">
@@ -19,6 +120,7 @@
             </div>
         </div>
     </div>
+    <!--删除后置节点-->
     <div class="ui nex modal" th:fragment="deleteNexModel">
         <i class="close icon"></i>
         <div class="content">
@@ -37,7 +139,7 @@
             </div>
         </div>
     </div>
-
+    <!--发布博客-->
     <div class="ui submit modal" th:fragment="submitModel">
         <i class="close icon"></i>
         <div class="content">
@@ -84,7 +186,7 @@
             </div>
         </div>
     </div>
-
+    <!--驳回发布-->
     <div class="ui reject basic modal" th:fragment="rejectModel">
         <div class="ui icon header">
             <i class="archive icon"></i>
@@ -109,7 +211,7 @@
             </div>
         </div>
     </div>
-
+    <!--确认通知-->
     <div class="ui agree basic modal" th:fragment="agreeModel">
         <div class="ui icon header">
             <i class="archive icon"></i>
@@ -186,32 +288,111 @@
         </div>
     </div>
 
-    <div class="ui show modal" th:fragment="showModel">
+    <div class="ui show fullscreen modal" th:fragment="showModel">
         <i class="close icon"></i>
         <div class="content">
-            <div class="description">
-                <div class="ui center aligned header">{{node.title}}</div>
-                <div id="content"></div>
+            <div class="ui container" style="width: 90%;">
+                <div class="ui raised segment">
+                    <div class="ui center aligned header">{{node.title}}</div>
+                    <div id="content"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="ui showBlog modal" th:fragment="showIndexBlogModel">
+    <div class="ui showBlog fullscreen modal" th:fragment="showIndexBlogModel">
         <i class="close icon"></i>
         <div class="content">
-            <div class="description">
-                <div class="ui center aligned header">{{showNode.title}}</div>
-                <div id="showBlogContent"></div>
+            <div class="ui container" style="width: 80%;">
+                <div class="ui stacked segment">
+                    <h1 class="ui center aligned header">{{showNode.title}}</h1>
+                    <div id="showBlogContent" style="height: 90%;"></div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="ui showMap modal" th:fragment="showIndexMapModel">
+
+    <div class="ui showMap fullscreen modal" th:fragment="showIndexMapModel">
         <i class="close icon"></i>
         <div class="content">
-            <div class="description">
-                <div id="mapContainer"></div>
+            <div class="ui container" style="width: 80%;">
+                <div class="ui stacked segment">
+                    <div id="mapContainer" style="height: 90%;"></div>
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="ui changeBlog fullscreen modal" th:fragment="changeBlogModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui container" style="width: 90%;">
+                <div class="ui raised segment">
+                    <form class="ui form">
+                        <div class="ui grid">
+                            <div class="ui four wide column">
+                                <div class="field">
+                                    <label>博客标题</label>
+                                    <input type="text" name="changeTitle" placeholder="请输入标题" v-model="changeTitle">
+                                </div>
+                                <div class="field">
+                                    <label>简单描述</label>
+                                    <input type="text" name="changeDes" placeholder="请输入简单描述" v-model="changeDes">
+                                </div>
+                                <div class="actions">
+                                    <div class="ui approve button">保存</div>
+                                    <div class="ui cancel button">取消</div>
+                                </div>
+                            </div>
+                            <div class="ui twelve wide column">
+                                <div id="modal" style="height: 1200px;"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui deleteBlog basic modal" th:fragment="deleteBlogModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否删除博客
+        </div>
+        <div class="content">
+            <p>如果不是端点节点，删除失败(根节点不能删除)</p>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteBlogModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+
+    <div class="ui showSuggest fullscreen modal" th:fragment="showIndexSuggestModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui container" style="width: 80%;">
+                <div class="ui stacked segment">
+                    <div class="ui header">问题1:{{suggest.question}}</div>
+                    <p>方案:</p>
+                    <div v-html="suggest.suggest"></div>
+                    <div class="ui header">问题2:{{suggest.extend}}</div>
+                    <p>方案:</p>
+                    <div v-html="suggest.extendSuggest"></div>
+                    <div class="ui header">前置节点建议:</div>
+                    <div v-html="suggest.previousSuggest"></div>
+                    <div class="ui header">后置节点建议</div>
+                    <div v-html="suggest.nextSuggest"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

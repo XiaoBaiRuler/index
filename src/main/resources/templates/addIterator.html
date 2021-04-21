@@ -140,11 +140,14 @@
     let app = new Vue({
         el: '#app',
         data: {
+            userVo: {},
+            topStar: [],
+            topCollect: [],
+            isLogin: false,
             isLeft: false,
             isRight: false,
             isBlog: true,
             isNode: true,
-            isLogin: false,
             left: 'five wide column',
             middle: 'sixteen wide column',
             right: 'five wide column',
@@ -163,8 +166,32 @@
             nexPage: true,
             preInput: "",
             nexInput: "",
-            userVo: {},
             iterator_content: ""
+        },
+        beforeMount: function(){
+            // 用户信息
+            axios.get("/user/getUserInfo")
+                .then(response => {
+                    if (response.data !== ""){
+                        this.isLogin = true
+                        this.userVo = response.data
+                    }else{
+                        this.isLogin = false
+                    }
+                })
+                .catch(error => console.log(error))
+            // 最高点赞
+            axios.get("/public/getTopStar?n=5")
+                .then(response => {
+                    this.topStar = response.data
+                })
+                .catch(error => console.log(error))
+            // 最高收藏
+            axios.get("/public/getTopCollect?n=5")
+                .then(response => {
+                    this.topCollect = response.data
+                })
+                .catch(error => console.log(error))
         },
         mounted: function(){
             $(function() {
@@ -178,16 +205,6 @@
             let nodeId = document.getElementById('nodeId').value
             this.nodeId = nodeId
             this.preparePage(nodeId, "", "", 0, 0)
-            axios.get("/user/getUserInfo")
-                .then(response => {
-                    if (response.data !== ""){
-                        this.isLogin = true
-                        this.userVo = response.data
-                    }else{
-                        this.isLogin = false
-                    }
-                })
-                .catch(error => console.log(error))
 
             axios.get("/public/getMind?nodeId=" + nodeId)
                 .then(response => {
