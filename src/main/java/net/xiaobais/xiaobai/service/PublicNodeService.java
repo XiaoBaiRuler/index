@@ -21,6 +21,13 @@ public interface PublicNodeService {
     Node findIndex();
 
     /**
+     * 通过nodeId获取公开节点
+     * @param nodeId nodeId
+     * @return Node
+     */
+    Node findPublicNodeByNodeId(Integer nodeId);
+
+    /**
      * 根据节点ID查找节点
      * @param id id
      * @return Node

@@ -1,5 +1,7 @@
 package net.xiaobais.xiaobai.service;
 
+import net.xiaobais.xiaobai.model.Blog;
+import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.vo.PublicNodeVo;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 
@@ -45,4 +47,46 @@ public interface CacheService {
      * @param preKey preKey
      */
     void deleteAllSimpleNodeVoList(String preKey);
+
+    /**
+     * 通过键值缓存Node
+     * @param key key
+     * @param node node
+     */
+    void setNodeByKey(String key, Node node);
+
+    /**
+     * 通过键获取Node
+     * @param key key
+     * @return node
+     */
+    Node getNodeByKey(String key);
+
+    /**
+     * 通过键删除Node
+     * @param key key
+     */
+    void deleteNodeByKey(String key);
+
+    /**
+     * 通过键值缓存blog
+     * @param key key
+     * @param blog blog
+     */
+    void setBlogByKey(String key, Blog blog);
+
+    /**
+     * 通过键获取blog
+     * @param key key
+     * @return blog
+     */
+    Blog getBlogByKey(String key);
+
+    /**
+     * 通过键删除blog
+     * @param key key
+     */
+    void deleteBlogByKey(String key);
+
+
 }

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author xiaobai
@@ -57,8 +58,6 @@ public class NoticeController {
         }
         Integer userId = JwtUtils.getUserId(cookies[0].getValue());
         model.addAttribute("userId", userId);
-        model.addAttribute("mostCollect", nodeToSimpleNodeVo(publicNodeService.findNodeByTopCollect(5)));
-        model.addAttribute("mostStar", nodeToSimpleNodeVo(publicNodeService.findNodeByTopStar(5)));
         return userId == 1 ? "personNotice" : "privateNotice";
     }
 
@@ -157,7 +156,14 @@ public class NoticeController {
     @PostMapping("/errorPublicNodeNotice")
     @ResponseBody
     public String errorPublicNodeNotice(Integer nodeId, Integer userId,
-                                        String message, Integer noticeId) throws Exception {
+                                        String message, Integer noticeId,
+                                        HttpServletRequest request) throws Exception {
+        if ("".equals(message)){
+            return "#不能处理为空";
+        }
+        if (!Objects.equals(JwtUtils.getUserId(request.getCookies()[0].getValue()), userId)){
+            return "#你没有权限";
+        }
         return noticeService.errorPublicNodeNotice(nodeId, message, userId, noticeId) ?
                 "驳回发布请求成功" : "#驳回发布请求失败";
     }
@@ -272,6 +278,9 @@ public class NoticeController {
         Cookie[] cookies = request.getCookies();
         if (cookies == null){
             return "#未登录";
+        }
+        if ("".equals(message)){
+            return "#信息不能为空";
         }
         return noticeService.errorSuggestNotice(noticeId, JwtUtils.getUserId(cookies[0].getValue()), message) != -1
                 ? "驳回成功" : "#处理失败";

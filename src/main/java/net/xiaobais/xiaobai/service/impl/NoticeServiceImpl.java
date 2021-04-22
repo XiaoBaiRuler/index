@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author xiaobai
@@ -39,9 +40,12 @@ public class NoticeServiceImpl implements NoticeService {
     private NodeMapper nodeMapper;
     @Resource
     private IteratorMapper iteratorMapper;
+    @Resource
+    private CacheService cacheService;
 
     private static final String DEAL_PREFIX = "/person/public";
     private static final String NODE_PREFIX = "/public/node/";
+    private static final String BLOG_CACHE = "/public/blog";
     private static final Integer SIZE = 5;
 
     @Override
@@ -281,6 +285,8 @@ public class NoticeServiceImpl implements NoticeService {
             throw new Exception("删除迭代关系失败");
         }
         if (nodeMapper.deleteByPrimaryKey(iteratorId) == -1){
+            cacheService.deleteNodeByKey(NODE_PREFIX + iteratorId);
+            cacheService.deleteBlogByKey(BLOG_CACHE + node.getBlogId());
             throw new Exception("删除迭代节点失败");
         }
         return true;
@@ -369,7 +375,7 @@ public class NoticeServiceImpl implements NoticeService {
     public long getAllSuggestNoticeCount(Integer userId, String message) {
         NoticeExample example = new NoticeExample();
         NoticeExample.Criteria criteria = example.createCriteria().andAcceptIdEqualTo(userId)
-                .andSubmitTypeEqualTo(2);
+                .andSubmitTypeEqualTo(2).andIsDeleteEqualTo(false);
         if (!"".equals(message)){
             criteria.andMessageLike( "%" + message + "%");
         }
@@ -387,7 +393,7 @@ public class NoticeServiceImpl implements NoticeService {
         PageHelper.startPage(pageNumber, pageSize);
         List<Notice> notices = noticeMapper.selectByExample(example);
         List<SuggestNoticeVo> list = new ArrayList<>();
-        notices.forEach(notice -> {
+        notices.stream().filter(Objects::nonNull).forEach(notice -> {
             SuggestNoticeVo noticeVo = new SuggestNoticeVo();
             noticeVo.setNoticeId(notice.getNoticeId());
             noticeVo.setSuggestId(notice.getSuggestId());
@@ -419,6 +425,7 @@ public class NoticeServiceImpl implements NoticeService {
             reply.setAcceptType(true);
             reply.setSuggestId(notice.getSuggestId());
             reply.setMessage(user.getUsername() + "根据你的建议修改了博客节点");
+            reply.setIsDelete(false);
             if (noticeMapper.insertSelective(reply) == -1){
                 throw new Exception("添加回复建议通知失败");
             }
@@ -447,6 +454,7 @@ public class NoticeServiceImpl implements NoticeService {
             reply.setAcceptType(true);
             reply.setSuggestId(notice.getSuggestId());
             reply.setMessage(user.getUsername() + "拒绝了你的建议请求: 理由: " + message);
+            reply.setIsDelete(false);
             if (noticeMapper.insertSelective(reply) == -1){
                 throw new Exception("添加回复建议通知失败");
             }

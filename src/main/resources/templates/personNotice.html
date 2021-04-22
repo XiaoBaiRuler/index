@@ -1,17 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <span th:replace="com/head :: head"></span>
+    <span th:replace="com/head :: cdnHead"></span>
     <title>个人信息管理</title>
-    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
-    <link rel="stylesheet" th:href="@{/item/editormd/css/editormd.css}">
-    <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
-    <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
-    <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
-    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
-    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
-    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
-    <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
+    <span th:replace="com/head :: cdnEditHead"></span>
     <style type="text/css">
         table{
             border: 1px solid skyblue;
@@ -41,17 +33,7 @@
         <br><br><br><br>
         <div class="ui fluid container" id="content_container">
             <div class="ui container" style="width: 85%;">
-                <div class="ui pointing menu">
-                    <a :class="aItemActive" @click="toReply">
-                        反馈通知
-                    </a>
-                    <a :class="bItemActive" @click="toIterator">
-                        迭代通知
-                    </a>
-                    <a :class="cItemActive" @click="toSuggest">
-                        建议通知
-                    </a>
-                </div>
+                <div th:replace="com/menu :: pointingMenu"></div>
                 <div class="ui segment" v-if="isReply">
                     <div class="ui fluid action input">
                         <input type="text" name="message" v-model="message" placeholder="通过请求信息搜索...">
@@ -139,18 +121,16 @@
                                     <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">当前节点</button>
                                 </td>
                                 <td>
-                                    <a :href="notice.dealUrl" v-show="!notice.isReply">迭代通知</a>
-                                    <a :href="notice.dealUrl" v-show="notice.isReply">反馈通知</a>
+                                    <a :href="notice.dealUrl" v-show="!notice.reply">迭代通知</a>
+                                    <a :href="notice.dealUrl" v-show="notice.reply">反馈通知</a>
                                 </td>
                                 <td>
                                     <button class="ui green inverted button"
-                                            v-show="!notice.isReply" @click="toYes(index, notice.noticeId)">确认</button>
+                                            v-if="notice.reply" @click="toYes(index, notice.noticeId, false)">确认</button>
                                     <button class="ui green inverted button"
-                                            v-show="notice.isReply" @click="toAgr(index, notice.noticeId)">
-                                        同意</button>
+                                            v-if="!notice.reply" @click="toAgr(index, notice.noticeId)">同意</button>
                                     <button class="ui green inverted button"
-                                            v-show="notice.isReply" @click="toRej(index, notice.noticeId)">
-                                        驳回</button>
+                                            v-show="!notice.reply" @click="toRej(index, notice.noticeId)">驳回</button>
                                 </td>
                             </tr>
                             </tbody>
@@ -192,7 +172,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(notice,index) in sit" :key="'sit' + index">
+                            <tr v-for="notice,index in sit" :key="'sit' + index">
                                 <td>{{index}}</td>
                                 <td>{{notice.message}}</td>
                                 <td>
@@ -202,16 +182,16 @@
                                     <button class="ui yellow inverted button" @click="toShowSuggest(notice.suggestId)">建议内容</button>
                                 </td>
                                 <td>
-                                    <a v-show="!notice.isReply">建议通知</a>
-                                    <a v-show="notice.isReply">反馈通知</a>
+                                    <a v-show="!notice.reply">建议通知</a>
+                                    <a v-show="notice.reply">反馈通知</a>
                                 </td>
                                 <td>
                                     <button class="ui green inverted button"
-                                            v-show="notice.isReply" @click="toYes(index, notice.noticeId)">确认</button>
+                                            v-if="notice.reply" @click="toYes(index, notice.noticeId, true)">确认</button>
                                     <button class="ui green inverted button"
-                                            v-show="!notice.isReply" @click="toChange(notice.noticeId, notice.nodeId)">修改</button>
+                                            v-if="!notice.reply" @click="toChange(index, notice.noticeId, notice.nodeId)">修改</button>
                                     <button class="ui teal inverted button"
-                                            v-show="!notice.isReply" @click="toStop(notice.noticeId, notice.nodeId)">修改</button>
+                                            v-if="!notice.reply" @click="toStop(index, notice.noticeId)">拒绝</button>
                                 </td>
                             </tr>
                             </tbody>
@@ -244,376 +224,388 @@
         <div th:replace="com/model :: rejectModel"></div>
         <div th:replace="com/model :: showIndexSuggestModel"></div>
         <div th:replace="com/model :: changeBlogModel"></div>
+        <div th:replace="com/model :: rejectSuggestModel"></div>
         <div th:replace="com/foot :: foot"></div>
-        <div class="ui left demo vertical inverted sidebar labeled icon menu">
-            <a class="item" th:href="@{'/private/user/' + ${userId}}">
-                <i class="user icon"></i>
-                个人信息
-            </a>
-            <a class="item" th:href="@{'/private/user/' + ${userId} + '#privateCollect'}">
-                <i class="star icon"></i>
-                收藏博客
-            </a>
-            <a class="item">
-                <i class="paper plane icon" th:href="@{'/private/user/' + ${userId} + '#public'}"></i>
-                发布博客
-            </a>
-            <a class="item" th:href="@{/person/public/toImage}">
-                <i class="image icon"></i>
-                图片管理
-            </a>
-            <a class="item" th:href="@{/person/public/toNotice}">
-                <i class="comment alternate icon"></i>
-                通知管理
-            </a>
-        </div>
+        <div th:replace="com/menu :: privateBarMenu"></div>
     </div>
 
-<script type="text/javascript">
-    let app = new Vue({
-        el: '#app',
-        data: {
-            userVo: {},
-            userId: -1,
-            topStar: [],
-            topCollect: [],
-            isLogin: false,
-            str: "",
-            size: 0,
-            notices: [],
-            pageNumber: 0,
-            pageSize: 5,
-            message: "",
-            node: {},
-            index: -1,
-            url: "",
-            nodeId: -1,
-            whoId: -1,
-            reason: "",
-            noticeId: -1,
-            aItemActive: "active item",
-            bItemActive: "item",
-            cItemActive: "item",
-            isReply: true,
-            isIterator: false,
-            isSuggest: false,
-            number: 0,
-            nitNumber: 1,
-            nit: [],
-            sit: [],
-            suggest: {},
-            changeTitle: "",
-            changeDes: "",
-            editor: null,
-            showNode: {}
-        },
-        beforeMount: function(){
-            // 用户信息
-            axios.get("/user/getUserInfo")
-                .then(response => {
-                    if (response.data !== ""){
-                        this.isLogin = true
-                        this.userVo = response.data
-                    }else{
-                        this.isLogin = false
-                    }
-                })
-                .catch(error => console.log(error))
-            // 最高点赞
-            axios.get("/public/getTopStar?n=5")
-                .then(response => {
-                    this.topStar = response.data
-                })
-                .catch(error => console.log(error))
-            // 最高收藏
-            axios.get("/public/getTopCollect?n=5")
-                .then(response => {
-                    this.topCollect = response.data
-                })
-                .catch(error => console.log(error))
-        },
-        mounted: function() {
-
-            this.userId = document.getElementById('userId').value
-            this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
-            axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
-                .then(response => {
-                    this.size = response.data
-                })
-                .catch(error => console.log(error))
-        },
-        methods: {
-            toReply: function(){
-                this.aItemActive = "active item"
-                this.bItemActive = "item"
-                this.cItemActive = "item"
-                this.isReply = true
-                this.isIterator = false
-                this.isSuggest = false
+    <script type="text/javascript">
+        let app = new Vue({
+            el: '#app',
+            data: {
+                userVo: {},
+                userId: -1,
+                topStar: [],
+                topCollect: [],
+                isLogin: false,
+                str: "",
+                size: 0,
+                notices: [],
+                pageNumber: 0,
+                pageSize: 5,
+                message: "",
+                node: {},
+                index: -1,
+                url: "",
+                nodeId: -1,
+                whoId: -1,
+                reason: "",
+                noticeId: -1,
+                aItemActive: "active item",
+                bItemActive: "item",
+                cItemActive: "item",
+                isReply: true,
+                isIterator: false,
+                isSuggest: false,
+                number: 0,
+                nitNumber: 1,
+                nit: [],
+                sit: [],
+                suggest: {},
+                changeTitle: "",
+                changeDes: "",
+                editor: null,
+                showNode: {}
+            },
+            beforeMount: function(){
+                // 用户信息
+                axios.get("/user/getUserInfo")
+                    .then(response => {
+                        if (response.data !== ""){
+                            this.isLogin = true
+                            this.userVo = response.data
+                        }else{
+                            this.isLogin = false
+                        }
+                    })
+                    .catch(error => console.log(error))
+                // 最高点赞
+                axios.get("/public/getTopStar?n=5")
+                    .then(response => {
+                        this.topStar = response.data
+                    })
+                    .catch(error => console.log(error))
+                // 最高收藏
+                axios.get("/public/getTopCollect?n=5")
+                    .then(response => {
+                        this.topCollect = response.data
+                    })
+                    .catch(error => console.log(error))
+            },
+            mounted: function() {
+                this.userId = document.getElementById('userId').value
+                this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
                 axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
                     .then(response => {
                         this.size = response.data
                     })
                     .catch(error => console.log(error))
-                this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
             },
-            toIterator: function(){
-                this.aItemActive = "item"
-                this.bItemActive = "active item"
-                this.cItemActive = "item"
-                this.isReply = false
-                this.isIterator = true
-                this.isSuggest = false
-                axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
-                    .then(response => {
-                        this.nubmer = response.data
-                        this.nitNumber = 1
-                    })
-                    .catch(error => console.log(error))
-                this.prepare(false)
-            },
-            toSuggest: function(){
-                this.aItemActive = "item"
-                this.bItemActive = "item"
-                this.cItemActive = "active item"
-                this.isReply = false
-                this.isIterator = false
-                this.isSuggest = true
-                axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
-                    .then(response => {
-                        this.nubmer = response.data
-                        this.nitNumber = 1
-                    })
-                    .catch(error => console.log(error))
-                this.prepare(true)
-            },
-            toPre: function(flag){
-                if (this.nitNumber > 1){
-                    this.nitNumber --;
-                    this.prepare(flag)
-                }
-            },
-            toNex: function(flag){
-                if (this.nitNumber < this.number){
-                    this.nitNumber ++;
-                    this.prepare(flag)
-                }
-            },
-            prepare: function(flag){
-                if (flag){
-                    axios.get("/person/public/getSuggestNotice?pageNumber=" + this.nitNumber + "&pageSize=" + this.pageSize
-                        + "&message=" + this.message)
+            methods: {
+                toYes: function(index, noticeId, flag){
+                    this.index = index
+                    this.noticeId = noticeId
+                    this.flag = flag
+                    $('.ui.yes.basic.modal').modal('show');
+                },
+                toRej: function(index, noticeId){
+                    this.index = index
+                    this.noticeId = noticeId
+                    $('.ui.rej.basic.modal').modal('show');
+                },
+                toAgr: function(index, noticeId){
+                    this.index = index
+                    this.noticeId = noticeId
+                    $('.ui.agr.basic.modal').modal('show');
+                },
+                toShow: function(nodeId){
+                    axios.get("/private/getNode?nodeId=" + nodeId)
                         .then(response => {
-                            this.sit = response.data
+                            this.node = response.data
+                            if (this.node.content === null){
+                                this.node.content = "空内容";
+                            }
+                            document.getElementById('content').innerHTML = marked(this.node.content
+                                , {
+                                    baseUrl: null,
+                                    breaks: true,
+                                    gfm: true,
+                                    headerIds: true,
+                                    headerPrefix: '',
+                                    highlight: function(code, language){
+                                        const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+                                        return hljs.highlight(validLanguage, code).value;
+                                    },
+                                    langPrefix: 'language-',
+                                    mangle: true,
+                                    pedantic: false,
+                                    renderer: new marked.Renderer(),
+                                    silent: false,
+                                    smartLists: true,
+                                    smartypants: true,
+                                    xhtml: true
+                                });
+                            hljs.highlightAll()
+                            $('.ui.show.fullscreen.modal').modal('show');
                         })
                         .catch(error => console.log(error))
-                }
-                else{
-                    axios.get("/person/public/getIteratorNotice?pageNumber=" + this.nitNumber + "&pageSize=" + this.pageSize
-                        + "&message=" + this.message)
+                },
+                searchNotice: function(){
+                    axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
                         .then(response => {
-                            this.nit = response.data
+                            this.size = response.data
                         })
                         .catch(error => console.log(error))
-                }
+                    this.preparePage(userId, 0, 5, this.message)
+                },
+                preparePage: function(userId, pageNumber, pageSize, message) {
+                    if (this.userId === "1"){
+                        axios.get("/person/public/getPublicNotice?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&message=" + message)
+                            .then(response => {
+                                if (response.data !== null){
+                                    this.notices = response.data
+                                }
+                            })
+                            .catch(error => console.log(error))
+                    }
+                },
+                toPrePage: function() {
+                    if (this.pageNumber > 0) {
+                        this.pageNumber -= 1
+                        this.preparePage(this.userId, this.pageNumber, this.pageSize, this.message)
+                    }
+                },
+                toNexPage: function() {
+                    let all = this.size - (this.pageNumber + 1) * this.pageSize
+                    if (all > 0) {
+                        this.pageNumber += 1
+                        all = all > this.pageSize ? this.pageSize : all
+                        this.preparePage(this.userId, this.pageNumber, all, this.message)
+                    }
+                },
+                toMenu: function() {
+                    $('.ui.labeled.icon.sidebar').sidebar('toggle');
+                },
+                logout: function(){
+                    axios.get("/private/logout")
+                        .then(response => {
+                            this.isLogin = response.data !== 1;
+                        })
+                        .catch(error => console.log(error))
+                },
+                search: function() {
+                    if (this.str === "") {
+                        alert("请输入搜索内容")
+                    } else {
+                        window.location.href = "/private/search/?pageNumber=1&pageSize=6&str=" + this.str
+                    }
+                },
+                toReply: function(){
+                    this.aItemActive = "active item"
+                    this.bItemActive = "item"
+                    this.cItemActive = "item"
+                    this.isReply = true
+                    this.isIterator = false
+                    this.isSuggest = false
+                    axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
+                        .then(response => {
+                            this.size = response.data
+                        })
+                        .catch(error => console.log(error))
+                    this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
+                },
 
-            },
-            searchNit: function(flag){
-                if (flag){
-                    axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
-                        .then(response => {
-                            this.nubmer = response.data
-                            this.prepare(true)
-                        })
-                        .catch(error => console.log(error))
-                }
-                else{
+                toIterator: function(){
+                    this.aItemActive = "item"
+                    this.bItemActive = "active item"
+                    this.cItemActive = "item"
+                    this.isReply = false
+                    this.isIterator = true
+                    this.isSuggest = false
                     axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
                         .then(response => {
                             this.nubmer = response.data
-                            this.prepare(false)
+                            this.nitNumber = 1
                         })
                         .catch(error => console.log(error))
-                }
-            },
-            toRej: function(index, noticeId, url){
-                this.index = index
-                this.noticeId = noticeId
-                $('.ui.rej.basic.modal').modal('show');
-            },
-            toAgr: function(index, noticeId, url){
-                this.index = index
-                this.noticeId = noticeId
-                $('.ui.agr.basic.modal').modal('show');
-            },
-            toYes: function(index, noticeId){
-                this.index = index
-                this.noticeId = noticeId
-                $('.ui.yes.basic.modal').modal('show');
-            },
-            toReject: function(index, nodeId, userId, noticeId){
-                this.index = index
-                this.nodeId = nodeId
-                this.whoId = userId
-                this.noticeId = noticeId
-                $('.ui.reject.basic.modal').modal('show');
-            },
-            toAgree: function(index, dealUrl){
-                this.index = index
-                this.url = dealUrl
-                $('.ui.agree.basic.modal').modal('show');
-            },
-            toShow: function(nodeId){
-                axios.get("/private/getNode?nodeId=" + nodeId)
-                    .then(response => {
-                        this.node = response.data
-                        if (this.node.content === null){
-                            this.node.content = "空内容";
-                        }
-                        document.getElementById('content').innerHTML = marked(this.node.content
-                            , {
-                                baseUrl: null,
-                                breaks: true,
-                                gfm: true,
-                                headerIds: true,
-                                headerPrefix: '',
-                                highlight: function(code, language){
-                                    const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-                                    return hljs.highlight(validLanguage, code).value;
-                                },
-                                langPrefix: 'language-',
-                                mangle: true,
-                                pedantic: false,
-                                renderer: new marked.Renderer(),
-                                silent: false,
-                                smartLists: true,
-                                smartypants: true,
-                                xhtml: true
-                            });
-                        hljs.highlightAll()
-                        $('.ui.show.fullscreen.modal').modal('show');
-                    })
-                    .catch(error => console.log(error))
-            },
-            searchNotice: function(){
-                axios.get("/person/public/getPublicNoticeCount?message=" + this.message)
-                    .then(response => {
-                        this.size = response.data
-                    })
-                    .catch(error => console.log(error))
-                this.preparePage(userId, 0, 5, this.message)
-            },
-            preparePage: function(userId, pageNumber, pageSize, message) {
-                if (this.userId === "1"){
-                    axios.get("/person/public/getPublicNotice?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&message=" + message)
+                    this.prepare(false)
+                },
+                toSuggest: function(){
+                    this.aItemActive = "item"
+                    this.bItemActive = "item"
+                    this.cItemActive = "active item"
+                    this.isReply = false
+                    this.isIterator = false
+                    this.isSuggest = true
+                    axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
                         .then(response => {
-                            if (response.data !== null){
-                                this.notices = response.data
-                            }
+                            this.nubmer = response.data
+                            this.nitNumber = 1
                         })
                         .catch(error => console.log(error))
+                    this.prepare(true)
+                },
+                toPre: function(flag){
+                    if (this.nitNumber > 1){
+                        this.nitNumber --;
+                        this.prepare(flag)
+                    }
+                },
+                toNex: function(flag){
+                    if (this.nitNumber < this.number){
+                        this.nitNumber ++;
+                        this.prepare(flag)
+                    }
+                },
+                prepare: function(flag){
+                    if (flag){
+                        axios.get("/person/public/getSuggestNotice?pageNumber=" + this.nitNumber + "&pageSize=" + this.pageSize
+                            + "&message=" + this.message)
+                            .then(response => {
+                                this.sit = response.data
+                            })
+                            .catch(error => console.log(error))
+                    }
+                    else{
+                        axios.get("/person/public/getIteratorNotice?pageNumber=" + this.nitNumber + "&pageSize=" + this.pageSize
+                            + "&message=" + this.message)
+                            .then(response => {
+                                this.nit = response.data
+                            })
+                            .catch(error => console.log(error))
+                    }
+                },
+                searchNit: function(flag){
+                    if (flag){
+                        axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
+                            .then(response => {
+                                this.nubmer = response.data
+                                this.prepare(true)
+                            })
+                            .catch(error => console.log(error))
+                    }
+                    else{
+                        axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
+                            .then(response => {
+                                this.nubmer = response.data
+                                this.prepare(false)
+                            })
+                            .catch(error => console.log(error))
+                    }
+                },
+                toReject: function(index, nodeId, userId, noticeId){
+                    this.index = index
+                    this.nodeId = nodeId
+                    this.whoId = userId
+                    this.noticeId = noticeId
+                    $('.ui.reject.basic.modal').modal('show');
+                },
+                toAgree: function(index, dealUrl){
+                    this.index = index
+                    this.url = dealUrl
+                    $('.ui.agree.basic.modal').modal('show');
+                },
+                toChange: function(index, noticeId, nodeId){
+                    this.index = index
+                    toChangeNoticeAndBlog(noticeId, nodeId)
+                },
+                toShowSuggest: function(suggestId){
+                    toShowSug(suggestId)
+                },
+                toStop: function(index, noticeId){
+                    $('.ui.rejectSuggest.basic.modal')
+                        .modal('setting',{
+                            closable  : false,
+                            blurring: true,
+                            onDeny    : function(){
+                                return true;
+                            },
+                            onApprove : function(){
+                                if (app.reason.length === 0){
+                                    alert("拒绝理由不能为空")
+                                    return false;
+                                }
+                                let rej = new FormData()
+                                rej.append("noticeId", noticeId)
+                                rej.append("message", app.reason)
+                                axios.post('/person/public/errorSuggestNotice', rej,
+                                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                                    .then(response => {
+                                        if (!response.data.includes("#")){
+                                            app.sit.splice(index, 1)
+                                        }
+                                        alert(response.data)
+                                        return true;
+                                    })
+                                    .catch(error => {alert("拒绝失败");return false;})
+                            },
+                        })
+                        .modal('hide others')
+                        .modal('show')
                 }
-            },
-            toPrePage: function() {
-                if (this.pageNumber > 0) {
-                    this.pageNumber -= 1
-                    this.preparePage(this.userId, this.pageNumber, this.pageSize, this.message)
-                }
-            },
-            toNexPage: function() {
-                let all = this.size - (this.pageNumber + 1) * this.pageSize
-                if (all > 0) {
-                    this.pageNumber += 1
-                    all = all > this.pageSize ? this.pageSize : all
-                    this.preparePage(this.userId, this.pageNumber, all, this.message)
-                }
-            },
-            toMenu: function() {
-                $('.ui.labeled.icon.sidebar').sidebar('toggle');
-            },
-            logout: function(){
-                axios.get("/private/logout")
-                    .then(response => {
-                        this.isLogin = response.data !== 1;
-                    })
-                    .catch(error => console.log(error))
-            },
-            search: function() {
-                if (this.str === "") {
-                    alert("请输入搜索内容")
-                } else {
-                    window.location.href = "/private/search/?pageNumber=1&pageSize=6&str=" + this.str
-                }
-            },
-            toChange: function(noticeId, nodeId){
-                toChangeNoticeAndBlog(noticeId, nodeId)
-            },
-            toShowSuggest: function(suggestId){
-                toShowSug(suggestId)
             }
-        }
-    })
-    $(document).on('click', '#reject', function() {
-        let vo = new FormData()
-        vo.append("nodeId", app.nodeId)
-        vo.append("userId", app.whoId)
-        vo.append("message", app.reason)
-        vo.append("noticeId", app.noticeId)
-        axios.post('/person/public/errorPublicNodeNotice', vo,
-            {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
-            .then(response => {
-                let msg = response.data
-                if (!msg.includes("#")){
-                    app.notices.splice(app.index, 1)
-                }
-                alert(response.data)})
-            .catch(error => console.log(error))
-    })
-    $(document).on('click', '#agree', function() {
-        axios.get('/person/public/' + app.url)
-            .then(response => {
-                let msg = response.data
-                if (!msg.includes("#")){
-                    app.notices.splice(app.index, 1)
-                }
-                alert(msg)
-            })
-            .catch(error => console.log(error))
-    })
-    $(document).on('click', '#yesButton', function() {
-        axios.get('/person/public/dealReplyNotice/' + app.noticeId)
-            .then(response => {
-                let msg = response.data
-                if (!msg.includes("#")){
-                    app.nit.splice(app.index, 1)
-                }
-                alert(msg)
-            })
-            .catch(error => console.log(error))
-    })
-    $(document).on('click', '#rejButton', function() {
-        axios.get('/person/public/errorIteratorNotice?noticeId=' + app.noticeId)
-            .then(response => {
-                let msg = response.data
-                if (!msg.includes("#")){
-                    app.nit.splice(app.index, 1)
-                }
-                alert(msg)
-            })
-            .catch(error => console.log(error))
-    })
-    $(document).on('click', '#agrButton', function() {
-        axios.get('/person/public/dealIteratorNotice?noticeId=' + app.noticeId)
-            .then(response => {
-                let msg = response.data
-                if (!msg.includes("#")){
-                    app.nit.splice(app.index, 1)
-                }
-                alert(msg)
-            })
-            .catch(error => console.log(error))
-    })
-</script>
-<script type="text/javascript" th:src="@{/js/showPrivate.js}"></script>
+        })
+        $(document).on('click', '#reject', function() {
+            let vo = new FormData()
+            vo.append("nodeId", app.nodeId)
+            vo.append("userId", app.whoId)
+            vo.append("message", app.reason)
+            vo.append("noticeId", app.noticeId)
+            axios.post('/person/public/errorPublicNodeNotice', vo,
+                {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                .then(response => {
+                    let msg = response.data
+                    if (!msg.includes("#")){
+                        app.notices.splice(app.index, 1)
+                    }
+                    alert(response.data)})
+                .catch(error => console.log(error))
+        })
+        $(document).on('click', '#agree', function() {
+            axios.get('/person/public/' + app.url)
+                .then(response => {
+                    let msg = response.data
+                    if (!msg.includes("#")){
+                        app.notices.splice(app.index, 1)
+                    }
+                    alert(msg)
+                })
+                .catch(error => console.log(error))
+        })
+        $(document).on('click', '#yesButton', function() {
+            axios.get('/person/public/dealReplyNotice/' + app.noticeId)
+                .then(response => {
+                    let msg = response.data
+                    if (!msg.includes("#")){
+                        !app.flag ? app.nit.splice(app.index, 1) : app.nit.splice(app.index, 1)
+                    }
+                    alert(msg)
+                })
+                .catch(error => console.log(error))
+        })
+        $(document).on('click', '#rejButton', function() {
+            axios.get('/person/public/errorIteratorNotice?noticeId=' + app.noticeId)
+                .then(response => {
+                    let msg = response.data
+                    if (!msg.includes("#")){
+                        app.nit.splice(app.index, 1)
+                    }
+                    alert(msg)
+                })
+                .catch(error => console.log(error))
+        })
+        $(document).on('click', '#agrButton', function() {
+            axios.get('/person/public/dealIteratorNotice?noticeId=' + app.noticeId)
+                .then(response => {
+                    let msg = response.data
+                    if (!msg.includes("#")){
+                        app.nit.splice(app.index, 1)
+                    }
+                    alert(msg)
+                })
+                .catch(error => console.log(error))
+        })
+    </script>
+    <script type="text/javascript" th:src="@{/js/showPrivate.js}"></script>
 </body>
 </html>

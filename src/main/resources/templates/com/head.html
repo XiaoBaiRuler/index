@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
+    <!--必须依赖-->
     <span th:fragment="head">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,63 @@
         <script type="text/javascript" th:src="@{/item/semantic_ui/semantic.min.js}"></script>
         <script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
         <script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+    </span>
+    <span th:fragment="cdnHead">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link rel="shortcut icon"
+              href="http://www.xiaobais.net:8080/image/5c81daa08ec0fdaacbccd40b9e905838/avatar/favicon.ico" >
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+              integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ=="
+              crossorigin="anonymous" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+                integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"
+                integrity="sha512-dqw6X88iGgZlTsONxZK9ePmJEFrmHwpuMrsUChjAw1mRUhUITE5QU9pkcSox+ynfLhL15Sv2al5A0LVyDCmtUw=="
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.1/vue.min.js"
+                integrity="sha512-IlIQ4xmw/lhSI27X3oMYzqKX+35vYBxzd9077OVAyuLmzMvPDnMovSAYY134zGclfHaV/mVKX6T19kwurr01SA=="
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous"></script>
+    </span>
+    <!--编辑依赖-->
+    <span th:fragment="editHead">
+        <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
+        <link rel="stylesheet" th:href="@{/item/editormd/css/editormd.css}">
+        <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
+        <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
+        <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
+        <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
+        <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
+        <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+        <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
+        <script type="text/javascript" th:src="@{/js/wangEditor.min.js}"></script>
+    </span>
+    <span th:fragment="cdnEditHead">
+        <link rel="stylesheet"
+              href="http://www.xiaobais.net:8080/image/5c81daa08ec0fdaacbccd40b9e905838/item/jsmind/style/jsmind.css">
+        <link rel="stylesheet" th:href="@{/item/editormd/css/editormd.css}">
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/monokai-sublime.min.css"
+              integrity="sha512-/l4iViNMhxR5MhSlak3Yw/L/7qUBifVy7MpLjeJTc8BPMRFbGplGN0xqufCDwhSdxSnVgy+e/OYsNnU75K3yyQ=="
+              crossorigin="anonymous" />
+        <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"
+                integrity="sha512-t1jq1b5U4hgz4lQoeyRD9QiVu99KxjyA939fnND+R+gLOHmuT5F9YFHJI1Nse1B1QG6/U11SPAc8fshYshb6MA=="
+                crossorigin="anonymous"></script>
+        <script src="http://www.xiaobais.net:8080/image/5c81daa08ec0fdaacbccd40b9e905838/item/highlight/highlight.pack.js"></script>
+        <script type="text/javascript"
+                src="http://www.xiaobais.net:8080/image/5c81daa08ec0fdaacbccd40b9e905838/item/jsmind/js/jsmind.js"></script>
+        <script type="text/javascript"
+                src="http://www.xiaobais.net:8080/image/5c81daa08ec0fdaacbccd40b9e905838/item/jsmind/js/jsmind.draggable.js"></script>
+        <script type="text/javascript"
+                src="http://www.xiaobais.net:8080/image/5c81daa08ec0fdaacbccd40b9e905838/item/jsmind/features/jsmind.shell.js"></script>
+        <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/wangEditor/3.1.1/wangEditor.min.js"
+                integrity="sha512-ZvmeXHeujug5oVY618qOKtgL4ks4L3f1Izo19TZgTz5N26ZP+5thTkGcdFvs0yuXDNrutbGEAAfEOKvy9onlcw=="
+                crossorigin="anonymous"></script>
     </span>
 </body>
 </html>

@@ -5,9 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.service.BlogService;
+import net.xiaobais.xiaobai.service.CacheService;
 import net.xiaobais.xiaobai.service.PublicNodeService;
 import net.xiaobais.xiaobai.utils.JwtUtils;
-import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import net.xiaobais.xiaobai.vo.UserVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @Author xiaobai
@@ -34,30 +32,46 @@ public class IndexController {
     private PublicNodeService nodeService;
     @Resource
     private BlogService blogService;
+    @Resource
+    private CacheService cacheService;
 
     private static final int SIZE = 1000;
 
+    private static final String NODE_CACHE = "/public/node/";
+    private static final String BLOG_CACHE = "/public/blog/";
 
 
     @ApiOperation("公开首页")
     @GetMapping({"/index","/"})
     public String index(Model model) {
-
-        Node index = nodeService.findIndex();
-        Blog blog = blogService.findBlogById(index.getBlogId());
-        model.addAttribute("nodeId", index.getNodeId());
+        Node node = cacheService.getNodeByKey(NODE_CACHE + 1);
+        if (node == null){
+            node = nodeService.findIndex();
+        }
+        Blog blog = cacheService.getBlogByKey(BLOG_CACHE + node.getBlogId());
+        if (blog == null){
+            blog = blogService.findBlogById(node.getBlogId());
+        }
+        model.addAttribute("nodeId", node.getNodeId());
         model.addAttribute("html", blog.getBlogContent());
         model.addAttribute("flag", false);
-        model.addAttribute("mostCollect", nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
-        model.addAttribute("mostStar", nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
         return "index";
     }
 
     @ApiOperation("公开节点页")
     @GetMapping("/public/node/{nodeId}")
     public String node(@PathVariable Integer nodeId, Model model){
-        Node node = nodeService.findNodeById(nodeId);
-        Blog blog = blogService.findBlogById(node.getBlogId());
+        Node node = cacheService.getNodeByKey(NODE_CACHE + nodeId);
+        if (node == null){
+            node = nodeService.findPublicNodeByNodeId(nodeId);
+        }
+        else if (node.getIsPrivate()){
+            return "/error/403";
+        }
+        Blog blog = cacheService.getBlogByKey(BLOG_CACHE + node.getBlogId());
+        if (blog == null){
+            blog = blogService.findBlogById(node.getBlogId());
+        }
         model.addAttribute("nodeId", nodeId);
         model.addAttribute("html", blog.getBlogContent());
         if (blog.getBlogContent() != null && blog.getBlogContent().length() > SIZE) {
@@ -66,8 +80,6 @@ public class IndexController {
         else {
             model.addAttribute("flag", true);
         }
-        model.addAttribute("mostCollect", nodeToSimpleNodeVo(nodeService.findNodeByTopCollect(5)));
-        model.addAttribute("mostStar", nodeToSimpleNodeVo(nodeService.findNodeByTopStar(5)));
         return "index";
     }
 
@@ -94,18 +106,6 @@ public class IndexController {
             return JwtUtils.getUserVo(token);
         }
         return null;
-    }
-
-    private List<SimpleNodeVo> nodeToSimpleNodeVo(List<Node> nodes){
-        List<SimpleNodeVo> simpleNodeVos = new ArrayList<>(nodes.size());
-        nodes.forEach(node -> {
-                SimpleNodeVo vo = new SimpleNodeVo();
-                vo.setUrl("/public/node/" + node.getNodeId());
-                vo.setTitle(node.getNodeName());
-                simpleNodeVos.add(vo);
-            }
-        );
-        return simpleNodeVos;
     }
 
 }

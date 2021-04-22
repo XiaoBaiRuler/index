@@ -50,6 +50,49 @@ public class PrivateNodeController {
     private PublicNodeService publicNodeService;
     @Resource
     private CommentService commentService;
+    @Resource
+    private CacheService cacheService;
+
+    private static final String NODE_CACHE = "/public/node/";
+    private static final String BLOG_CACHE = "/public/blog/";
+
+    @ApiOperation("获取节点内容(获取缓存)")
+    @GetMapping("/getNode")
+    @ResponseBody
+    public PrivateNodeVo getNode(@RequestParam Integer nodeId, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        // 缓存信息
+        Node node = cacheService.getNodeByKey(NODE_CACHE + nodeId);
+        Blog blog;
+        if (node != null){
+            blog = cacheService.getBlogByKey(BLOG_CACHE + node.getBlogId());
+            if (blog == null){
+                blog = blogService.findBlogById(node.getBlogId());
+            }
+            if ( userId == 1 || !node.getIsPrivate() || node.getUserId().equals(userId)){
+                return nodeToPublicNodeVo(node, blog, userId);
+            }
+        }
+        else {
+            // 管理员公开节点
+            node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
+            // 管理员管理所有节点
+            if (node == null && userId == 1){
+                node = privateNodeService.findNodeByNodeId(nodeId);
+            }
+            assert node != null;
+            blog = blogService.findBlogById(node.getBlogId());
+            // 添加缓存
+            cacheService.setNodeByKey(NODE_CACHE + node.getNodeId(), node);
+            cacheService.setBlogByKey(BLOG_CACHE + node.getBlogId(), blog);
+            return nodeToPublicNodeVo(node, blog, userId);
+        }
+        return null;
+    }
 
     @ApiOperation("获取私有前置节点")
     @GetMapping("/getPreNode")
@@ -265,20 +308,6 @@ public class PrivateNodeController {
             throw new Exception("后置关系添加失败");
         }
     }
-    
-    @ApiOperation("获取节点内容")
-    @GetMapping("/getNode")
-    @ResponseBody
-    public PrivateNodeVo getNode(@RequestParam Integer nodeId, HttpServletRequest request){
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null){
-            return null;
-        }
-        Integer id = JwtUtils.getUserId(cookies[0].getValue());
-        Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,id);
-        Blog blog = blogService.findBlogById(node.getBlogId());
-        return nodeToPublicNodeVo(node,blog, id);
-    }
 
     @ApiOperation("获取节点内容")
     @GetMapping("/getNodeByUserId")
@@ -341,6 +370,8 @@ public class PrivateNodeController {
             }
             else{
                 if (deleteNode(nodeId, node.getMapId(), node.getBlogId())){
+                    cacheService.deleteNodeByKey(NODE_CACHE + nodeId);
+                    cacheService.deleteNodeByKey(BLOG_CACHE + node.getBlogId());
                     return "删除前置节点成功";
                 }
             }
@@ -353,6 +384,8 @@ public class PrivateNodeController {
             }
             else{
                 if (deleteNode(nodeId, node.getMapId(), node.getBlogId())){
+                    cacheService.deleteNodeByKey(NODE_CACHE + nodeId);
+                    cacheService.deleteNodeByKey(BLOG_CACHE + node.getBlogId());
                     return "删除后置节点成功";
                 }
             }
@@ -367,13 +400,10 @@ public class PrivateNodeController {
     public void updateNode(@PathVariable Integer nodeId, UpdatePrivateVo updateVo,
                               HttpServletRequest request) throws Exception {
         Cookie[] cookies = request.getCookies();
-        Integer userId = -1;
-        if (cookies != null){
-            userId = JwtUtils.getUserId(cookies[0].getValue());
+        if (cookies == null){
+            return;
         }
-        else{
-            throw new Exception("用户权限不足");
-        }
+        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
         if ("".equals(updateVo.getTitle()) || "".equals(updateVo.getDesc()) || "".equals(updateVo.getBlogContent())){
             return;
         }
@@ -382,12 +412,14 @@ public class PrivateNodeController {
             if (privateNodeService.updateNodeByNodeId(nodeId, updateVo.getTitle()) == -1){
                 throw new Exception("更新标题失败");
             }
+            cacheService.deleteNodeByKey(NODE_CACHE + nodeId);
         }
         if (updateVo.getSelect().contains("1")){
             if (blogService.updateBlogByBlogId(node.getBlogId(), updateVo.getTitle(),
                     updateVo.getBlogContent(), updateVo.getDesc()) == -1){
                 throw new Exception("更新博客内容失败");
             }
+            cacheService.deleteBlogByKey(BLOG_CACHE + node.getBlogId());
         }
         if (updateVo.getSelect().contains("2")){
             if (mapService.updateMapByMapId(node.getMapId(), updateVo.getMapData()) == -1){

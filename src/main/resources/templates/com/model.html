@@ -101,6 +101,7 @@
             </div>
         </div>
     </div>
+
     <!--删除前置节点-->
     <div class="ui pre modal" th:fragment="deletePreModel">
         <i class="close icon"></i>
@@ -139,6 +140,7 @@
             </div>
         </div>
     </div>
+
     <!--发布博客-->
     <div class="ui submit modal" th:fragment="submitModel">
         <i class="close icon"></i>
@@ -211,7 +213,7 @@
             </div>
         </div>
     </div>
-    <!--确认通知-->
+    <!--同意发布-->
     <div class="ui agree basic modal" th:fragment="agreeModel">
         <div class="ui icon header">
             <i class="archive icon"></i>
@@ -228,7 +230,7 @@
             </div>
         </div>
     </div>
-
+    <!--确认通知-->
     <div class="ui yes basic modal" th:fragment="yesModel">
         <div class="ui icon header">
             <i class="archive icon"></i>
@@ -245,7 +247,7 @@
             </div>
         </div>
     </div>
-
+    <!--驳回迭代-->
     <div class="ui rej basic modal" th:fragment="rejModel">
         <div class="ui icon header">
             <i class="archive icon"></i>
@@ -270,7 +272,7 @@
             </div>
         </div>
     </div>
-
+    <!--同意迭代-->
     <div class="ui agr basic modal" th:fragment="agrModel">
         <div class="ui icon header">
             <i class="archive icon"></i>
@@ -287,7 +289,53 @@
             </div>
         </div>
     </div>
+    <!--拒绝建议-->
+    <div class="ui rejectSuggest basic modal" th:fragment="rejectSuggestModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否拒绝建议?
+        </div>
+        <div class="ui content">
+            <div class="ui inverted form">
+                <div class="field">
+                    <label>拒绝理由</label>
+                    <textarea rows="2" name="reason" v-model="reason"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
 
+    <!--展现建议节点-->
+    <div class="ui showSuggest fullscreen modal" th:fragment="showIndexSuggestModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui container" style="width: 80%;">
+                <div class="ui stacked segment">
+                    <div class="ui header">问题1:{{suggest.question}}</div>
+                    <p>方案:</p>
+                    <div v-html="suggest.suggest"></div>
+                    <div class="ui header">问题2:{{suggest.extend}}</div>
+                    <p>方案:</p>
+                    <div v-html="suggest.extendSuggest"></div>
+                    <div class="ui header">前置节点建议:</div>
+                    <div v-html="suggest.previousSuggest"></div>
+                    <div class="ui header">后置节点建议</div>
+                    <div v-html="suggest.nextSuggest"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--展现节点文本内容-->
     <div class="ui show fullscreen modal" th:fragment="showModel">
         <i class="close icon"></i>
         <div class="content">
@@ -299,7 +347,7 @@
             </div>
         </div>
     </div>
-
+    <!--展现节点文本内容-->
     <div class="ui showBlog fullscreen modal" th:fragment="showIndexBlogModel">
         <i class="close icon"></i>
         <div class="content">
@@ -311,7 +359,7 @@
             </div>
         </div>
     </div>
-
+    <!--展现节点导图内容-->
     <div class="ui showMap fullscreen modal" th:fragment="showIndexMapModel">
         <i class="close icon"></i>
         <div class="content">
@@ -322,7 +370,7 @@
             </div>
         </div>
     </div>
-
+    <!--修改博客内容-->
     <div class="ui changeBlog fullscreen modal" th:fragment="changeBlogModel">
         <i class="close icon"></i>
         <div class="content">
@@ -353,7 +401,7 @@
             </div>
         </div>
     </div>
-
+    <!--删除博客节点-->
     <div class="ui deleteBlog basic modal" th:fragment="deleteBlogModel">
         <div class="ui icon header">
             <i class="archive icon"></i>
@@ -370,26 +418,6 @@
             <div class="ui green ok inverted button" id="deleteBlogModel">
                 <i class="checkmark icon"></i>
                 是
-            </div>
-        </div>
-    </div>
-
-    <div class="ui showSuggest fullscreen modal" th:fragment="showIndexSuggestModel">
-        <i class="close icon"></i>
-        <div class="content">
-            <div class="ui container" style="width: 80%;">
-                <div class="ui stacked segment">
-                    <div class="ui header">问题1:{{suggest.question}}</div>
-                    <p>方案:</p>
-                    <div v-html="suggest.suggest"></div>
-                    <div class="ui header">问题2:{{suggest.extend}}</div>
-                    <p>方案:</p>
-                    <div v-html="suggest.extendSuggest"></div>
-                    <div class="ui header">前置节点建议:</div>
-                    <div v-html="suggest.previousSuggest"></div>
-                    <div class="ui header">后置节点建议</div>
-                    <div v-html="suggest.nextSuggest"></div>
-                </div>
             </div>
         </div>
     </div>

@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <span th:replace="com/head :: head"></span>
+    <span th:replace="com/head :: cdnhead"></span>
     <title >添加迭代节点</title>
-    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
-    <link rel="stylesheet" th:href="@{/item/editormd/css/editormd.css}">
-    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
-    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
-    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
-    <script type="text/javascript" th:src="@{/item/editormd/editormd.min.js}"></script>
+    <span th:replace="com/head :: cdnEditHead"></span>
     <style type="text/css">
         table{
             border: 1px solid skyblue;

@@ -241,5 +241,17 @@
             通知管理
         </a>
     </div>
+    <!--pointingMenu-->
+    <div class="ui pointing menu" th:fragment="pointingMenu">
+        <a :class="aItemActive" @click="toReply">
+            反馈通知
+        </a>
+        <a :class="bItemActive" @click="toIterator">
+            迭代通知
+        </a>
+        <a :class="cItemActive" @click="toSuggest">
+            建议通知
+        </a>
+    </div>
 </body>
 </html>

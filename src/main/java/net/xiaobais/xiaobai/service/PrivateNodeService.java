@@ -13,12 +13,13 @@ import java.util.List;
 public interface PrivateNodeService {
 
     /**
-     * 查找属于UserId
+     * 查找属于UserId，管理员可以查看所有公开节点
      * @param nodeId nodeId
      * @param userId userId
      * @return Node
      */
     Node findNodeByNodeIdAndIsPrivateAndUserId(Integer nodeId, Integer userId);
+
 
     /**
      * 管理员查找用户的私有节点

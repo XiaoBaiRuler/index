@@ -258,6 +258,10 @@ function toChangeNoticeAndBlog(noticeId, nodeId){
                             .then(response => {
                                 axios.get('/person/public/dealSuggestNotice?noticeId=' + noticeId)
                                     .then(res => {
+                                        if (!res.data.includes("#")){
+                                            alert(res.data)
+                                            app.sit.splice(app.index, 1)
+                                        }
                                         alert(res.data)
                                     })
                                 return true;

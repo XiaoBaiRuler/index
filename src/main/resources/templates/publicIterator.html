@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <span th:replace="com/head :: head"></span>
+    <span th:replace="com/head :: cdnHead"></span>
     <title >index</title>
-    <link rel="stylesheet" th:href="@{/item/jsmind/style/jsmind.css}">
-    <link rel="stylesheet" th:href="@{/item/highlight/styles/monokai-sublime.css}">
-    <script type="text/javascript" th:src="@{/item/marked-master/marked.min.js}"></script>
-    <script type="text/javascript" th:src="@{/item/highlight/highlight.pack.js}"></script>
-    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.js}"></script>
-    <script type="text/javascript" th:src="@{/item/jsmind/js/jsmind.draggable.js}"></script>
-    <script type="text/javascript" th:src="@{/item/jsmind/features/jsmind.shell.js}"></script>
+    <span th:replace="com/head :: cdnEditHead"></span>
     <style type="text/css">
         table{
             border: 1px solid skyblue;
