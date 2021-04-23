@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <span th:replace="com/head :: cdnhead"></span>
+    <span th:replace="com/head :: cdnHead"></span>
     <title >添加迭代节点</title>
     <span th:replace="com/head :: cdnEditHead"></span>
     <style type="text/css">
@@ -110,7 +110,7 @@
             </div>
         </div>
     </div>
-    <div class="ui container" v-show="!isNode" style="width: 80%;">
+    <div class="ui container" v-show="!isNode" style="width: 95%;">
         <div class="ui stacked segment">
             <div id="mind_container"></div>
         </div>
@@ -314,7 +314,7 @@
                     this.middle = 'eleven wide column'
                     this.right = 'three wide column'
                 } else {
-                    this.middleWidth = '80%'
+                    this.middleWidth = '95%'
                     this.left = 'three wide column'
                     this.middle = 'sixteen wide column'
                     this.right = 'three wide column'

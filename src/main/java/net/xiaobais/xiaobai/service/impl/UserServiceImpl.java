@@ -1,5 +1,6 @@
 package net.xiaobais.xiaobai.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import net.xiaobais.xiaobai.mapper.MyFansMapper;
 import net.xiaobais.xiaobai.mapper.MyFollowMapper;
 import net.xiaobais.xiaobai.mapper.MyNodeMapper;
@@ -118,5 +119,25 @@ public class UserServiceImpl implements UserService {
         publicUserVo.setLikeBlogs(myNodeMapper.countLikeNodeByUserId(userId));
         publicUserVo.setAuth(user.getIsAuth());
         return publicUserVo;
+    }
+
+    @Override
+    public List<User> getAllUsersByPageAndMessage(Integer pageNumber, Integer pageSize, String message) {
+        UserExample example = new UserExample();
+        if (!"".equals(message)){
+            example.createCriteria().andUsernameLike("%" + message + "%");
+        }
+        PageHelper.startPage(pageNumber, pageSize);
+        return userMapper.selectByExample(example);
+    }
+
+    @Override
+    public Long countAllUsersByMessage(String message) {
+        UserExample example = new UserExample();
+        if (!"".equals(message)){
+            example.createCriteria().andUsernameLike("%" + message + "%");
+        }
+        long l = userMapper.countByExample(example);
+        return l % 8 == 0 ? l / 8 : l / 8 + 1;
     }
 }

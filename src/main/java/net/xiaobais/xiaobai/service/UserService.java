@@ -79,4 +79,20 @@ public interface UserService {
      * @return PublicUserVo
      */
     PublicUserVo getPublicUserVo(Integer userId);
+
+    /**
+     * 分页获取所有用户信息
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param message message
+     * @return List<User>
+     */
+    List<User> getAllUsersByPageAndMessage(Integer pageNumber, Integer pageSize, String message);
+
+    /**
+     * 通过message模糊查询用户个数
+     * @param message message
+     * @return Long
+     */
+    Long countAllUsersByMessage(String message);
 }

@@ -63,6 +63,14 @@ public interface PublicNodeService {
     Node findNodeByNodeIdAndNotIsPrivate(Integer id);
 
     /**
+     * 根据用户Id和nodeId获取用户的公开内容
+     * @param userId userId
+     * @param nodeId nodeId
+     * @return Node
+     */
+    Node findPublicNodeByUserIdAndNodeId(Integer userId, Integer nodeId);
+
+    /**
      * 查找公开的最多收藏的5个
      * @param top top
      * @return List<Node>

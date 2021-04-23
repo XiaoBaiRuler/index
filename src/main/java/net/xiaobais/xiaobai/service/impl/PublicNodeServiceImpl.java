@@ -77,6 +77,16 @@ public class PublicNodeServiceImpl implements PublicNodeService {
     }
 
     @Override
+    public Node findPublicNodeByUserIdAndNodeId(Integer userId, Integer nodeId) {
+        NodeExample nodeExample = new NodeExample();
+        nodeExample.createCriteria().andNodeIdEqualTo(nodeId)
+                .andUserIdEqualTo(userId)
+                .andIsPrivateEqualTo(false);
+        List<Node> nodes = nodeMapper.selectByExample(nodeExample);
+        return nodes.isEmpty() ? null : nodes.get(0);
+    }
+
+    @Override
     public List<Node> findNodeByTopCollect(Integer top) {
         NodeExample nodeExample = new NodeExample();
         nodeExample.createCriteria().andIsPrivateEqualTo(false);

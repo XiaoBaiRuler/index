@@ -320,7 +320,7 @@
                     $('.ui.agr.basic.modal').modal('show');
                 },
                 toShow: function(nodeId){
-                    axios.get("/private/getNode?nodeId=" + nodeId)
+                    axios.get("/public/getNode?nodeId=" + nodeId)
                         .then(response => {
                             this.node = response.data
                             document.getElementById('content').innerHTML = marked(this.node.content
@@ -344,7 +344,7 @@
                                     xhtml: true
                                 });
                             hljs.highlightAll()
-                            $('.ui.show.modal').modal('show');
+                            $('.ui.show.fullscreen.modal').modal('show');
                         })
                         .catch(error => console.log(error))
                 },

@@ -232,7 +232,7 @@
             <i class="paper plane icon"></i>
             发布博客
         </a>
-        <a class="item" th:href="@{/person/public/toImage/}">
+        <a class="item" th:href="@{/person/public/toImage}">
             <i class="image icon"></i>
             图片管理
         </a>
@@ -251,6 +251,13 @@
         </a>
         <a :class="cItemActive" @click="toSuggest">
             建议通知
+        </a>
+    </div>
+    <!--adminBarMenu-->
+    <div class="ui left demo vertical inverted sidebar labeled icon menu" th:fragment="adminBarMenu">
+        <a class="item" th:href="@{/admin/toAdminUser}">
+            <i class="user icon"></i>
+            用户管理
         </a>
     </div>
 </body>

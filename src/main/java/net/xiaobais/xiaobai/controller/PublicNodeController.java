@@ -162,7 +162,7 @@ public class PublicNodeController {
     }
 
     @CrossOrigin
-    @ApiOperation("获取公开节点")
+    @ApiOperation("获取公开节点个数")
     @GetMapping("/public/countPublicNode")
     @ResponseBody
     public int countPublicNodeByUserIdAndTitle(@RequestParam Integer userId,
@@ -171,7 +171,7 @@ public class PublicNodeController {
     }
 
     @CrossOrigin
-    @ApiOperation("获取公开节点")
+    @ApiOperation("获取收藏节点个数")
     @GetMapping("/public/countCollectNode")
     @ResponseBody
     public int countCollectNodeByUserIdAndTitle(@RequestParam Integer userId,

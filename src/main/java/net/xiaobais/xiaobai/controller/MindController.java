@@ -101,8 +101,8 @@ public class MindController {
             return null;
         }
         Integer userId = JwtUtils.getUserId(cookies[0].getValue());
-        Map map = mapService.findMapById(nodeId);
         Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
+        Map map = mapService.findMapById(node.getMapId());
         if (map == null || NOTHING.equals(map.getMapData())){
             List<MindVo> list = new ArrayList<>();
             MindVo mindVo = new MindVo(ROOT + nodeId, null, true,

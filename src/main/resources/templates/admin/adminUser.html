@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: cdnHead"></span>
+    <title>管理用户</title>
+</head>
+<body>
+    <div id="app">
+        <div th:replace="com/menu :: publicUserMenu"></div>
+        <br><br><br><br>
+        <div class="ui container" style="width: 85%; height: 1000px;">
+            <div class="ui fluid action input">
+                <input type="text" name="message" v-model="message" placeholder="通过用户名模糊查询...">
+                <button class="ui icon button" @click="searchUser">
+                    <i class="search icon"></i>
+                </button>
+            </div>
+            <div class="ui fluid raised segment">
+                <table class="ui celled table">
+                    <thead>
+                    <tr>
+                        <th>编号顺序</th>
+                        <th>用户名</th>
+                        <th>密码</th>
+                        <th>创建日期</th>
+                        <th>用户简介</th>
+                        <th>用户邮箱</th>
+                        <th>是否认证</th>
+                        <th>主页节点</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="user,index in users" :key="'user' + index">
+                        <td>{{index}}</td>
+                        <td>{{user.username}}</td>
+                        <td>{{user.password}}</td>
+                        <td>{{user.createDate}}</td>
+                        <td>{{user.userDesc}}</td>
+                        <td>{{user.userEmail}}</td>
+                        <td>
+                            {{user.isAuth ? "是" : "否"}}
+                        </td>
+                        <td>
+                            <button class="ui yellow inverted button">主页节点</button>
+                        </td>
+                        <td>
+                            <button class="ui red inverted button">删除</button>
+                            <button class="ui green inverted button">修改</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="9">
+                            <div class="ui right floated pagination menu">
+                                <a class="icon item" @click="toPre">
+                                    <i class="left chevron icon"></i>
+                                </a>
+                                <a class="disabled item">{{number}}</a>
+                                <a class="icon item" @click="toNex">
+                                    <i class="right chevron icon"></i>
+                                </a>
+                            </div>
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div th:replace="com/menu :: adminBarMenu"></div>
+        <br><br>
+        <div th:replace="com/foot :: foot"></div>
+    </div>
+    <script type="text/javascript">
+        let app = new Vue({
+            el: '#app',
+            data: {
+                userVo: {},
+                userId: -1,
+                topStar: [],
+                topCollect: [],
+                isLogin: false,
+                str: "",
+                number: 1,
+                size: 1,
+                pageSize: 8,
+                users: [],
+                message: ""
+            },
+            beforeMount: function(){
+                // 用户信息
+                axios.get("/user/getUserInfo")
+                    .then(response => {
+                        if (response.data !== ""){
+                            this.isLogin = true
+                            this.userVo = response.data
+                        }else{
+                            this.isLogin = false
+                        }
+                    })
+                    .catch(error => console.log(error))
+                // 最高点赞
+                axios.get("/public/getTopStar?n=5")
+                    .then(response => {
+                        this.topStar = response.data
+                    })
+                    .catch(error => console.log(error))
+                // 最高收藏
+                axios.get("/public/getTopCollect?n=5")
+                    .then(response => {
+                        this.topCollect = response.data
+                    })
+                    .catch(error => console.log(error))
+            },
+            mounted: function() {
+                axios.get("/admin/countAllUser?message=" + this.message)
+                    .then(response => {
+                        this.size = response.data
+                    })
+                    .catch(error => console.log(error))
+                this.prepare()
+            },
+            methods: {
+                toMenu: function() {
+                    $('.ui.labeled.icon.sidebar').sidebar('toggle');
+                },
+                logout: function(){
+                    axios.get("/private/logout")
+                        .then(response => {
+                            this.isLogin = response.data !== 1;
+                        })
+                        .catch(error => console.log(error))
+                },
+                search: function() {
+                    if (this.str === "") {
+                        alert("请输入搜索内容")
+                    } else {
+                        window.location.href = "/private/search/?pageNumber=1&pageSize=6&str=" + this.str
+                    }
+                },
+                toPre: function(){
+                    if (this.number > 1){
+                        this.number --;
+                        this.prepare()
+                    }
+                },
+                toNex: function(){
+                    if (this.number < this.size){
+                        this.number ++;
+                        this.prepare()
+                    }
+                },
+                prepare: function(){
+                    axios.get("/admin/getAllUser?pageNumber=" + this.number + "&pageSize=" + this.pageSize
+                        + "&message=" + this.message)
+                        .then(response => {
+                            this.users = response.data
+                        })
+                        .catch(error => console.log(error))
+                },
+                searchUser: function(){
+                    axios.get("/admin/countAllUser?message=" + this.message)
+                        .then(response => {
+                            this.size = response.data
+                        })
+                        .catch(error => console.log(error))
+                    this.prepare()
+                },
+            }
+        })
+    </script>
+</body>
+</html>

@@ -78,13 +78,15 @@ public class PrivateNodeController {
             }
         }
         else {
-            // 管理员公开节点
+            // 所属用户ID
             node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
             // 管理员管理所有节点
             if (node == null && userId == 1){
                 node = privateNodeService.findNodeByNodeId(nodeId);
             }
-            assert node != null;
+            if (node == null){
+                node = publicNodeService.findNodeByNodeIdAndNotIsPrivate(nodeId);
+            }
             blog = blogService.findBlogById(node.getBlogId());
             // 添加缓存
             cacheService.setNodeByKey(NODE_CACHE + node.getNodeId(), node);
@@ -218,6 +220,9 @@ public class PrivateNodeController {
     @PostMapping("/addPrevious/{nodeId}")
     @ResponseBody
     public void addPreNode(@PathVariable Integer nodeId, AddNodeVo nodeVo) throws Exception {
+        if ("".equals(nodeVo.getBlogTitle()) || "".equals(nodeVo.getContent()) || "".equals(nodeVo.getDesc())){
+            return;
+        }
         User user = userService.getUserById(nodeVo.getUserId());
         int blogId = blogService.insertBlogByTitleAndContent(nodeVo.getBlogTitle(),
                 nodeVo.getContent(), nodeVo.getDesc());
