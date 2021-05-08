@@ -61,7 +61,7 @@ public class CollectController {
         if (cookies == null){
             return "0";
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         // 检查该用户是否点赞过该节点
         if (!collectService.isCollect(userId, nodeId)){
             publicNodeService.addCount(nodeId);
@@ -82,7 +82,7 @@ public class CollectController {
         if (cookies == null){
             return "#没有登录";
         }
-        UserVo user = JwtUtils.getUserVo(cookies[0].getValue());
+        UserVo user = JwtUtils.getUserVo(JwtUtils.getToken(cookies));
         if (user.getUserId() == 1){
             return "#超级管理员: 可以管理所有公开节点(不需要转化)";
         }

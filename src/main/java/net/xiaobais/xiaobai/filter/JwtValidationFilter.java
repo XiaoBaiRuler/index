@@ -34,7 +34,7 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
             super.doFilterInternal(request, response, chain);
             return;
         }
-        SecurityContextHolder.getContext().setAuthentication(getAuthentication(cookies[0].getValue()));
+        SecurityContextHolder.getContext().setAuthentication(getAuthentication(JwtUtils.getToken(cookies)));
         super.doFilterInternal(request, response, chain);
     }
 

@@ -100,7 +100,7 @@ public class MindController {
         if (cookies == null){
             return null;
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
         Map map = mapService.findMapById(node.getMapId());
         if (map == null || NOTHING.equals(map.getMapData())){

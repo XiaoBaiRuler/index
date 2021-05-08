@@ -56,7 +56,7 @@ public class NoticeController {
         if (cookies == null){
             return "redirect:/toLogin";
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         model.addAttribute("userId", userId);
         return userId == 1 ? "personNotice" : "privateNotice";
     }
@@ -76,7 +76,7 @@ public class NoticeController {
         if (cookies == null){
             return 0;
         }
-        return noticeService.getPersonNoticeCount(message, JwtUtils.getUserId(cookies[0].getValue()));
+        return noticeService.getPersonNoticeCount(message, JwtUtils.getUserId(JwtUtils.getToken(cookies)));
     }
 
     @ApiOperation("获取所有发布通知")
@@ -90,7 +90,7 @@ public class NoticeController {
         if (cookies == null){
             return null;
         }
-        UserVo user = JwtUtils.getUserVo(cookies[0].getValue());
+        UserVo user = JwtUtils.getUserVo(JwtUtils.getToken(cookies));
         if (user.getUserId() == 1){
             return noticeService.getAllPublicNotice(pageNumber, pageSize, message);
         }
@@ -108,7 +108,7 @@ public class NoticeController {
         if (cookies == null){
             return null;
         }
-        UserVo user = JwtUtils.getUserVo(cookies[0].getValue());
+        UserVo user = JwtUtils.getUserVo(JwtUtils.getToken(cookies));
         if (user.getUserId() != 1){
             return noticeService.getAllPersonNotice(pageNumber, pageSize, message, user.getUserId());
         }
@@ -125,7 +125,7 @@ public class NoticeController {
         if (cookies == null){
             return "#用户未登录";
         }
-        UserVo user = JwtUtils.getUserVo(cookies[0].getValue());
+        UserVo user = JwtUtils.getUserVo(JwtUtils.getToken(cookies));
         int i = noticeService.addPublicNodeNotice(user.getUsername(), nodeId,
                 user.getUserId(), rootId, flag);
         return i != -1 ? "发送发布通知成功" : "#发送发布通知失败";
@@ -145,7 +145,7 @@ public class NoticeController {
         if (cookies == null){
             return "#用户未登录";
         }
-        UserVo user = JwtUtils.getUserVo(cookies[0].getValue());
+        UserVo user = JwtUtils.getUserVo(JwtUtils.getToken(cookies));
         Integer newNodeId = copyPrivateNodeToPublicNode(nodeId, userId, rootId, flag);
         String message = user.getUsername() + "同意你发布的博客作为他的附近节点, 节点链接为" + NODE_PREFIX + newNodeId;
         return noticeService.dealPublicNodeNotice(message, userId, nodeId, newNodeId, noticeId) ?
@@ -176,7 +176,7 @@ public class NoticeController {
         if (cookies == null){
             return "#未登录";
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         return noticeService.dealReplyNotice(noticeId, userId) ? "确认成功" : "#确认失败";
     }
 
@@ -189,7 +189,7 @@ public class NoticeController {
             return 0;
         }
         long c = noticeService.getAllIteratorNoticeCount(
-                JwtUtils.getUserId(cookies[0].getValue()), message);
+                JwtUtils.getUserId(JwtUtils.getToken(cookies)), message);
         return c % 5 == 0 ? c / 5 : c / 5 + 1;
     }
 
@@ -203,7 +203,7 @@ public class NoticeController {
             return null;
         }
         return noticeService.getAllIteratorNotice(pageNumber, pageSize,
-                JwtUtils.getUserId(cookies[0].getValue()), message);
+                JwtUtils.getUserId(JwtUtils.getToken(cookies)), message);
     }
 
     @ApiOperation("处理迭代通知")
@@ -214,7 +214,7 @@ public class NoticeController {
         if (cookies == null){
             return "#未登录";
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         Notice notice = noticeService.getNoticeByNoticeId(noticeId);
         return noticeService.dealIteratorNotice(noticeId, userId, notice.getUserId(), notice.getIteratorId(), notice.getNodeId())
                 ? "处理成功" : "#处理失败";
@@ -228,7 +228,7 @@ public class NoticeController {
         if (cookies == null){
             return "#未登录";
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         Notice notice = noticeService.getNoticeByNoticeId(noticeId);
         return noticeService.errorIteratorNotice(noticeId, userId, notice.getUserId(), notice.getIteratorId(), notice.getNodeId())
                 ? "处理成功" : "#处理失败";
@@ -242,7 +242,7 @@ public class NoticeController {
         if (cookies == null){
             return 0;
         }
-        long count = noticeService.getAllSuggestNoticeCount(JwtUtils.getUserId(cookies[0].getValue()),
+        long count = noticeService.getAllSuggestNoticeCount(JwtUtils.getUserId(JwtUtils.getToken(cookies)),
                 message);
         return count % 5 == 0 ? count / 5 : count / 5 + 1;
     }
@@ -256,7 +256,7 @@ public class NoticeController {
         if (cookies == null){
             return null;
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         return noticeService.getAllSuggestNotice(pageNumber, pageSize, userId, message);
     }
     @ApiOperation("处理建议通知")
@@ -267,7 +267,7 @@ public class NoticeController {
         if (cookies == null){
             return "#未登录";
         }
-        return noticeService.dealSuggestNotice(noticeId, JwtUtils.getUserId(cookies[0].getValue())) != -1
+        return noticeService.dealSuggestNotice(noticeId, JwtUtils.getUserId(JwtUtils.getToken(cookies))) != -1
                 ? "处理成功" : "#处理失败";
     }
 
@@ -282,7 +282,7 @@ public class NoticeController {
         if ("".equals(message)){
             return "#信息不能为空";
         }
-        return noticeService.errorSuggestNotice(noticeId, JwtUtils.getUserId(cookies[0].getValue()), message) != -1
+        return noticeService.errorSuggestNotice(noticeId, JwtUtils.getUserId(JwtUtils.getToken(cookies)), message) != -1
                 ? "驳回成功" : "#处理失败";
     }
 

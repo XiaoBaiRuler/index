@@ -92,6 +92,11 @@
                             <div class="ui raised segment" v-show="!isBlog">
                                 <div id="jsmind_container"></div>
                             </div>
+                            <div class="ui container" style="width: 95%;" v-if="userVo.userId != 1">
+                                <div class="ui raised segment">
+                                    <button class="fluid ui green button" @click="toSubmit">发布博客</button>
+                                </div>
+                            </div>
                         </div>
                         <!--编辑-->
                         <div class="ui container" :style="{width: middleWidth}" v-show="isEditor">
@@ -115,7 +120,7 @@
                             <div class="ui raised segment" v-show="!isBlog">
                                 <div id="editor_jsmind_container"></div>
                             </div>
-                            <div th:replace="com/form :: editForm"></div>
+                            <button class="ui right floated positive button" @click="edit(nodeId)">保存</button>
                         </div>
                     </div>
                     <div :class="right" v-show="isRight">
@@ -155,13 +160,8 @@
         <div th:replace="com/model :: showIndexMapModel"></div>
         <div th:replace="com/model :: changeBlogModel"></div>
         <div th:replace="com/model :: deleteBlogModel"></div>
-        <div ></div>
-        <div class="ui container" style="width: 95%;" v-if="userVo.userId != 1">
-            <div class="ui raised segment">
-                <button class="fluid ui green button" @click="toSubmit">发布博客</button>
-            </div>
-        </div>
-        <br><br><br><br>
+        <div th:replace="com/model :: editModel"></div>
+        <br><br>
         <div th:replace="com/foot :: foot"></div>
         <div th:replace="com/Bar :: right_bar"></div>
     </div>
@@ -231,16 +231,6 @@
                         if (response.data !== ""){
                             this.isLogin = true
                             this.userVo = response.data
-                            axios.get("/private/getNode?nodeId=" + this.nodeId)
-                                .then(response => {
-                                    this.node = response.data
-                                    this.blogDes = this.node.desc
-                                    this.blogTitle = this.node.title
-                                    if (this.isUpdate === 1){
-                                        this.changeEditor()
-                                    }
-                                })
-                                .catch(error => console.log(error))
                             this.prepareMind()
                             this.preparePage(this.nodeId, "", "", 0, 0)
                         }else{
@@ -258,6 +248,18 @@
                 axios.get("/public/getTopCollect?n=5")
                     .then(response => {
                         this.topCollect = response.data
+                    })
+                    .catch(error => console.log(error))
+            },
+            mounted: function(){
+                axios.get("/private/getNode?nodeId=" + this.nodeId)
+                    .then(response => {
+                        this.node = response.data
+                        this.blogDes = this.node.desc
+                        this.blogTitle = this.node.title
+                        if (this.isUpdate === "1"){
+                            this.changeEditor()
+                        }
                     })
                     .catch(error => console.log(error))
             },
@@ -299,6 +301,7 @@
                     this.isNode = !this.isNode
                 },
                 changeEditor: function(){
+                    console.log(this.isEditor)
                     this.isEditor = !this.isEditor
                     if (this.isEditor) {
                         if(!this.isPrepare){
@@ -539,29 +542,11 @@
                         alert("描述不能为空")
                         return;
                     }
-                    let value = document.getElementById('update_html').value;
-                    if (value === ""){
+                    if (document.getElementById('update_html').value === ""){
                         alert("博客内容不能为空")
                         return;
                     }
-                    let addNodeVo = new FormData()
-                    addNodeVo.append("title", this.blogTitle)
-                    addNodeVo.append("desc", this.blogDes)
-                    addNodeVo.append("blogContent", document.getElementById('update_html').value)
-                    addNodeVo.append("mapData", this.jm !== {}
-                        ? JSON.stringify(this.jm.get_data("node_array").data)
-                        : "{}")
-                    addNodeVo.append("select", this.select)
-                    axios.post('/private/updateNode/' + nodeId, addNodeVo,
-                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
-                        .then(response => {
-                            alert("更新节点成功")
-                            window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId + "?isUpdate=0"
-                        })
-                        .catch(error => {alert("更新节点失败");console.log(error)})
-                },
-                reBack: function(){
-                    window.location.href = "/private/node/" + this.nodeId + "/" + this.userVo.userId + "?isUpdate=0"
+                    editNode(nodeId)
                 },
                 toTop: function(){
                     window.location.href = '#top'

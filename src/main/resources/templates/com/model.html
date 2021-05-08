@@ -3,30 +3,36 @@
 <body>
     <!--创建目录-->
     <div class="ui createDir modal" th:fragment="createDirModel">
-        <div class="stacked segment">
-            <div class="ui form">
-                <div class="ui teal inverted field">
-                    <label>目录名</label>
-                    <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
-                </div>
-                <div class="actions">
-                    <div class="ui black deny button">取消</div>
-                    <div class="ui positive button" id="createButton">确定</div>
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="stacked segment">
+                <div class="ui form">
+                    <div class="ui teal inverted field">
+                        <label>目录名</label>
+                        <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
+                    </div>
+                    <div class="actions">
+                        <div class="ui black deny button">取消</div>
+                        <div class="ui positive button" id="createButton">确定</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!--更新目录-->
     <div class="ui updateDir modal" th:fragment="updateDirModel">
-        <div class="stacked segment">
-            <div class="ui form">
-                <div class="ui teal inverted field">
-                    <label>目录名</label>
-                    <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
-                </div>
-                <div class="actions">
-                    <div class="ui black deny button">取消</div>
-                    <div class="ui positive button" id="updateButton">确定</div>
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="stacked segment">
+                <div class="ui form">
+                    <div class="ui teal inverted field">
+                        <label>目录名</label>
+                        <input type="text" name="dir" v-model="dir" placeholder="目录名只能字母、下划线、数字">
+                    </div>
+                    <div class="actions">
+                        <div class="ui black deny button">取消</div>
+                        <div class="ui positive button" id="updateButton">确定</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -53,32 +59,37 @@
     </div>
     <!--创建文件-->
     <div class="ui createFile modal" th:fragment="createFileModel">
-        <div class="stacked segment">
-            <div class="ui form">
-                <div class="ui teal inverted field">
-                    <label>目录名</label>
-                    <input type="file" id="fileUpload" placeholder="选择文件">
-                </div>
-                <div class="actions">
-                    <div class="ui black deny button">取消</div>
-                    <div class="ui positive button" id="createFileButton">确定</div>
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="stacked segment">
+                <div class="ui form">
+                    <div class="ui teal inverted field">
+                        <label>目录名</label>
+                        <input type="file" id="fileUpload" placeholder="选择文件">
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">取消</div>
+            <div class="ui positive button" id="createFileButton">确定</div>
         </div>
     </div>
     <!--更新文件-->
     <div class="ui updateFile modal" th:fragment="updateFileModel">
-        <div class="stacked segment">
-            <div class="ui form">
-                <div class="ui teal inverted field">
-                    <label>新文件名</label>
-                    <input type="text" name="newName" v-model="newName"  placeholder="选择文件">
-                </div>
-                <div class="actions">
-                    <div class="ui black deny button">取消</div>
-                    <div class="ui positive button" id="updateFileButton">确定</div>
+        <div class="content">
+            <div class="stacked segment">
+                <div class="ui form">
+                    <div class="ui teal inverted field">
+                        <label>新文件名</label>
+                        <input type="text" name="newName" v-model="newName" placeholder="选择文件">
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">取消</div>
+            <div class="ui positive button" id="updateFileButton">确定</div>
         </div>
     </div>
     <!--删除文件-->
@@ -311,6 +322,37 @@
             <div class="ui green ok inverted button">
                 <i class="checkmark icon"></i>
                 是
+            </div>
+        </div>
+    </div>
+    <!--编辑节点-->
+    <div class="ui edit basic modal" th:fragment="editModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            请选择要保存的模块
+        </div>
+        <div class="content">
+            <div class="ui form">
+                <div class="field">
+                    <div class="ui checkbox">
+                        <input type="checkbox" tabindex="0" class="hidden" value="1" name="select" v-model="select">
+                        <label>博客内容</label>
+                    </div>
+                    <div class="ui checkbox">
+                        <input type="checkbox" tabindex="1" class="hidden" value="2" name="select" v-model="select">
+                        <label>导图内容</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                取消
+            </div>
+            <div class="ui green ok inverted button">
+                <i class="checkmark icon"></i>
+                保存
             </div>
         </div>
     </div>

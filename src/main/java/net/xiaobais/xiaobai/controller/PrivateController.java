@@ -53,7 +53,7 @@ public class PrivateController {
         if (cookies == null){
             return "login";
         }
-        UserVo userVo = JwtUtils.getUserVo(cookies[0].getValue());
+        UserVo userVo = JwtUtils.getUserVo(JwtUtils.getToken(cookies));
         if (!userVo.getUserId().equals(userId)){
             return "error/403";
         }
@@ -77,7 +77,7 @@ public class PrivateController {
         if (cookies == null){
             return "/error/403";
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         model.addAttribute("str", str);
         model.addAttribute("pageNumber", pageNumber);
         model.addAttribute("pageSize", pageSize);

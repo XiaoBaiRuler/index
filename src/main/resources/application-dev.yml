@@ -83,4 +83,7 @@ user:
 
 ---
 file:
-  dir: "E:\\xiaobai\\"
+  dir: "E:\\xiaobai\\image\\"
+  size: "560#"
+  avatar: "200#"
+  url: "http://localhost:8081/image/"

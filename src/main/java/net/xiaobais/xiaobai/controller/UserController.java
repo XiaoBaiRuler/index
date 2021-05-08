@@ -50,7 +50,7 @@ public class UserController {
         if (cookies == null){
             return "redirect:/toLogin";
         }
-        if (!JwtUtils.getUserId(cookies[0].getValue()).equals(userId)){
+        if (!JwtUtils.getUserId(JwtUtils.getToken(cookies)).equals(userId)){
             return "/error/403";
         }
         model.addAttribute("userId", userId);
@@ -76,7 +76,7 @@ public class UserController {
         if (cookies == null){
             return "#用户未登录";
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         User user = new User();
         user.setUserId(userId);
         user.setUserDesc(desc);

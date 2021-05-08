@@ -7,9 +7,6 @@
         .ui.custom.popup {
             min-width: 800px;
         }
-        .ui.form {
-            margin: 10px 5px 20px;
-        }
     </style>
 </head>
 <body>
@@ -19,7 +16,13 @@
     <br><br><br>
     <div class="ui fluid container" v-if="!isShowImage">
         <div class="ui container" style="width: 95%;">
-            <div class="ui stacked segment">
+            <div class="ui fluid action input">
+                <input type="text" name="s" v-model="s" placeholder="通过目录名模糊查询...">
+                <button class="ui icon button" @click="searchAll(true)">
+                    <i class="search icon"></i>
+                </button>
+            </div>
+            <div class="ui stacked segment" style="height: 1080px;">
                 <div class="ui stackable grid">
                     <div class="four wide column">
                         <div class="ui raised segment">
@@ -36,7 +39,7 @@
                         <div class="ui raised segment">
                             <div class="ui center aligned header">{{dir.dir}}</div>
                             <a class="image">
-                                <img class="ui huge image" th:src="@{/img/bh.png}">
+                                <img class="ui huge image" th:src="@{/img/bh_480.png}">
                             </a>
                             <div class="ui fluid icon buttons">
                                 <button class="ui right aligned button" data-content="修改目录" @click="changeDirName(dir.dir, index)">
@@ -52,13 +55,29 @@
                         </div>
                     </div>
                 </div>
+                <br>
+                <div class="ui right floated pagination menu">
+                    <a class="icon item" @click="toPre(true)">
+                        <i class="left chevron icon"></i>
+                    </a>
+                    <a class="disabled item">{{nowDir}}</a>
+                    <a class="icon item" @click="toNex(true)">
+                        <i class="right chevron icon"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
     <div class="ui fluid container" v-if="isShowImage">
         <div class="ui container" style="width: 95%;">
-            <div class="ui stackable segment" style="height: 1200px;">
-                <div class="ui grid">
+            <div class="ui fluid action input">
+                <input type="text" name="s" v-model="s" placeholder="通过目录名模糊查询...">
+                <button class="ui icon button" @click="searchAll(false)">
+                    <i class="search icon"></i>
+                </button>
+            </div>
+            <div class="ui stackable segment" style="height: 1080px;">
+                <div class="ui stackable grid">
                     <div class="four wide column">
                         <div class="ui raised segment">
                             <div class="ui placeholder segment">
@@ -74,10 +93,10 @@
                         <div class="ui raised segment">
                             <div class="ui center aligned header">{{file.fileName}}</div>
                             <a class="center floated image" id="show-pop" :href="file.fileUrl">
-                                <img class="ui huge image" :src="file.fileUrl" id="show-image">
+                                <img class="ui huge image" :src="file.fileUrl" id="show-image" style="width: 600px;height: 300px;">
                             </a>
                             <div class="ui fluid icon buttons">
-                                <button class="ui right aligned button" data-content="修改文件" @click="updateFile(index)">
+                                <button class="ui right aligned button" data-content="修改文件" @click="updateFile(index, file.fileName)">
                                     <i class="exchange icon"></i>
                                 </button>
                                 <button class="ui center aligned button" data-content="删除文件" @click="delFile(index)">
@@ -88,16 +107,22 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="ui custom popup transition hidden">
-                            <img class="ui fluid image" :src="file.fileUrl">
-                        </div>
                     </div>
-
+                </div>
+                <br>
+                <div class="ui right floated pagination menu">
+                    <a class="icon item" @click="toPre(false)">
+                        <i class="left chevron icon"></i>
+                    </a>
+                    <a class="disabled item">{{nowFile}}</a>
+                    <a class="icon item" @click="toNex(false)">
+                        <i class="right chevron icon"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-
+    <div th:replace="com/foot :: foot"></div>
     <div th:replace="com/model :: createDirModel"></div>
     <div th:replace="com/model :: updateDirModel"></div>
     <div th:replace="com/model :: deleteDirModel"></div>
@@ -105,7 +130,6 @@
     <div th:replace="com/model :: updateFileModel"></div>
     <div th:replace="com/model :: deleteFileModel"></div>
     <div th:replace="com/menu :: privateBarMenu"></div>
-    <div th:replace="com/foot :: foot"></div>
 </div>
 <script type="text/javascript">
     let app = new Vue({
@@ -118,7 +142,12 @@
             isLogin: false,
             user: {},
             allDir: [],
+            countDir: 0,
+            countFile: 0,
+            nowDir: 1,
+            nowFile: 1,
             str: "",
+            s: "",
             dir: "",
             dirIndex: -1,
             isShowImage: false,
@@ -152,20 +181,17 @@
                     this.topCollect = response.data
                 })
                 .catch(error => console.log(error))
+            // 目录个数
+            this.count(true)
         },
         mounted: function() {
-            this.getDir()
+            this.getDirOrFile(1, true)
         },
         updated: function(){
             $('.aligned.button')
                 .popup({
                     inline: true
                 });
-            $('.huge.image').popup({
-                position: 'bottom left',
-                popup: $('.custom.popup'),
-                on: 'hover',
-            });
         },
         methods: {
             logout: function(){
@@ -182,6 +208,10 @@
                     window.location.href = "/public/search/?pageNumber=1&pageSize=6&str=" + this.str
                 }
             },
+            searchAll: function(flag){
+                this.count(flag)
+                this.getDirOrFile(1, flag)
+            },
             toMenu: function() {
                 $('.ui.labeled.icon.sidebar').sidebar('toggle');
             },
@@ -195,20 +225,76 @@
             },
             toDir: function(dir){
                 this.dir = dir
-                axios.get('/person/public/file/getAllFile?dir=' + dir)
-                    .then(response => {
-                        this.allFile = response.data
-                        this.isShowImage = true
-                        console.log(this.allFile)
-                    })
-                    .catch(error => console.log(error));
+                this.count(false)
+                this.getDirOrFile(this.nowFile, false)
+                $('.huge.image').popup({
+                    position: 'bottom left',
+                    popup: $('.custom.popup'),
+                    on: 'hover',
+                });
             },
-            getDir: function(){
-                axios.get('/person/public/file/getAllDir')
-                    .then(response => {
-                        this.allDir = response.data
-                    })
-                    .catch(error => console.log(error));
+            count: function(flag){
+                if (flag){
+                    axios.get("/person/public/file/getCountDir?s=" + this.s)
+                        .then(response => {
+                            this.countDir = response.data
+                        })
+                        .catch(error => console.log(error))
+                }
+                else{
+                    axios.get("/person/public/file/getCountFile?dir=" + this.dir + "&s=" + this.s)
+                        .then(response => {
+                            this.countFile = response.data
+                        })
+                        .catch(error => console.log(error))
+                }
+            },
+            getDirOrFile: function(pageNumber, flag){
+                if (flag){
+                    axios.get('/person/public/file/getAllDir?pageNumber=' + pageNumber + "&s=" + this.s)
+                        .then(response => {
+                            this.allDir = response.data
+                        })
+                        .catch(error => console.log(error));
+                }
+                else{
+                    axios.get('/person/public/file/getAllFile?dir=' + this.dir + "&s=" + this.s + "&pageNumber=" + pageNumber)
+                        .then(response => {
+                            this.allFile = response.data
+                            this.isShowImage = true
+                        })
+                        .catch(error => console.log(error));
+                }
+
+            },
+            toPre: function(flag){
+                if(flag){
+                    if (this.nowDir > 1){
+                        this.nowDir --
+                        this.getDirOrFile(this.nowDir, true)
+                    }
+                }
+                else{
+                    if (this.nowFile > 1){
+                        this.nowFile --
+                        this.getDirOrFile(this.nowFile, false)
+                    }
+                }
+
+            },
+            toNex: function(flag){
+                if (flag){
+                    if (this.nowDir < this.countDir){
+                        this.nowDir ++
+                        this.getDirOrFile(this.nowDir, true)
+                    }
+                }
+                else{
+                    if (this.nowFile < this.countFile){
+                        this.nowFile ++
+                        this.getDirOrFile(this.nowFile, false)
+                    }
+                }
             },
             delDir: function(dir, index){
                 this.dir = dir
@@ -235,7 +321,8 @@
             createFile: function(){
                 $('.ui.createFile.modal').modal('show');
             },
-            updateFile: function(index){
+            updateFile: function(index, fileName){
+                this.newName = fileName
                 this.fileIndex = index
                 $('.ui.updateFile.modal').modal('show');
             }
@@ -249,7 +336,7 @@
                 let msg = response.data
                 if (!msg.includes("#")){
                     let s = {
-                        dir: app.dir
+                        dir: app.dir.split("/")[0]
                     }
                     app.allDir.unshift(s)
                 }
@@ -329,7 +416,9 @@
             .then(response => {
                 let msg = response.data
                 if (!msg.includes("#")){
-                    app.allFile[app.fileIndex].fileName = app.newName
+                    app.allFile[app.fileIndex].fileName = app.newName.split("/")[0]
+                    app.dir = ""
+                    app.newName = ""
                 }
                 else{
                     alert(msg)

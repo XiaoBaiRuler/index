@@ -101,8 +101,8 @@ public class IndexController {
         if (cookies == null){
             return null;
         }
-        String token = cookies[0].getValue();
-        if(JwtUtils.checkJwt(token) != null && !JwtUtils.isExpiration(token)){
+        String token = JwtUtils.getToken(cookies);
+        if(!JwtUtils.isExpiration(token)){
             return JwtUtils.getUserVo(token);
         }
         return null;

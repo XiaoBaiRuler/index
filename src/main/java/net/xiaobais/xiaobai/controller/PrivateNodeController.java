@@ -64,7 +64,7 @@ public class PrivateNodeController {
         if (cookies == null){
             return null;
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         // 缓存信息
         Node node = cacheService.getNodeByKey(NODE_CACHE + nodeId);
         Blog blog;
@@ -107,7 +107,7 @@ public class PrivateNodeController {
         Cookie[] cookies = request.getCookies();
         Integer userId = -1;
         if (cookies != null){
-            userId = JwtUtils.getUserId(cookies[0].getValue());
+            userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         }
 
         List<Node> previousNodes = null;
@@ -142,7 +142,7 @@ public class PrivateNodeController {
         Cookie[] cookies = request.getCookies();
         Integer userId = -1;
         if (cookies != null){
-            userId = JwtUtils.getUserId(cookies[0].getValue());
+            userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         }
         List<Node> nextNodes = null;
         if (title == null || "".equals(title)) {
@@ -173,7 +173,7 @@ public class PrivateNodeController {
         Cookie[] cookies = request.getCookies();
         Integer userId = -1;
         if (cookies != null){
-            userId = JwtUtils.getUserId(cookies[0].getValue());
+            userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         }
         if (title == null || "".equals(title)) {
             return previousService.countPreviousNode(nodeId, userId != 1 ? 1 : 0);
@@ -192,7 +192,7 @@ public class PrivateNodeController {
         Cookie[] cookies = request.getCookies();
         Integer userId = -1;
         if (cookies != null){
-            userId = JwtUtils.getUserId(cookies[0].getValue());
+            userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         }
 
         if (title == null || "".equals(title)) {
@@ -277,6 +277,9 @@ public class PrivateNodeController {
     @PostMapping("/addNext/{nodeId}")
     @ResponseBody
     public void addNexNode(@PathVariable Integer nodeId, AddNodeVo nodeVo) throws Exception {
+        if ("".equals(nodeVo.getBlogTitle()) || "".equals(nodeVo.getContent()) || "".equals(nodeVo.getDesc())){
+            return;
+        }
         User user = userService.getUserById(nodeVo.getUserId());
         int blogId = blogService.insertBlogByTitleAndContent(nodeVo.getBlogTitle(),
                 nodeVo.getContent(), nodeVo.getDesc());
@@ -325,14 +328,14 @@ public class PrivateNodeController {
         }
         Node node;
         Blog blog;
-        if (JwtUtils.getUserId(cookies[0].getValue()) == 1){
+        if (JwtUtils.getUserId(JwtUtils.getToken(cookies)) == 1){
             node = privateNodeService.findNodeByNodeId(nodeId);
             if (node != null){
                 blog = blogService.findBlogById(node.getBlogId());
                 return nodeToPublicNodeVo(node, blog, 1);
             }
         }
-        if (JwtUtils.getUserId(cookies[0].getValue()).equals(userId)){
+        if (JwtUtils.getUserId(JwtUtils.getToken(cookies)).equals(userId)){
             node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId,userId);
             if (node != null){
                 blog = blogService.findBlogById(node.getBlogId());
@@ -354,7 +357,7 @@ public class PrivateNodeController {
         Cookie[] cookies = request.getCookies();
         Integer userId = -1;
         if (cookies != null){
-            userId = JwtUtils.getUserId(cookies[0].getValue());
+            userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         }
         else{
             return "用户没有登录";
@@ -408,18 +411,20 @@ public class PrivateNodeController {
         if (cookies == null){
             return;
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         if ("".equals(updateVo.getTitle()) || "".equals(updateVo.getDesc()) || "".equals(updateVo.getBlogContent())){
             return;
         }
         Node node = privateNodeService.findNodeByNodeIdAndIsPrivateAndUserId(nodeId, userId);
+        Blog blog = blogService.findBlogById(node.getBlogId());
         if (!updateVo.getTitle().equals(node.getNodeName())){
             if (privateNodeService.updateNodeByNodeId(nodeId, updateVo.getTitle()) == -1){
                 throw new Exception("更新标题失败");
             }
             cacheService.deleteNodeByKey(NODE_CACHE + nodeId);
         }
-        if (updateVo.getSelect().contains("1")){
+        if (updateVo.getSelect().contains("1") || !blog.getBlogTitle().equals(updateVo.getTitle())
+                || !blog.getBlogDes().equals(updateVo.getDesc())){
             if (blogService.updateBlogByBlogId(node.getBlogId(), updateVo.getTitle(),
                     updateVo.getBlogContent(), updateVo.getDesc()) == -1){
                 throw new Exception("更新博客内容失败");
@@ -441,7 +446,7 @@ public class PrivateNodeController {
         if (cookies == null){
             return null;
         }
-        return privateNodeService.getAllPrivate(JwtUtils.getUserId(cookies[0].getValue()));
+        return privateNodeService.getAllPrivate(JwtUtils.getUserId(JwtUtils.getToken(cookies)));
     }
 
     @ApiOperation("获取所有公开节点")
@@ -463,7 +468,7 @@ public class PrivateNodeController {
         if (cookies == null){
             return null;
         }
-        Integer userId = JwtUtils.getUserId(cookies[0].getValue());
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         List<PrivateNodeVo> list = new ArrayList<>();
         List<Node> nodes = privateNodeService.getPrivateNodeByStr(pageNumber, pageSize, str, userId);
         nodes.forEach(node ->{

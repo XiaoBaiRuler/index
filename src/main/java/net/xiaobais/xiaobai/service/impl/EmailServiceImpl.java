@@ -31,6 +31,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public boolean sendEmailVerifyCode(String email) {
+        if (email.equals(from)){
+            return false;
+        }
         try {
             String code = codeService.generateCode(email);
             SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -48,11 +51,33 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public boolean sendEmailCode(String email) {
+        if (email.equals(from)){
+            return false;
+        }
         try {
             String code = codeService.generateCode(email);
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setSubject("xiaobais.net: 验证码2分钟内有效:[" + code + "]");
             mailMessage.setText(code);
+            mailMessage.setTo(email);
+            mailMessage.setFrom(from);
+            mailSender.send(mailMessage);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean sendMessage(String email, String message) {
+        if (email.equals(from)){
+            return false;
+        }
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setSubject("xiaobais.net");
+            mailMessage.setText(message);
             mailMessage.setTo(email);
             mailMessage.setFrom(from);
             mailSender.send(mailMessage);

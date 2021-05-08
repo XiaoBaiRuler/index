@@ -82,26 +82,5 @@
         </div>
         <div class="ui red button" @click.once="submitSuggest">提交</div>
     </div>
-    <!--editForm-->
-    <div class="ui fluid container" th:fragment="editForm">
-        <div class="ui form">
-            <label>选择保存的部分</label>
-            <div class="field">
-                <div class="ui checkbox">
-                    <input type="checkbox" tabindex="0" class="hidden" value="1" name="select" v-model="select">
-                    <label>博客内容</label>
-                </div>
-                <div class="ui checkbox">
-                    <input type="checkbox" tabindex="1" class="hidden" value="2" name="select" v-model="select">
-                    <label>导图内容</label>
-                </div>
-                <div class="ui right floated buttons">
-                    <button class="ui button" @click.once="reBack">取消</button>
-                    <div class="or"></div>
-                    <button class="ui positive button" @click.once="edit(nodeId)">保存</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>

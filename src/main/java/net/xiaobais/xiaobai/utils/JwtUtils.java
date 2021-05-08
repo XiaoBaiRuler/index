@@ -2,16 +2,16 @@ package net.xiaobais.xiaobai.utils;
 
 import com.alibaba.fastjson.JSONArray;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import net.xiaobais.xiaobai.entity.UserEntity;
 import net.xiaobais.xiaobai.vo.UserVo;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import javax.servlet.http.Cookie;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author xiaobai
@@ -34,7 +34,6 @@ public class JwtUtils {
      * @return String
      */
     public static String generateJsonWebToken(UserEntity user){
-        System.out.println(user.getUsername());
         return Jwts
                 .builder()
                 .setSubject(SUBJECT)
@@ -50,47 +49,14 @@ public class JwtUtils {
     }
 
     /**
-     * 根据用户名和权限生成token
-     * @param username username
-     * @param role roles
-     * @return String
-     */
-    public static String createToken(String username, String role){
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(ROLE_CLAIMS, role);
-        return Jwts.builder()
-                .setSubject(username)
-                .setClaims(map)
-                .claim("username", username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, KEY).compact();
-    }
-
-    /**
-     * 验证token是否有效
-     * @param token token
-     * @return Claims or null
-     */
-    public static Claims checkJwt(String token){
-        try {
-            return Jwts
-                    .parser()
-                    .setSigningKey(KEY)
-                    .parseClaimsJws(token)
-                    .getBody();
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
      * 根据token查找用户名
      * @param token token
      * @return String
      */
     public static String getUsername(String token){
+        if (token == null || isExpiration(token)){
+            return null;
+        }
         Claims claims = Jwts.parser().
                 setSigningKey(KEY).
                 parseClaimsJws(token)
@@ -152,8 +118,22 @@ public class JwtUtils {
      * @return boolean
      */
     public static boolean isExpiration(String token){
-        Claims claims = Jwts.parser()
-                .setSigningKey(KEY).parseClaimsJws(token).getBody();
-        return claims.getExpiration().before(new Date());
+        try {
+            Jwts.parser().setSigningKey(KEY)
+                    .parseClaimsJws(token)
+                    .getBody();
+        }catch (ExpiredJwtException e){
+            return true;
+        }
+        return false;
+    }
+
+    public static String getToken(Cookie[] cookies){
+        for (Cookie cookie : cookies){
+            if ("token".equals(cookie.getName())){
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }

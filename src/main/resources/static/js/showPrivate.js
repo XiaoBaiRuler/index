@@ -278,6 +278,41 @@ function toChangeNoticeAndBlog(noticeId, nodeId){
         .catch(error => console.log(error))
 }
 
+function editNode(nodeId){
+    $('.ui.edit.basic.modal')
+        .modal('setting',{
+            closable  : false,
+            blurring: true,
+            onDeny    : function(){
+                return true;
+            },
+            onApprove : function(){
+                if (app.select.length === 0){
+                    alert("请选择要保存的内容")
+                    return false;
+                }
+                let addNodeVo = new FormData()
+                addNodeVo.append("title", app.blogTitle)
+                addNodeVo.append("desc", app.blogDes)
+                addNodeVo.append("blogContent", document.getElementById('update_html').value)
+                addNodeVo.append("mapData", app.jm !== {}
+                    ? JSON.stringify(app.jm.get_data("node_array").data)
+                    : "{}")
+                addNodeVo.append("select", app.select)
+                axios.post('/private/updateNode/' + nodeId, addNodeVo,
+                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                    .then(response => {
+                        alert("更新节点成功")
+                        window.location.href = "/private/node/" + nodeId + "/" + app.userVo.userId + "?isUpdate=0"
+                        return true;
+                    })
+                    .catch(error => {alert("更新节点失败");console.log(error)})
+            },
+        })
+        .modal('hide others')
+        .modal('show')
+}
+
 // 删除前置节点
 $(document).on('click', '#deletePreModel', function() {
     axios.get('/private/deleteNode?nodeId=' + app.deleteId + "&flag=true")
@@ -302,7 +337,6 @@ $(document).on('click', '#deleteNexModel', function() {
         })
         .catch(error => console.log(error))
 })
-
 // 删除思维导图中的节点
 $(document).on('click', '#deleteBlogModel', function() {
     axios.get('/private/deleteNode?nodeId=' + app.deleteId + "&flag=" + app.flag)

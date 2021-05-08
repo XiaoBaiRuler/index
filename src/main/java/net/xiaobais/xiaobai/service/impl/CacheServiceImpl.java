@@ -82,7 +82,7 @@ public class CacheServiceImpl implements CacheService {
 
     @Override
     public void deleteNodeByKey(String key) {
-        redisService.remove(key);
+        redisService.remove(REDIS_KEY_PREFIX_CACHE + key);
     }
 
     @Override
@@ -102,6 +102,6 @@ public class CacheServiceImpl implements CacheService {
 
     @Override
     public void deleteBlogByKey(String key) {
-        redisService.remove(key);
+        redisService.remove(REDIS_KEY_PREFIX_CACHE + key);
     }
 }

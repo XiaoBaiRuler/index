@@ -21,4 +21,12 @@ public interface EmailService {
      * @return boolean
      */
     boolean sendEmailCode(String email);
+
+    /**
+     * 向认证的用户发送信息
+     * @param email email
+     * @param message message
+     * @return boolean
+     */
+    boolean sendMessage(String email, String message);
 }
