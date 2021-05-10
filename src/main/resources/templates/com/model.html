@@ -464,5 +464,200 @@
         </div>
     </div>
 
+    <!--禁用用户-->
+    <div class="ui stopUser basic modal" th:fragment="stopUserModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否禁用用户
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="stopUserModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+    <!--解禁用户-->
+    <div class="ui agreeUser basic modal" th:fragment="agreeUserModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否解禁用户
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="agreeUserModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+    <!--编辑用户-->
+    <div class="ui editUser basic modal" th:fragment="editUserModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui container" style="width: 90%;">
+                <div class="ui raised segment">
+                    <form class="ui form">
+                        <div class="ui negative message" v-show="usernameMessage">
+                            <i class="close icon"></i>
+                            <p>{{errorMessage}}</p>
+                        </div>
+                        <div class="field">
+                            <label>用户名</label>
+                            <input type="text" name="username" placeholder="请输入标题" v-model="username">
+                        </div>
+                        <div class="ui negative message" v-show="userDescMessage">
+                            <i class="close icon"></i>
+                            <p>新简介不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>用户简介</label>
+                            <input type="text" name="userDesc" placeholder="请输入简单描述" v-model="userDesc">
+                        </div>
+                        <div class="ui negative message" v-show="userEmailMessage">
+                            <i class="close icon"></i>
+                            <p>新邮箱不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>用户邮箱</label>
+                            <input type="email" name="userEmail" placeholder="请输入邮箱" v-model="userEmail">
+                        </div>
+                        <div class="actions">
+                            <div class="ui green approve button">保存</div>
+                            <div class="ui cancel button">取消</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--普通删除通知-->
+    <div class="ui deleteNotice basic modal" th:fragment="deleteNoticeModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否删除通知
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteNoticeModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+    <!--彻底删除通知-->
+    <div class="ui completeDeleteNotice basic modal" th:fragment="completeDeleteNoticeModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否彻底删除用户
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="completeDeleteNoticeModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+    <!--编辑通知-->
+    <div class="ui editNotice basic modal" th:fragment="editNoticeModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui container" style="width: 90%;">
+                <div class="ui raised segment">
+                    <form class="ui form">
+                        <div class="ui negative message" v-show="errorMessage">
+                            <i class="close icon"></i>
+                            <p>信息不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>发送信息</label>
+                            <input type="text" name="editMessage" placeholder="请输入发送信息"
+                                   v-model="editMessage">
+                        </div>
+                        <div class="actions">
+                            <div class="ui green approve button">保存</div>
+                            <div class="ui cancel button">取消</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--删除建议-->
+    <div class="ui deleteSuggest basic modal" th:fragment="deleteSuggestModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否删除建议
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteSuggestModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+
+    <!--删除迭代-->
+    <div class="ui deleteIterator basic modal" th:fragment="deleteIteratorModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否删除建议
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteIteratorModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
+    <!--编辑迭代理由-->
+    <div class="ui editIterator basic modal" th:fragment="editIteratorModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui container" style="width: 90%;">
+                <div class="ui raised segment">
+                    <form class="ui form">
+                        <div class="ui negative message" v-show="errorMessage">
+                            <i class="close icon"></i>
+                            <p>理由不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>迭代理由</label>
+                            <input type="text" name="reason" placeholder="请输入迭代理由"
+                                   v-model="reason">
+                        </div>
+                        <div class="actions">
+                            <div class="ui green approve button">保存</div>
+                            <div class="ui cancel button">取消</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

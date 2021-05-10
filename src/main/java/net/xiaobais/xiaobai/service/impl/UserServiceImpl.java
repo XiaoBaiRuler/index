@@ -8,6 +8,7 @@ import net.xiaobais.xiaobai.mapper.UserMapper;
 import net.xiaobais.xiaobai.model.User;
 import net.xiaobais.xiaobai.model.UserExample;
 import net.xiaobais.xiaobai.service.UserService;
+import net.xiaobais.xiaobai.vo.EditUserVo;
 import net.xiaobais.xiaobai.vo.PublicUserVo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
@@ -140,4 +141,25 @@ public class UserServiceImpl implements UserService {
         long l = userMapper.countByExample(example);
         return l % 8 == 0 ? l / 8 : l / 8 + 1;
     }
+
+    @Override
+    public boolean dealUser(Boolean enabled, Integer userId) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setEnabled(enabled);
+        return userMapper.updateByPrimaryKeySelective(user) != -1;
+    }
+
+    @Override
+    public boolean editUser(Integer userId, EditUserVo editUserVo, String avatar) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setUsername(editUserVo.getUsername());
+        user.setUserDesc(editUserVo.getUserDesc());
+        user.setUserEmail(editUserVo.getUserEmail());
+        user.setUserAvatar(avatar);
+        user.setIsAuth(false);
+        return userMapper.updateByPrimaryKeySelective(user) != -1;
+    }
+
 }

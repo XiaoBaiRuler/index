@@ -87,11 +87,13 @@ public class PrivateNodeController {
             if (node == null){
                 node = publicNodeService.findNodeByNodeIdAndNotIsPrivate(nodeId);
             }
-            blog = blogService.findBlogById(node.getBlogId());
-            // 添加缓存
-            cacheService.setNodeByKey(NODE_CACHE + node.getNodeId(), node);
-            cacheService.setBlogByKey(BLOG_CACHE + node.getBlogId(), blog);
-            return nodeToPublicNodeVo(node, blog, userId);
+            if (node != null){
+                blog = blogService.findBlogById(node.getBlogId());
+                // 添加缓存
+                cacheService.setNodeByKey(NODE_CACHE + node.getNodeId(), node);
+                cacheService.setBlogByKey(BLOG_CACHE + node.getBlogId(), blog);
+                return nodeToPublicNodeVo(node, blog, userId);
+            }
         }
         return null;
     }

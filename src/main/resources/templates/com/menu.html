@@ -184,6 +184,7 @@
                 设置 <i class="dropdown icon"></i>
                 <div class="menu">
                     <a class="item" @click="toMenu">个人菜单</a>
+                    <a class="item" v-if="userVo.userId == 1" href="/admin/toAdminUser">管理员后台</a>
                     <a class="item" th:href="@{/logout}" @click="logout">注销</a>
                 </div>
             </div>
@@ -258,6 +259,18 @@
         <a class="item" th:href="@{/admin/toAdminUser}">
             <i class="user icon"></i>
             用户管理
+        </a>
+        <a class="item" th:href="@{/admin/toAdminNotice}">
+            <i class="comment alternate icon"></i>
+            通知管理
+        </a>
+        <a class="item" th:href="@{/admin/toAdminSuggest}">
+            <i class="tasks icon"></i>
+            建议管理
+        </a>
+        <a class="item" th:href="@{/admin/toAdminIterator}">
+            <i class="exchange icon"></i>
+            迭代管理
         </a>
     </div>
 </body>

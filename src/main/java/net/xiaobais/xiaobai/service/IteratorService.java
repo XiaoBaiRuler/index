@@ -31,4 +31,37 @@ public interface IteratorService {
      * @return Node
      */
     Node getNodeByIteratorId(Integer iteratorId);
+
+    /**
+     * 分页查找迭代节点
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param message 迭代理由
+     * @return List<Iterator>
+     */
+    List<Iterator> getAllIterator(Integer pageNumber, Integer pageSize, String message);
+
+    /**
+     * 统计迭代节点个数
+     * @param message message
+     * @return Long
+     */
+    Long countAllIterator(String message);
+
+    /**
+     * 删除迭代节点
+     * @param nodeId nodeId
+     * @param iteratorId iteratorId
+     * @exception Exception
+     */
+    void deleteIterator(Integer nodeId, Integer iteratorId) throws Exception;
+
+    /**
+     * 更新迭代理由
+     * @param iteratorId iteratorId
+     * @param nodeId nodeId
+     * @param reason reason
+     * @return
+     */
+    boolean updateIterator(Integer iteratorId, Integer nodeId, String reason);
 }

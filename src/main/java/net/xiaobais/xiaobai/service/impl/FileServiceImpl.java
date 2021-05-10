@@ -187,4 +187,11 @@ public class FileServiceImpl implements FileService {
         return count / 6;
     }
 
+    @Override
+    public boolean updateRootName(String username, String oldName) {
+        File file = new File(directory + DigestUtils.md5Hex(oldName + NAME));
+        File newFile = new File(directory + DigestUtils.md5Hex(username + NAME));
+        return file.renameTo(newFile);
+    }
+
 }

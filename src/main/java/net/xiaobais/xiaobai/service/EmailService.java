@@ -24,9 +24,9 @@ public interface EmailService {
 
     /**
      * 向认证的用户发送信息
-     * @param email email
+     * @param userId userId
      * @param message message
      * @return boolean
      */
-    boolean sendMessage(String email, String message);
+    boolean sendMessage(Integer userId, String message);
 }

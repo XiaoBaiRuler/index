@@ -64,4 +64,12 @@ public interface FileService {
      */
     Integer getCountFiles(File[] files, String s);
 
+    /**
+     * 更新用户名而更新的根目录
+     * @param username username
+     * @param oldName oldName
+     * @return boolean
+     */
+    boolean updateRootName(String username, String oldName);
+
 }

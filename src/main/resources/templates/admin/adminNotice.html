@@ -10,53 +10,98 @@
         <div th:replace="com/menu :: publicUserMenu"></div>
         <br><br><br><br>
         <div class="ui container" style="width: 85%; height: 1000px;">
-            <div class="ui fluid action input">
-                <input type="text" name="message" v-model="message" placeholder="通过用户名模糊查询...">
-                <button class="ui icon button" @click="searchUser">
-                    <i class="search icon"></i>
-                </button>
+            <div class="ui form">
+                <div class="inline fields">
+                    <label>选择通知类型</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="type" value="0" v-model="type">
+                            <label>发布博客通知</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="type" value="1" v-model="type">
+                            <label>迭代通知</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="type" value="2" v-model="type">
+                            <label>建议通知</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="type" value="-1" v-model="type">
+                            <label>全部</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui fluid action input">
+                        <input type="text" name="message" v-model="message" placeholder="通过通知信息模糊查询...">
+                        <button class="ui icon button" @click="searchUser">
+                            <i class="search icon"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="ui fluid raised segment">
                 <table class="ui celled table">
                     <thead>
                     <tr>
                         <th>编号顺序</th>
-                        <th>用户名</th>
-                        <th>密码</th>
-                        <th>创建日期</th>
-                        <th>用户简介</th>
-                        <th>用户邮箱</th>
-                        <th>是否认证</th>
-                        <th>主页节点</th>
+                        <th>发送人</th>
+                        <th>接收人</th>
+                        <th>发送类型</th>
+                        <th>接收类型</th>
+                        <th>相关节点</th>
+                        <th>相关内容</th>
+                        <th>通知信息</th>
+                        <th>是否删除</th>
                         <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="user,index in users" :key="'user' + index">
+                    <tr v-for="notice,index in notices" :key="'notice' + index">
                         <td>{{index}}</td>
-                        <td>{{user.username}}</td>
-                        <td>{{user.password}}</td>
-                        <td>{{user.createDate}}</td>
-                        <td>{{user.userDesc}}</td>
-                        <td>{{user.userEmail}}</td>
+                        <td>{{notice.username}}</td>
+                        <td>{{notice.acceptName}}</td>
+                        <td v-if="notice.submitType == 0">发送博客通知</td>
+                        <td v-if="notice.submitType == 1">迭代通知</td>
+                        <td v-if="notice.submitType == 2">建议通知</td>
+                        <td v-if="notice.acceptType">请求通知</td>
+                        <td v-if="!notice.acceptType">反馈通知</td>
                         <td>
-                            {{user.isAuth ? "是" : "否"}}
+                            <button class="ui yellow inverted button" @click="showIndex(notice.nodeId)">相关节点</button>
                         </td>
                         <td>
-                            <button class="ui yellow inverted button" @click="showIndex(user.indexId)">主页节点</button>
+                            <button class="ui yellow inverted button" v-if="notice.submitType == 1"
+                                    @click="showIterator(notice.iteratorId)">迭代节点</button>
+                            <button class="ui yellow inverted button" v-if="notice.submitType == 2"
+                                    @click="showSuggest(notice.suggestId)">建议节点</button>
+                        </td>
+                        <td>{{notice.message}}</td>
+                        <td>
+                            {{notice.delete ? "是" : "否"}}
                         </td>
                         <td>
-                            <button class="ui red inverted button" v-show="user.enabled"
-                                    @click="dealUser(true, index, user.userId)">禁用</button>
-                            <button class="ui green inverted button" v-show="!user.enabled"
-                                    @click="dealUser(false, index, user.userId)">解禁</button>
-                            <button class="ui green inverted button" @click="editUser(index, user.userId)">修改</button>
+                            <button class="ui red inverted button" v-show="notice.delete"
+                                    @click="dealNotice(true, index, notice.noticeId)">彻底删除</button>
+                            <button class="ui green inverted button" v-show="!notice.delete"
+                                    @click="dealNotice(false, index, notice.noticeId)">普通删除</button>
+                            <button class="ui green inverted button" @click="editNotice(index, notice.noticeId)">修改</button>
                         </td>
                     </tr>
                     </tbody>
                     <tfoot>
                     <tr>
-                        <th colspan="9">
+                        <th colspan="10">
                             <div class="ui right floated pagination menu">
                                 <a class="icon item" @click="toPre">
                                     <i class="left chevron icon"></i>
@@ -73,9 +118,10 @@
             </div>
         </div>
         <div th:replace="com/model :: showIndexBlogModel"></div>
-        <div th:replace="com/model :: stopUserModel"></div>
-        <div th:replace="com/model :: agreeUserModel"></div>
-        <div th:replace="com/model :: editUserModel"></div>
+        <div th:replace="com/model :: showIndexSuggestModel"></div>
+        <div th:replace="com/model :: deleteNoticeModel"></div>
+        <div th:replace="com/model :: completeDeleteNoticeModel"></div>
+        <div th:replace="com/model :: editNoticeModel"></div>
         <div th:replace="com/menu :: adminBarMenu"></div>
         <br><br>
         <div th:replace="com/foot :: foot"></div>
@@ -85,25 +131,22 @@
             el: '#app',
             data: {
                 userVo: {},
-                userId: -1,
+                noticeId: -1,
                 topStar: [],
                 topCollect: [],
                 isLogin: false,
                 str: "",
+                type: -1,
                 number: 1,
                 size: 1,
                 pageSize: 8,
-                users: [],
+                notices: [],
                 message: "",
                 index: -1,
                 showNode: {},
-                username: "",
-                userDesc: "",
-                userEmail: "",
-                usernameMessage: false,
-                userDescMessage: false,
-                userEmailMessage: false,
-                errorMessage: "用户名不能少于6个字母"
+                editMessage: "",
+                errorMessage: false,
+                suggest: ""
             },
             beforeMount: function(){
                 // 用户信息
@@ -131,7 +174,8 @@
                     .catch(error => console.log(error))
             },
             mounted: function() {
-                axios.get("/admin/countAllUser?message=" + this.message)
+                $('.ui.radio.checkbox').checkbox();
+                axios.get("/admin/countAllNotice/" + this.type + "?message=" + this.message)
                     .then(response => {
                         this.size = response.data
                     })
@@ -139,9 +183,7 @@
                 this.prepare()
             },
             updated: function(){
-                this.usernameMessage = this.username.length < 6
-                this.userDescMessage = this.userDesc.length === 0;
-                this.userEmailMessage = this.userEmail.length === 0;
+                this.errorMessage = this.editMessage.length === 0
             },
             methods: {
                 toMenu: function() {
@@ -174,15 +216,15 @@
                     }
                 },
                 prepare: function(){
-                    axios.get("/admin/getAllUser?pageNumber=" + this.number + "&pageSize=" + this.pageSize
+                    axios.get("/admin/getAllNotice/" + this.type + "?pageNumber=" + this.number + "&pageSize=" + this.pageSize
                         + "&message=" + this.message)
                         .then(response => {
-                            this.users = response.data
+                            this.notices = response.data
                         })
                         .catch(error => console.log(error))
                 },
                 searchUser: function(){
-                    axios.get("/admin/countAllUser?message=" + this.message)
+                    axios.get("/admin/countAllNotice/" + this.type + "?message=" + this.message)
                         .then(response => {
                             this.size = response.data
                         })
@@ -190,22 +232,26 @@
                     this.prepare()
                 },
                 showIndex: function(nodeId){
-                    toShowBlog(nodeId)
+                    toShowAdminBlog(nodeId)
                 },
-                dealUser(flag, index, userId){
-                    this.index = index
-                    this.userId = userId
-                    flag
-                        ? $('.ui.stopUser.basic.modal').modal('show')
-                        : $('.ui.agreeUser.basic.modal').modal('show')
+                showIterator: function(nodeId){
+                    toShowAdminBlog(nodeId)
                 },
-                editUser(index, userId){
+                showSuggest: function(suggestId){
+                    toShowSug(suggestId)
+                },
+                dealNotice(flag, index, noticeId){
                     this.index = index
-                    this.userId = userId
-                    this.username = this.users[index].username
-                    this.userDesc = this.users[index].userDesc
-                    this.userEmail = this.users[index].userEmail
-                    $('.ui.editUser.basic.modal')
+                    this.noticeId = noticeId
+                    !flag
+                        ? $('.ui.deleteNotice.basic.modal').modal('show')
+                        : $('.ui.completeDeleteNotice.basic.modal').modal('show')
+                },
+                editNotice(index, noticeId){
+                    this.index = index
+                    this.noticeId = noticeId
+                    this.editMessage = this.notices[index].message
+                    $('.ui.editNotice.basic.modal')
                         .modal('setting',{
                             closable  : false,
                             blurring: true,
@@ -213,30 +259,24 @@
                                 return true;
                             },
                             onApprove : function(){
-                                if (app.usernameMessage || app.userDescMessage || app.userEmailMessage){
+                                if (app.errorMessage){
                                     return false
                                 }
-                                let user = new FormData()
-                                user.append("username", app.username)
-                                user.append("userDesc", app.userDesc)
-                                user.append("userEmail", app.userEmail)
-                                axios.post('/admin/updateUser/' + app.userId, user,
+                                let notice = new FormData()
+                                notice.append("message", app.editMessage)
+                                axios.post('/admin/updateNoticeMessage/' + app.noticeId, notice,
                                     {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
                                     .then(response => {
-                                        if (!response.data.includes("#")){
-                                            app.users[app.index].username = app.username
-                                            app.users[app.index].userDesc = app.userDesc
-                                            app.users[app.index].userEmail = app.userEmail
-                                            app.users[app.index].isAuth = false
+                                        if (response.data.includes("#")){
+                                            app.notices[index].message = app.editMessage
                                             return true
                                         }
                                         else{
-                                            app.errorMessage = response.data
-                                            app.usernameMessage = true
+                                            app.errorMessage = true
                                             return false
                                         }
                                     })
-                                    .catch(error => {alert("更新用户失败");console.log(error)})
+                                    .catch(error => {alert("更新通知信息失败");console.log(error)})
                             },
                         })
                         .modal('hide others')
@@ -244,13 +284,13 @@
                 }
             }
         })
-        // 禁用用户
-        $(document).on('click', '#stopUserModel', function() {
-            axios.get('/admin/stopUser?userId=' + app.userId)
+        // 普通删除通知
+        $(document).on('click', '#deleteNoticeModel', function() {
+            axios.get('/admin/deleteNotice/' + app.noticeId)
                 .then(response => {
                     let msg = response.data
-                    if (!msg.includes("#")){
-                        app.users[app.index].enabled = false
+                    if (msg.includes("#")){
+                        app.notices[app.index].delete = true
                     }
                     else{
                         alert(msg)
@@ -258,13 +298,14 @@
                 })
                 .catch(error => console.log(error))
         })
-        // 解禁用户
-        $(document).on('click', '#agreeUserModel', function() {
-            axios.get('/admin/agreeUser?userId=' + app.userId)
+        // 彻底删除通知
+        $(document).on('click', '#completeDeleteNoticeModel', function() {
+            axios.get('/admin/completeDeleteNotice/' + app.noticeId)
                 .then(response => {
                     let msg = response.data
-                    if (!msg.includes("#")){
-                        app.users[app.index].enabled = true
+                    if (msg.includes("#")){
+                        alert("删除成功")
+                        app.notices.splice(app.index, 1)
                     }
                     else{
                         alert(msg)

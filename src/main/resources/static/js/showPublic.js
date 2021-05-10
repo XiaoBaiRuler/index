@@ -82,6 +82,43 @@ function toShowBlog(nodeId){
         .catch(error => console.log(error))
 }
 
+function toShowAdminBlog(nodeId){
+    axios.get("/private/getNode?nodeId=" + nodeId)
+        .then(response => {
+            if (response.data === ""){
+                alert("节点以删除");
+                return;
+            }
+            app.showNode = response.data
+            if (app.showNode.content === null){
+                app.showNode.content = "空内容";
+            }
+            document.getElementById('showBlogContent').innerHTML = marked(app.showNode.content
+                , {
+                    baseUrl: null,
+                    breaks: true,
+                    gfm: true,
+                    headerIds: true,
+                    headerPrefix: '',
+                    highlight: function(code, language){
+                        const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+                        return hljs.highlight(validLanguage, code).value;
+                    },
+                    langPrefix: 'language-',
+                    mangle: true,
+                    pedantic: false,
+                    renderer: new marked.Renderer(),
+                    silent: false,
+                    smartLists: true,
+                    smartypants: true,
+                    xhtml: true
+                });
+            hljs.highlightAll()
+            $('.ui.showBlog.fullscreen.modal').modal('hide others').modal('show')
+        })
+        .catch(error => console.log(error))
+}
+
 function toShowMap(nodeId){
     axios.get("/public/getMind?nodeId=" + nodeId)
         .then(response => {

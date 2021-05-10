@@ -2,6 +2,7 @@ package net.xiaobais.xiaobai.service;
 
 import net.xiaobais.xiaobai.model.Suggest;
 import net.xiaobais.xiaobai.model.SuggestWithBLOBs;
+import net.xiaobais.xiaobai.vo.AdminSuggestVo;
 
 import java.util.List;
 
@@ -33,4 +34,29 @@ public interface SuggestService {
      * @return List<Suggest>
      */
     List<Suggest> getSuggestsByNodeId(Integer nodeId);
+
+    /**
+     * 分页模糊查找建议节点
+     * @param type type
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param message message
+     * @return List<AdminSuggestVo>
+     */
+    List<AdminSuggestVo> getAllSuggest(Integer type, Integer pageNumber, Integer pageSize, String message);
+
+    /**
+     * 统计所有建议节点个数
+     * @param type type
+     * @param message message
+     * @return Long
+     */
+    Long countAllSuggest(Integer type, String message);
+
+    /**
+     * 删除建议节点
+     * @param suggestId suggestId
+     * @return boolean
+     */
+    boolean deleteSuggest(Integer suggestId);
 }

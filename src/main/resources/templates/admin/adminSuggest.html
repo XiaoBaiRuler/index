@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: cdnHead"></span>
+    <title>管理用户</title>
+    <span th:replace="com/head :: cdnEditHead"></span>
+</head>
+<body>
+    <div id="app">
+        <div th:replace="com/menu :: publicUserMenu"></div>
+        <br><br><br><br>
+        <div class="ui container" style="width: 85%; height: 1000px;">
+            <div class="ui form">
+                <div class="inline fields">
+                    <label>选择通知类型</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="type" value="1" v-model="type">
+                            <label>问题建议</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="type" value="2" v-model="type">
+                            <label>扩展建议</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="type" value="0" v-model="type">
+                            <label>全部</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui fluid action input">
+                        <input type="text" name="message" v-model="message" placeholder="通过问题模糊查询...">
+                        <button class="ui icon button" @click="searchUser">
+                            <i class="search icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="ui fluid raised segment">
+                <table class="ui celled table">
+                    <thead>
+                    <tr>
+                        <th>编号顺序</th>
+                        <th>相关节点</th>
+                        <th>建议内容</th>
+                        <th>建议链接</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="suggest,index in suggests" :key="'suggest' + index">
+                        <td>{{index}}</td>
+                        <td>
+                            <button class="ui yellow inverted button"
+                                    @click="showIndex(suggest.nodeId)">相关节点</button>
+                        </td>
+                        <td>
+                            <button class="ui yellow inverted button"
+                                    @click="showSuggest(suggest.suggestId)">建议节点</button>
+                        </td>
+                        <td>{{suggest.url}}</td>
+                        <td>
+                            <button class="ui red inverted button"
+                                    @click="deleteSuggest(index, suggest.suggestId)">普通删除</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="5">
+                            <div class="ui right floated pagination menu">
+                                <a class="icon item" @click="toPre">
+                                    <i class="left chevron icon"></i>
+                                </a>
+                                <a class="disabled item">{{number}}</a>
+                                <a class="icon item" @click="toNex">
+                                    <i class="right chevron icon"></i>
+                                </a>
+                            </div>
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div th:replace="com/model :: showIndexBlogModel"></div>
+        <div th:replace="com/model :: showIndexSuggestModel"></div>
+        <div th:replace="com/model :: deleteSuggestModel"></div>
+        <div th:replace="com/menu :: adminBarMenu"></div>
+        <br><br>
+        <div th:replace="com/foot :: foot"></div>
+    </div>
+    <script type="text/javascript">
+        let app = new Vue({
+            el: '#app',
+            data: {
+                userVo: {},
+                suggestId: -1,
+                topStar: [],
+                topCollect: [],
+                isLogin: false,
+                str: "",
+                type: 0,
+                number: 1,
+                size: 1,
+                pageSize: 8,
+                suggests: [],
+                message: "",
+                index: -1,
+                showNode: {},
+                suggest: ""
+            },
+            beforeMount: function(){
+                // 用户信息
+                axios.get("/user/getUserInfo")
+                    .then(response => {
+                        if (response.data !== ""){
+                            this.isLogin = true
+                            this.userVo = response.data
+                        }else{
+                            this.isLogin = false
+                        }
+                    })
+                    .catch(error => console.log(error))
+                // 最高点赞
+                axios.get("/public/getTopStar?n=5")
+                    .then(response => {
+                        this.topStar = response.data
+                    })
+                    .catch(error => console.log(error))
+                // 最高收藏
+                axios.get("/public/getTopCollect?n=5")
+                    .then(response => {
+                        this.topCollect = response.data
+                    })
+                    .catch(error => console.log(error))
+            },
+            mounted: function() {
+                $('.ui.radio.checkbox').checkbox();
+                axios.get("/admin/countAllSuggest/" + this.type + "?message=" + this.message)
+                    .then(response => {
+                        this.size = response.data
+                    })
+                    .catch(error => console.log(error))
+                this.prepare()
+            },
+            methods: {
+                toMenu: function() {
+                    $('.ui.labeled.icon.sidebar').sidebar('toggle');
+                },
+                logout: function(){
+                    axios.get("/private/logout")
+                        .then(response => {
+                            this.isLogin = response.data !== 1;
+                        })
+                        .catch(error => console.log(error))
+                },
+                search: function() {
+                    if (this.str === "") {
+                        alert("请输入搜索内容")
+                    } else {
+                        window.location.href = "/private/search/?pageNumber=1&pageSize=6&str=" + this.str
+                    }
+                },
+                toPre: function(){
+                    if (this.number > 1){
+                        this.number --;
+                        this.prepare()
+                    }
+                },
+                toNex: function(){
+                    if (this.number < this.size){
+                        this.number ++;
+                        this.prepare()
+                    }
+                },
+                prepare: function(){
+                    axios.get("/admin/getAllSuggest/" + this.type + "?pageNumber=" + this.number + "&pageSize=" + this.pageSize
+                        + "&message=" + this.message)
+                        .then(response => {
+                            this.suggests = response.data
+                        })
+                        .catch(error => console.log(error))
+                },
+                searchUser: function(){
+                    axios.get("/admin/countAllSuggest/" + this.type + "?message=" + this.message)
+                        .then(response => {
+                            this.size = response.data
+                        })
+                        .catch(error => console.log(error))
+                    this.prepare()
+                },
+                showIndex: function(nodeId){
+                    toShowAdminBlog(nodeId)
+                },
+                showSuggest: function(suggestId){
+                    toShowSug(suggestId)
+                },
+                deleteSuggest(index, suggestId){
+                    this.index = index
+                    this.suggestId = suggestId
+                    $('.ui.deleteSuggest.basic.modal').modal('show')
+                }
+            }
+        })
+        // 删除建议
+        $(document).on('click', '#deleteSuggestModel', function() {
+            axios.get('/admin/deleteSuggest?suggestId=' + app.suggestId)
+                .then(response => {
+                    let msg = response.data
+                    if (msg.includes("#")){
+                        alert("删除成功")
+                        app.suggests.splice(app.index, 1)
+                    }
+                    else{
+                        alert(msg)
+                    }
+                })
+                .catch(error => console.log(error))
+        })
+    </script>
+    <script type="text/javascript" th:src="@{/js/showPublic.js}"></script>
+</body>
+</html>

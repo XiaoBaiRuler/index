@@ -54,7 +54,7 @@ spring:
   mail:
     host: smtp.qq.com
     username: 3122594244@qq.com
-    password: wspyaypnxzdhddbd
+    password: ifqonfwwcpcydgic
     default-encoding: utf-8
     port: 465
     protocol: smtp
@@ -74,6 +74,7 @@ redis:
 
 mail:
   prefixUrl: "http://localhost:8080/verifyCode"
+  url: "http://localhost:8080/person/public/toNotice"
 
 ---
 user:

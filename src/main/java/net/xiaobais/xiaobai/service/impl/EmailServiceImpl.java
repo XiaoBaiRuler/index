@@ -1,7 +1,9 @@
 package net.xiaobais.xiaobai.service.impl;
 
+import net.xiaobais.xiaobai.model.User;
 import net.xiaobais.xiaobai.service.CodeService;
 import net.xiaobais.xiaobai.service.EmailService;
+import net.xiaobais.xiaobai.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,15 +21,14 @@ public class EmailServiceImpl implements EmailService {
 
     @Value("${spring.mail.username}")
     private String from;
-
     @Value("${mail.prefixUrl}")
     private String prefixUrl;
-
     @Resource
     private CodeService codeService;
-
     @Resource
     private JavaMailSender mailSender;
+    @Resource
+    private UserService userService;
 
     @Override
     public boolean sendEmailVerifyCode(String email) {
@@ -70,15 +71,19 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public boolean sendMessage(String email, String message) {
-        if (email.equals(from)){
+    public boolean sendMessage(Integer userId, String message) {
+        User user = userService.getUserById(userId);
+        if (!user.getIsAuth()){
+            return false;
+        }
+        if (user.getUserEmail().equals(from)){
             return false;
         }
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setSubject("xiaobais.net");
             mailMessage.setText(message);
-            mailMessage.setTo(email);
+            mailMessage.setTo(user.getUserEmail());
             mailMessage.setFrom(from);
             mailSender.send(mailMessage);
             return true;

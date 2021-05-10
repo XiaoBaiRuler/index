@@ -1,9 +1,10 @@
-package net.xiaobais.xiaobai.controller;
+package net.xiaobais.xiaobai.controller.admin;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @Author xiaobai
@@ -12,10 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Api(tags = "AdminAuthorityController")
 @Controller
+@RequestMapping("/admin")
 public class AdminAuthorityController {
 
     @ApiOperation("管理员添加权限")
-    @GetMapping("/admin/addAuthority")
+    @GetMapping("/addAuthority")
     public String addAuthority(){
         return "admin/addAuthority";
     }

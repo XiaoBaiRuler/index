@@ -1,6 +1,7 @@
 package net.xiaobais.xiaobai.service;
 
 import net.xiaobais.xiaobai.model.User;
+import net.xiaobais.xiaobai.vo.EditUserVo;
 import net.xiaobais.xiaobai.vo.PublicUserVo;
 
 import java.util.List;
@@ -95,4 +96,21 @@ public interface UserService {
      * @return Long
      */
     Long countAllUsersByMessage(String message);
+
+    /**
+     * 是否禁用用户
+     * @param enabled enabled
+     * @param userId userId
+     * @return boolean
+     */
+    boolean dealUser(Boolean enabled, Integer userId);
+
+    /**
+     * 更新用户的部分信息
+     * @param userId userId
+     * @param editUserVo editUserVo
+     * @param avatar avatar
+     * @return boolean
+     */
+    boolean editUser(Integer userId, EditUserVo editUserVo, String avatar);
 }

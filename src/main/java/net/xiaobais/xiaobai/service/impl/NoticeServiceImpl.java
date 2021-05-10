@@ -7,9 +7,11 @@ import net.xiaobais.xiaobai.mapper.NodeMapper;
 import net.xiaobais.xiaobai.mapper.NoticeMapper;
 import net.xiaobais.xiaobai.model.*;
 import net.xiaobais.xiaobai.service.*;
+import net.xiaobais.xiaobai.vo.AdminNoticeVo;
 import net.xiaobais.xiaobai.vo.IteratorNoticeVo;
 import net.xiaobais.xiaobai.vo.PublicNoticeVo;
 import net.xiaobais.xiaobai.vo.SuggestNoticeVo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,10 +44,16 @@ public class NoticeServiceImpl implements NoticeService {
     private IteratorMapper iteratorMapper;
     @Resource
     private CacheService cacheService;
+    @Resource
+    private EmailService emailService;
+
+    @Value("${mail.url}")
+    private String url;
 
     private static final String DEAL_PREFIX = "/person/public";
     private static final String NODE_PREFIX = "/public/node/";
     private static final String BLOG_CACHE = "/public/blog";
+    private static final String EMAIL_STR = "\n,进入通知:界面:";
     private static final Integer SIZE = 5;
 
     @Override
@@ -61,7 +69,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setNodeId(nodeId);
         String str = flag == 1 ? "前置方向" : "后置方向";
         notice.setMessage(username + "请求发布博客到<<" + nodeId + ">>的" + str);
-
+        emailService.sendMessage(1, notice.getMessage() + EMAIL_STR + url);
         notice.setDealUrl(str);
         notice.setErrorUrl(DEAL_PREFIX + "/errorPublicNodeNotice");
         notice.setIsDelete(false);
@@ -90,6 +98,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setSubmitType(0);
         notice.setAcceptType(true);
         notice.setMessage(message);
+        emailService.sendMessage(userId, message + EMAIL_STR + url);
         notice.setNodeId(newNodeId);
         notice.setDealUrl(NODE_PREFIX + newNodeId);
         notice.setIsDelete(false);
@@ -133,6 +142,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setAcceptType(true);
         notice.setNodeId(nodeId);
         notice.setMessage("管理拒绝你的发布请求，理由" + message);
+        emailService.sendMessage(userId, notice.getMessage() + EMAIL_STR + url);
         notice.setIsDelete(false);
         if (noticeMapper.insertSelective(notice) == -1){
             throw new Exception("创建错误通知失败");
@@ -241,6 +251,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setNodeId(nodeId);
         notice.setIteratorId(iteratorId);
         notice.setMessage(message);
+        emailService.sendMessage(acceptId, message + EMAIL_STR + url);
         notice.setIsDelete(false);
         notice.setSubmitType(1);
         notice.setAcceptType(false);
@@ -256,6 +267,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setUserId(userId);
         notice.setAcceptId(acceptId);
         notice.setMessage(user.getUsername() + "同意了你的迭代请求");
+        emailService.sendMessage(acceptId, notice.getMessage() + EMAIL_STR + url);
         notice.setSubmitType(1);
         notice.setAcceptType(true);
         notice.setNodeId(nodeId);
@@ -300,6 +312,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setUserId(userId);
         notice.setAcceptId(acceptId);
         notice.setMessage(user.getUsername() + "驳回了你的迭代请求");
+        emailService.sendMessage(acceptId, notice.getMessage() + EMAIL_STR + url);
         notice.setSubmitType(1);
         notice.setAcceptType(true);
         notice.setNodeId(nodeId);
@@ -368,6 +381,7 @@ public class NoticeServiceImpl implements NoticeService {
         notice.setIsDelete(false);
         notice.setSuggestId(suggestId);
         notice.setMessage("用户发起了建议请求");
+        emailService.sendMessage(acceptId, "有用户发起建议请求" + EMAIL_STR + url);
         return noticeMapper.insertSelective(notice) != -1;
     }
 
@@ -425,6 +439,7 @@ public class NoticeServiceImpl implements NoticeService {
             reply.setAcceptType(true);
             reply.setSuggestId(notice.getSuggestId());
             reply.setMessage(user.getUsername() + "根据你的建议修改了博客节点");
+            emailService.sendMessage(notice.getUserId(), reply.getMessage() + EMAIL_STR + url);
             reply.setIsDelete(false);
             if (noticeMapper.insertSelective(reply) == -1){
                 throw new Exception("添加回复建议通知失败");
@@ -454,6 +469,7 @@ public class NoticeServiceImpl implements NoticeService {
             reply.setAcceptType(true);
             reply.setSuggestId(notice.getSuggestId());
             reply.setMessage(user.getUsername() + "拒绝了你的建议请求: 理由: " + message);
+            emailService.sendMessage(notice.getUserId(), reply.getMessage() + EMAIL_STR + url);
             reply.setIsDelete(false);
             if (noticeMapper.insertSelective(reply) == -1){
                 throw new Exception("添加回复建议通知失败");
@@ -464,6 +480,73 @@ public class NoticeServiceImpl implements NoticeService {
             }
         }
         return reply.getNoticeId();
+    }
+
+    @Override
+    public List<AdminNoticeVo> getAllNotice(Integer type, Integer pageNumber, Integer pageSize, String message) {
+        NoticeExample noticeExample = new NoticeExample();
+        NoticeExample.Criteria criteria = noticeExample.createCriteria();
+        if (!"".equals(message)){
+            criteria.andMessageLike("%" + message + "%");
+        }
+        if (type != -1){
+            criteria.andSubmitTypeEqualTo(type);
+        }
+        PageHelper.startPage(pageNumber, pageSize);
+        List<Notice> notices = noticeMapper.selectByExample(noticeExample);
+        List<AdminNoticeVo> lists = new ArrayList<>();
+        notices.stream().filter(Objects::nonNull).forEach(notice -> {
+            AdminNoticeVo adminNoticeVo = new AdminNoticeVo();
+            adminNoticeVo.setNoticeId(notice.getNoticeId());
+            adminNoticeVo.setUsername(userService.getUserById(notice.getUserId()).getUsername());
+            adminNoticeVo.setAcceptName(userService.getUserById(notice.getAcceptId()).getUsername());
+            adminNoticeVo.setSubmitType(notice.getSubmitType());
+            adminNoticeVo.setNodeId(notice.getNodeId());
+            adminNoticeVo.setSuggestId(notice.getSuggestId());
+            adminNoticeVo.setIteratorId(notice.getIteratorId());
+            adminNoticeVo.setMessage(notice.getMessage());
+            adminNoticeVo.setDelete(notice.getIsDelete());
+            lists.add(adminNoticeVo);
+        });
+        return lists;
+    }
+
+    @Override
+    public Long countAllNotice(Integer type, String message) {
+        NoticeExample noticeExample = new NoticeExample();
+        NoticeExample.Criteria criteria = noticeExample.createCriteria();
+        if (!"".equals(message)){
+            criteria.andMessageLike("%" + message + "%");
+        }
+        if (type != -1){
+            criteria.andSubmitTypeEqualTo(type);
+        }
+        long l = noticeMapper.countByExample(noticeExample);
+        return l % 8 == 0 ? l / 8 : l / 8 + 1;
+    }
+
+    @Override
+    public boolean deleteNotice(Integer noticeId) {
+        Notice notice = new Notice();
+        notice.setNoticeId(noticeId);
+        notice.setIsDelete(true);
+        return noticeMapper.updateByPrimaryKeySelective(notice) != -1;
+    }
+
+    @Override
+    public boolean completeDeleteNotice(Integer noticeId) {
+        NoticeExample example = new NoticeExample();
+        example.createCriteria().andIsDeleteEqualTo(true)
+                .andNoticeIdEqualTo(noticeId);
+        return noticeMapper.deleteByExample(example) != -1;
+    }
+
+    @Override
+    public boolean updateNoticeMessage(Integer noticeId, String message) {
+        Notice notice = new Notice();
+        notice.setNoticeId(noticeId);
+        notice.setMessage(message);
+        return noticeMapper.updateByPrimaryKeySelective(notice) != -1;
     }
 
 

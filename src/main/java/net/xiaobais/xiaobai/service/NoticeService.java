@@ -1,6 +1,7 @@
 package net.xiaobais.xiaobai.service;
 
 import net.xiaobais.xiaobai.model.Notice;
+import net.xiaobais.xiaobai.vo.AdminNoticeVo;
 import net.xiaobais.xiaobai.vo.IteratorNoticeVo;
 import net.xiaobais.xiaobai.vo.PublicNoticeVo;
 import net.xiaobais.xiaobai.vo.SuggestNoticeVo;
@@ -210,5 +211,45 @@ public interface NoticeService {
      * @exception Exception 事务管理
      */
     int errorSuggestNotice(Integer noticeId, Integer userId, String message) throws Exception;
+
+    /**
+     * 查找所有通知
+     * @param type type
+     * @param pageNumber pageNumber
+     * @param pageSize pageSize
+     * @param message message
+     * @return List<AdminNoticeVo>
+     */
+    List<AdminNoticeVo> getAllNotice(Integer type, Integer pageNumber, Integer pageSize, String message);
+
+    /**
+     * 统计通知个数
+     * @param type type
+     * @param message message
+     * @return Long
+     */
+    Long countAllNotice(Integer type, String message);
+
+    /**
+     * 管理员普通删除通知
+     * @param noticeId noticeId
+     * @return boolean
+     */
+    boolean deleteNotice(Integer noticeId);
+
+    /**
+     * 管理员彻底删除通知
+     * @param noticeId noticeId
+     * @return boolean
+     */
+    boolean completeDeleteNotice(Integer noticeId);
+
+    /**
+     * 管理员更新通知信息
+     * @param noticeId noticeId
+     * @param message message
+     * @return boolean
+     */
+    boolean updateNoticeMessage(Integer noticeId, String message);
 
 }
