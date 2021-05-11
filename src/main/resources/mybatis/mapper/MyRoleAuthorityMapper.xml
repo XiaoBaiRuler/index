@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.xiaobais.xiaobai.mapper.MyRoleAuthorityMapper">
+    <select id="getAllAuthoritiesByRoleId" resultType="net.xiaobais.xiaobai.vo.AdminAuthorityVo">
+        select ra.role_id, a.*
+        from role_authority as ra
+        INNER JOIN authority as a
+        on ra.authority_id = a.authority_id
+        where ra.role_id = #{roleId}
+        and a.authority_tag like #{message}
+    </select>
+
+    <select id="countAllAuthoritiesByRoleId" resultType="integer">
+        select count(*)
+        from role_authority as ra
+                 INNER JOIN authority as a
+                            on ra.authority_id = a.authority_id
+        where ra.role_id = #{roleId}
+          and a.authority_tag like #{message}
+    </select>
+
+    <select id="getAllAuthorities" resultType="net.xiaobais.xiaobai.vo.AdminAuthorityVo">
+        select ra.role_id, a.*
+        from role_authority as ra
+                 INNER JOIN authority as a
+                            on ra.authority_id = a.authority_id
+        where a.authority_tag like #{message}
+    </select>
+
+    <select id="countAllAuthorities" resultType="integer">
+        select count(*)
+        from role_authority as ra
+                 INNER JOIN authority as a
+                            on ra.authority_id = a.authority_id
+        where a.authority_tag like #{message}
+    </select>
+</mapper>

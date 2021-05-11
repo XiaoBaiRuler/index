@@ -50,6 +50,6 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     @Override
     public int addAuthority(Authority authority) {
-        return authorityMapper.insert(authority);
+        return authorityMapper.insert(authority) != -1 ? authority.getAuthorityId() : -1;
     }
 }

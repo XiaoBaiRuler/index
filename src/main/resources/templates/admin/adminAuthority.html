@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <span th:replace="com/head :: cdnHead"></span>
+    <title>管理用户</title>
+    <span th:replace="com/head :: cdnEditHead"></span>
+</head>
+<body>
+    <div id="app">
+        <div th:replace="com/menu :: publicUserMenu"></div>
+        <br><br><br><br>
+        <div class="ui container" style="width: 85%; height: 1000px;">
+            <div class="ui form">
+                <div class="inline fields">
+                    <label>选择角色</label>
+                    <div class="field" v-for="role, index in roles" :key="'role' + index">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="roleId" :value="role.roleId" v-model="roleId">
+                            <label>{{role.roleName}}:{{role.roleDes}}</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" tabindex="0" class="hidden"
+                                   name="roleId" value="0" v-model="roleId">
+                            <label>全部权限</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui fluid action input">
+                        <input type="text" name="message" v-model="message" placeholder="通过权限标签模糊查询...">
+                        <button class="ui icon button" @click="searchUser">
+                            <i class="search icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="ui fluid raised segment">
+                <a class="ui green right ribbon label" @click="addAuthority">添加权限</a>
+                <table class="ui celled table">
+                    <thead>
+                    <tr>
+                        <th>编号顺序</th>
+                        <th>角色ID</th>
+                        <th>权限链接</th>
+                        <th>权限名</th>
+                        <th>权限标签</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="a,index in authorities" :key="'a' + index">
+                        <td>{{index}}</td>
+                        <td>
+                            {{a.roleId}}
+                        </td>
+                        <td>
+                            {{a.authorityUrl}}
+                        </td>
+                        <td>{{a.authorityName}}</td>
+                        <td>{{a.authorityTag}}</td>
+                        <td>
+                            <button class="ui red inverted button" @click="deleteAuthority(index)">删除</button>
+                            <button class="ui yellow inverted button" @click="editAuthority(index)">更新</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="10">
+                            <div class="ui right floated pagination menu">
+                                <a class="icon item" @click="toPre">
+                                    <i class="left chevron icon"></i>
+                                </a>
+                                <a class="disabled item">{{number}}</a>
+                                <a class="icon item" @click="toNex">
+                                    <i class="right chevron icon"></i>
+                                </a>
+                            </div>
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div th:replace="com/model :: addAuthorityModel"></div>
+        <div th:replace="com/model :: editAuthorityModel"></div>
+        <div th:replace="com/model :: deleteAuthorityModel"></div>
+        <div th:replace="com/menu :: adminBarMenu"></div>
+        <br><br>
+        <div th:replace="com/foot :: foot"></div>
+    </div>
+    <script type="text/javascript">
+        let app = new Vue({
+            el: '#app',
+            data: {
+                userVo: {},
+                iteratorId: -1,
+                topStar: [],
+                topCollect: [],
+                isLogin: false,
+                str: "",
+                roles: [],
+                roleId: 0,
+                authorityId: 0,
+                number: 1,
+                size: 1,
+                pageSize: 5,
+                authorities: [],
+                message: "",
+                index: -1,
+                authorityUrl: "",
+                authorityName: "",
+                authorityTag: "",
+                urlFlag: false,
+                nameFlag: false,
+                tagFlag: false
+            },
+            beforeMount: function(){
+                // 用户信息
+                axios.get("/user/getUserInfo")
+                    .then(response => {
+                        if (response.data !== ""){
+                            this.isLogin = true
+                            this.userVo = response.data
+                        }else{
+                            this.isLogin = false
+                        }
+                    })
+                    .catch(error => console.log(error))
+                // 最高点赞
+                axios.get("/public/getTopStar?n=5")
+                    .then(response => {
+                        this.topStar = response.data
+                    })
+                    .catch(error => console.log(error))
+                // 最高收藏
+                axios.get("/public/getTopCollect?n=5")
+                    .then(response => {
+                        this.topCollect = response.data
+                    })
+                    .catch(error => console.log(error))
+            },
+            mounted: function() {
+                // 获取所有角色
+                axios.get("/admin/getAllRoles")
+                    .then(response => {
+                        this.roles = response.data
+                    })
+                    .catch(error => console.log(error))
+
+                axios.get("/admin/countAllAuthorities/"+ this.roleId +"?message=" + this.message)
+                    .then(response => {
+                        this.size = response.data
+                        $('.ui.radio.checkbox').checkbox();
+                    })
+                    .catch(error => console.log(error))
+                this.prepare()
+            },
+            updated: function(){
+                this.checked()
+            },
+            methods: {
+                toMenu: function() {
+                    $('.ui.labeled.icon.sidebar').sidebar('toggle');
+                },
+                logout: function(){
+                    axios.get("/private/logout")
+                        .then(response => {
+                            this.isLogin = response.data !== 1;
+                        })
+                        .catch(error => console.log(error))
+                },
+                search: function() {
+                    if (this.str === "") {
+                        alert("请输入搜索内容")
+                    } else {
+                        window.location.href = "/private/search/?pageNumber=1&pageSize=6&str=" + this.str
+                    }
+                },
+                toPre: function(){
+                    if (this.number > 1){
+                        this.number --;
+                        this.prepare()
+                    }
+                },
+                toNex: function(){
+                    if (this.number < this.size){
+                        this.number ++;
+                        this.prepare()
+                    }
+                },
+                prepare: function(){
+                    axios.get("/admin/getAllAuthorities/"+ this.roleId +
+                        "?pageNumber=" + this.number + "&pageSize=" + this.pageSize
+                        + "&message=" + this.message)
+                        .then(response => {
+                            this.authorities = response.data
+                        })
+                        .catch(error => console.log(error))
+                },
+                searchUser: function(){
+                    axios.get("/admin/countAllAuthorities/"+ this.roleId +"?message=" + this.message)
+                        .then(response => {
+                            this.size = response.data
+                        })
+                        .catch(error => console.log(error))
+                    this.prepare()
+                },
+                checked: function(){
+                    this.urlFlag = this.authorityUrl.length === 0
+                    this.nameFlag = this.authorityName.length === 0
+                    this.tagFlag = this.authorityTag.length === 0
+                },
+                editAuthority(index){
+                    this.index = index
+                    this.authorityUrl = app.authorities[index].authorityUrl
+                    this.authorityName = app.authorities[index].authorityName
+                    this.authorityTag = app.authorities[index].authorityTag
+                    this.authorityId = app.authorities[index].authorityId
+                    this.checked()
+                    $('.ui.editAuthority.basic.modal')
+                        .modal('setting',{
+                            closable  : false,
+                            blurring: true,
+                            onDeny    : function(){
+                                return true;
+                            },
+                            onApprove : function(){
+                                if (app.urlFlag || app.nameFlag || app.tagFlag){
+                                    return false
+                                }
+                                let authority = new FormData()
+                                authority.append("authorityId", app.authorityId)
+                                authority.append("authorityUrl", app.authorityUrl)
+                                authority.append("authorityName", app.authorityName)
+                                authority.append("authorityTag", app.authorityTag)
+                                axios.post('/admin/updateAuthority', authority,
+                                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                                    .then(response => {
+                                        if (response.data.includes("#")){
+                                            app.authorities[index].authorityUrl = app.authorityUrl
+                                            app.authorities[index].authorityName = app.authorityName
+                                            app.authorities[index].authorityTag = app.authorityTag
+                                            return true
+                                        }
+                                        else{
+                                            alert(response.data)
+                                            return false
+                                        }
+                                    })
+                                    .catch(error => {alert("更新迭代理由失败");console.log(error)})
+                            },
+                        })
+                        .modal('hide others')
+                        .modal('show')
+                },
+                addAuthority(){
+                    this.authorityUrl = ""
+                    this.authorityName = ""
+                    this.authorityTag = ""
+                    this.roleId = 1
+                    this.checked()
+                    $('.ui.radio.checkbox').checkbox();
+                    $('.ui.addAuthority.basic.modal')
+                        .modal('setting',{
+                            closable  : false,
+                            blurring: true,
+                            onDeny    : function(){
+                                return true;
+                            },
+                            onApprove : function(){
+                                if (app.urlFlag || app.nameFlag || app.tagFlag){
+                                    return false
+                                }
+                                let authority = new FormData()
+                                authority.append("roleId", app.roleId)
+                                authority.append("authorityUrl", app.authorityUrl)
+                                authority.append("authorityName", app.authorityName)
+                                authority.append("authorityTag", app.authorityTag)
+                                axios.post('/admin/addAuthority', authority,
+                                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                                    .then(response => {
+                                        if (response.data.includes("#")){
+                                            alert("添加成功")
+                                            return true
+                                        }
+                                        else{
+                                            alert(response.data)
+                                            return false
+                                        }
+                                    })
+                                    .catch(error => {alert("添加权限失败");console.log(error)})
+                            },
+                        })
+                        .modal('hide others')
+                        .modal('show')
+                    this.roleId = 0
+                    this.searchUser()
+                },
+                deleteAuthority(index){
+                    app.index = index
+                    app.roleId = app.authorities[index].roleId
+                    app.authorityId = app.authorities[index].authorityId
+                    $('.ui.deleteAuthority.basic.modal').modal('hide others').modal('show')
+                }
+            }
+        })
+        // 普通删除通知
+        $(document).on('click', '#deleteAuthorityModel', function() {
+            axios.get('/admin/deleteAuthority?roleId=' + app.roleId + "&authorityId=" + app.authorityId)
+                .then(response => {
+                    let msg = response.data
+                    if (msg.includes("#")){
+                        alert("删除成功")
+                        app.authorities.splice(app.index, 1)
+                    }
+                    else{
+                        alert(msg)
+                    }
+                })
+                .catch(error => console.log(error))
+        })
+    </script>
+    <script type="text/javascript" th:src="@{/js/showPublic.js}"></script>
+</body>
+</html>

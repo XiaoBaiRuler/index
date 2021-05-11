@@ -46,7 +46,9 @@
             <generatedKey column="user_id" sqlStatement="Mysql" identity="true"/>
         </table>
         <table tableName="role" domainObjectName="Role"/>
-        <table tableName="authority" domainObjectName="Authority"/>
+        <table tableName="authority" domainObjectName="Authority">
+            <generatedKey column="authority_id" sqlStatement="Mysql" identity="true"/>
+        </table>
         <table tableName="user_role" domainObjectName="UserRole"/>
         <table tableName="role_authority" domainObjectName="RoleAuthority"/>
 

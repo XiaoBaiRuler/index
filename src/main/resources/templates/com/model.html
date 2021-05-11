@@ -659,5 +659,119 @@
             </div>
         </div>
     </div>
+
+    <!--编辑权限-->
+    <div class="ui editAuthority basic modal" th:fragment="editAuthorityModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui container" style="width: 90%;">
+                <div class="ui raised segment">
+                    <form class="ui form">
+                        <div class="ui negative message" v-show="urlFlag">
+                            <i class="close icon"></i>
+                            <p>请求链接不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>请求链接</label>
+                            <input type="text" name="authorityUrl" placeholder="请输入请求链接"
+                                   v-model="authorityUrl">
+                        </div>
+                        <div class="ui negative message" v-show="nameFlag">
+                            <i class="close icon"></i>
+                            <p>请求名不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>请求名</label>
+                            <input type="text" name="authorityName" placeholder="请输入请求名"
+                                   v-model="authorityName">
+                        </div>
+                        <div class="ui negative message" v-show="tagFlag">
+                            <i class="close icon"></i>
+                            <p>请求标签不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>请求标签</label>
+                            <input type="text" name="authorityTag" placeholder="请输入请求标签"
+                                   v-model="authorityTag">
+                        </div>
+                        <div class="actions">
+                            <div class="ui green approve button">保存</div>
+                            <div class="ui cancel button">取消</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--添加权限-->
+    <div class="ui addAuthority basic modal" th:fragment="addAuthorityModel">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui container" style="width: 90%;">
+                <div class="ui raised segment">
+                    <form class="ui form">
+                        <div class="inline fields">
+                            <label>选择角色</label>
+                            <div class="field" v-for="role, index in roles" :key="'role' + index">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" tabindex="0" class="hidden"
+                                           name="roleId" :value="role.roleId" v-model="roleId">
+                                    <label>{{role.roleName}}:{{role.roleDes}}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui negative message" v-show="urlFlag">
+                            <i class="close icon"></i>
+                            <p>请求链接不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>请求链接</label>
+                            <input type="text" name="authorityUrl" placeholder="请输入请求链接"
+                                   v-model="authorityUrl">
+                        </div>
+                        <div class="ui negative message" v-show="nameFlag">
+                            <i class="close icon"></i>
+                            <p>请求名不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>请求名</label>
+                            <input type="text" name="authorityName" placeholder="请输入请求名"
+                                   v-model="authorityName">
+                        </div>
+                        <div class="ui negative message" v-show="tagFlag">
+                            <i class="close icon"></i>
+                            <p>请求标签不能为空</p>
+                        </div>
+                        <div class="field">
+                            <label>请求标签</label>
+                            <input type="text" name="authorityTag" placeholder="请输入请求标签"
+                                   v-model="authorityTag">
+                        </div>
+                        <div class="actions">
+                            <div class="ui green approve button">保存</div>
+                            <div class="ui cancel button">取消</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--删除权限-->
+    <div class="ui deleteAuthority basic modal" th:fragment="deleteAuthorityModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否删除权限
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteAuthorityModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
 </body>
 </html>

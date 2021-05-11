@@ -99,17 +99,20 @@
     </if>
   </delete>
   <insert id="insert" parameterType="net.xiaobais.xiaobai.model.Authority">
-    insert into authority (authority_id, authority_url, authority_name, 
-      authority_tag)
-    values (#{authorityId,jdbcType=INTEGER}, #{authorityUrl,jdbcType=VARCHAR}, #{authorityName,jdbcType=VARCHAR}, 
-      #{authorityTag,jdbcType=VARCHAR})
+    <selectKey keyProperty="authorityId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into authority (authority_url, authority_name, authority_tag
+      )
+    values (#{authorityUrl,jdbcType=VARCHAR}, #{authorityName,jdbcType=VARCHAR}, #{authorityTag,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="net.xiaobais.xiaobai.model.Authority">
+    <selectKey keyProperty="authorityId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into authority
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="authorityId != null">
-        authority_id,
-      </if>
       <if test="authorityUrl != null">
         authority_url,
       </if>
@@ -121,9 +124,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="authorityId != null">
-        #{authorityId,jdbcType=INTEGER},
-      </if>
       <if test="authorityUrl != null">
         #{authorityUrl,jdbcType=VARCHAR},
       </if>
