@@ -40,30 +40,38 @@ public class MindController {
     private PublicNodeService publicNodeService;
     @Resource
     private PrivateNodeService privateNodeService;
+    @Resource
+    private CacheService cacheService;
 
     private static final String NOTHING = "[]";
-    private static final String PREFIX_URL = "/public/node/";
+    private static final String MIND_ID = "/public/getMindById";
+    private static final String PUBLIC_ID = "/public/getNodeMind";
+    private static final String PRIVATE_ID = "/private/getNodeMind";
     private static final String ROOT = "root";
 
     @ApiOperation("通过mindId获取Mind数据(public)")
     @GetMapping("/public/getMindById")
     @ResponseBody
     public List<MindVo> findMindByMindId(@RequestParam Integer mindId){
-        Map map = mapService.findMapById(mindId);
-        if (map == null || NOTHING.equals(map.getMapData())){
-            List<MindVo> list = new ArrayList<>();
-            MindVo mindVo = new MindVo("root", null, true, "这个节点没有导图呢", null, true);
-            list.add(mindVo);
-            return list;
+        List<MindVo> list = cacheService.getMindListByKey(MIND_ID + mindId);
+        if (list == null){
+            Map map = mapService.findMapById(mindId);
+            if (map == null || NOTHING.equals(map.getMapData())){
+                list = new ArrayList<>();
+                MindVo mindVo = new MindVo("root", null, true, "这个节点没有导图呢", null, true);
+                list.add(mindVo);
+                return list;
+            }
+            list = JSONObject.parseArray(map.getMapData(), MindVo.class);
+            cacheService.setMindListByKey(MIND_ID + mindId, list);
         }
-        return JSONObject.parseArray(map.getMapData(), MindVo.class);
+        return list;
     }
 
     @ApiOperation("通过nodeId获取Mind数据(public)")
     @GetMapping("/public/getMind")
     @ResponseBody
     public List<MindVo> findMindByNodeId(@RequestParam Integer nodeId){
-
         Node node = publicNodeService.findNodeById(nodeId);
         Map map = mapService.findMapById(node.getMapId());
         if (map == null || NOTHING.equals(map.getMapData())){
@@ -81,7 +89,13 @@ public class MindController {
     @ResponseBody
     public List<MindVo> findMindByNodeIdAndLevel(@RequestParam Integer nodeId,
                                                  @RequestParam Integer level){
-        return publicMindService.getMindVoByLevel(level, nodeId);
+        String key = PUBLIC_ID + nodeId + "/" + level;
+        List<MindVo> list = cacheService.getMindListByKey(key);
+        if (list == null){
+            list = publicMindService.getMindVoByLevel(level, nodeId);
+            cacheService.setMindListByKey(key, list);
+        }
+        return list;
     }
 
     @ApiOperation("通过nodeId获取所有迭代节点")
@@ -120,7 +134,13 @@ public class MindController {
     public List<MindVo> findPrivateMindByNodeIdAndUserIdAndLevel(@RequestParam Integer nodeId,
                                                                  @RequestParam Integer userId,
                                                                  @RequestParam Integer level){
-        return privateMindService.getPrivateMindVoByLevel(level, nodeId, userId);
+        String key = PRIVATE_ID + nodeId + "/" + userId + "/" + level;
+        List<MindVo> list = cacheService.getMindListByKey(key);
+        if (list == null){
+            list = privateMindService.getPrivateMindVoByLevel(level, nodeId, userId);
+            cacheService.setMindListByKey(key, list);
+        }
+        return list;
     }
 
     @CrossOrigin

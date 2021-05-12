@@ -5,10 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Node;
 import net.xiaobais.xiaobai.model.SuggestWithBLOBs;
-import net.xiaobais.xiaobai.service.BlogService;
-import net.xiaobais.xiaobai.service.PublicNodeService;
-import net.xiaobais.xiaobai.service.SuggestService;
-import net.xiaobais.xiaobai.service.UserService;
+import net.xiaobais.xiaobai.service.*;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,6 +31,8 @@ public class SuggestController {
     private SuggestService suggestService;
     @Resource
     private UserService userService;
+    @Resource
+    private CacheService cacheService;
 
     private static final int SIZE = 1000;
 
@@ -41,6 +40,7 @@ public class SuggestController {
     private static final String TWO = "2";
     private static final String THREE = "3";
     private static final String FOUR = "4";
+    private static final String PUBLIC_ID = "/public/getNodeMind";
 
 
 
@@ -66,7 +66,11 @@ public class SuggestController {
     @PostMapping("/person/public/addSuggest")
     @ResponseBody
     public Integer addSuggest(SuggestWithBLOBs suggestWb) throws Exception {
-        return suggestService.addSuggest(suggestWb);
+        int i = suggestService.addSuggest(suggestWb);
+        if (i != -1){
+            cacheService.deleteAllMindListByKey(PUBLIC_ID);
+        }
+        return i;
     }
 
     @ApiOperation("通过suggestId获取建议节点")

@@ -154,6 +154,9 @@
                     <div id="mind_container"></div>
                 </div>
             </div>
+            <br>
+            <div th:replace="com/comment :: comments"></div>
+            <br><br>
         </div>
         <div th:replace="com/model :: submitModel"></div>
         <div th:replace="com/model :: showIndexBlogModel"></div>
@@ -161,6 +164,7 @@
         <div th:replace="com/model :: changeBlogModel"></div>
         <div th:replace="com/model :: deleteBlogModel"></div>
         <div th:replace="com/model :: editModel"></div>
+        <div th:replace="com/model :: deleteCommentModel"></div>
         <br><br>
         <div th:replace="com/foot :: foot"></div>
         <div th:replace="com/Bar :: right_bar"></div>
@@ -219,7 +223,14 @@
                 editor: null,
                 deleteNodeId: "",
                 allJm: {},
-                flag: ""
+                flag: "",
+                comments: {},
+                i: -1,
+                j: -1,
+                k: -1,
+                username: "",
+                commentContent: "",
+                commentId: 0
             },
             beforeMount: function(){
                 this.isUpdate = document.getElementById("isUpdate").value
@@ -233,6 +244,11 @@
                             this.userVo = response.data
                             this.prepareMind()
                             this.preparePage(this.nodeId, "", "", 0, 0)
+                            if (this.userVo.userId === 1){
+                                axios.get("/public/getAllComments?nodeId=" + this.nodeId)
+                                    .then(response =>{ this.comments = response.data})
+                                    .catch(error => console.log(error))
+                            }
                         }else{
                             this.isLogin = false
                         }
@@ -578,8 +594,89 @@
                             $('.ui.radio.checkbox').checkbox();
                         })
                         .catch(error => console.log(error))
+                },
+                toComment: function(){
+                    window.location.href = '#comments'
+                },
+                replyOne: function(username, commentId, i, j) {
+                    window.location.href = '#replys'
+                    this.username = username
+                    this.commentId = commentId
+                    this.i = i;
+                    this.j = j;
+                },
+                submitReply: function(){
+                    let item = {
+                        commentId: this.commentId,
+                        userId: this.userVo.userId,
+                        nodeId: this.nodeId,
+                        avatar: this.userVo.img,
+                        userUrl: "/public/user/" + this.userVo.userId,
+                        username: this.userVo.username,
+                        time: "今天",
+                        comment: this.commentContent,
+                        userEmail: this.userVo.email,
+                        flag: false,
+                        children: []
+                    }
+                    let comment = new FormData()
+                    comment.append("parentId", this.commentId)
+                    comment.append("userId", this.userVo.userId)
+                    comment.append("nodeId", this.nodeId)
+                    comment.append("content", this.commentContent)
+
+                    axios.post('/person/public/addComment', comment,
+                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                        .then(response => {
+                            item.commentId = response.data
+                            if (this.commentId === 0){
+                                this.comments.push(item)
+                            }
+                            else{
+                                if (this.i !== -1 && this.j === -1){
+                                    this.comments[this.i].flag = true
+                                    this.comments[this.i].children.push(item)
+                                }
+                                if (this.i !== -1 && this.j !== -1){
+                                    this.comments[this.i].children[this.j].flag = true
+                                    this.comments[this.i].children[this.j].children.push(item)
+                                }
+                            }
+                            window.location.href = '#comments'
+                            this.commentContent = ""
+                        })
+                        .catch(error => console.log(error))
+                },
+                deleteOne: function(commentId, i, j, k){
+                    this.commentId = commentId
+                    this.i = i
+                    this.j = j
+                    this.k = k
+                    $('.ui.deleteComment.basic.modal').modal('hide others').modal('show')
                 }
             }
+        })
+        // 删除评论
+        $(document).on('click', '#deleteCommentModel', function() {
+            axios.get("/admin/deleteComment/" + app.commentId)
+                .then(response => {
+                    if (response.data.includes("#")){
+                        alert("删除成功")
+                        if (app.i !== -1 && app.j === -1 && app.k === -1){
+                            app.comments.splice(app.i, 1)
+                        }
+                        else if (app.i !== -1 && app.j !== -1 && app.k === -1){
+                            app.comments[app.i].children.splice(app.j, 1)
+                        }
+                        else if (app.i !== -1 && app.j !== -1 && app.k !== -1){
+                            app.comments[app.i].children[app.j].children.splice(app.k, 1)
+                        }
+                    }
+                    else{
+                        alert(response.data)
+                    }
+                })
+                .catch(error => console.log(error))
         })
     </script>
     <script type="text/javascript" th:src="@{/js/showPrivate.js}"></script>

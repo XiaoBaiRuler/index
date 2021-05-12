@@ -3,8 +3,11 @@ package net.xiaobais.xiaobai.service.impl;
 import com.alibaba.fastjson.JSON;
 import net.xiaobais.xiaobai.model.Blog;
 import net.xiaobais.xiaobai.model.Node;
+import net.xiaobais.xiaobai.model.User;
 import net.xiaobais.xiaobai.service.CacheService;
 import net.xiaobais.xiaobai.service.RedisService;
+import net.xiaobais.xiaobai.vo.CommentVo;
+import net.xiaobais.xiaobai.vo.MindVo;
 import net.xiaobais.xiaobai.vo.PublicNodeVo;
 import net.xiaobais.xiaobai.vo.SimpleNodeVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,4 +107,71 @@ public class CacheServiceImpl implements CacheService {
     public void deleteBlogByKey(String key) {
         redisService.remove(REDIS_KEY_PREFIX_CACHE + key);
     }
+
+    @Override
+    public void setUserList(String key, List<User> users) {
+        redisService.set(REDIS_KEY_PREFIX_CACHE + key, JSON.toJSONString(users));
+        redisService.expire(REDIS_KEY_PREFIX_CACHE + key, AUTH_CODE_EXPIRE_CACHE);
+    }
+
+    @Override
+    public List<User> getUserList(String key) {
+        String s = redisService.get(REDIS_KEY_PREFIX_CACHE + key);
+        if (s == null || "".equals(s)){
+            return null;
+        }
+        return JSON.parseArray(s, User.class);
+    }
+
+    @Override
+    public void deleteAllUserByPreKey(String preKey) {
+        redisService.removeAll(REDIS_KEY_PREFIX_CACHE + preKey + "*");
+    }
+
+    @Override
+    public List<MindVo> getMindListByKey(String key) {
+        String s = redisService.get(REDIS_KEY_PREFIX_CACHE + key);
+        if (s == null || "".equals(s)){
+            return null;
+        }
+        return JSON.parseArray(s, MindVo.class);
+    }
+
+    @Override
+    public void setMindListByKey(String key, List<MindVo> list) {
+        redisService.set(REDIS_KEY_PREFIX_CACHE + key, JSON.toJSONString(list));
+        redisService.expire(REDIS_KEY_PREFIX_CACHE + key, AUTH_CODE_EXPIRE_CACHE);
+    }
+
+    @Override
+    public void deleteMindListByKey(String key) {
+        redisService.remove(REDIS_KEY_PREFIX_CACHE + key);
+    }
+
+    @Override
+    public void deleteAllMindListByKey(String preKey) {
+        redisService.removeAll(REDIS_KEY_PREFIX_CACHE + preKey + "*");
+    }
+
+    @Override
+    public List<CommentVo> getCommentsByKey(String key) {
+        String s = redisService.get(REDIS_KEY_PREFIX_CACHE + key);
+        if (s == null || "".equals(s)){
+            return null;
+        }
+        return JSON.parseArray(s, CommentVo.class);
+    }
+
+    @Override
+    public void setCommentsByKey(String key, List<CommentVo> comments) {
+        redisService.set(REDIS_KEY_PREFIX_CACHE + key, JSON.toJSONString(comments));
+        redisService.expire(REDIS_KEY_PREFIX_CACHE + key, AUTH_CODE_EXPIRE_CACHE);
+    }
+
+    @Override
+    public void deleteCommentsByKey(String key) {
+        redisService.remove(REDIS_KEY_PREFIX_CACHE + key);
+    }
+
+
 }

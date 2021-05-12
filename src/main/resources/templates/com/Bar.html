@@ -3,6 +3,7 @@
 <body>
     <div id="toolbar" class="right_bar" th:fragment="right_bar">
         <div class="ui vertical icon buttons">
+            <a class="ui teal button" @click="toComment" v-if="userVo.userId === 1">评论</a>
             <div class="ui teal icon button" @click="toTop"><i class="chevron up icon"></i></div>
         </div>
     </div>

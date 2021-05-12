@@ -55,6 +55,9 @@ public class PrivateNodeController {
 
     private static final String NODE_CACHE = "/public/node/";
     private static final String BLOG_CACHE = "/public/blog/";
+    private static final String MIND_ID = "/public/getMindById";
+    private static final String PRIVATE_ID = "/private/getNodeMind";
+    private static final String PUBLIC_ID = "/public/getNodeMind";
 
     @ApiOperation("获取节点内容(获取缓存)")
     @GetMapping("/getNode")
@@ -260,6 +263,10 @@ public class PrivateNodeController {
         if (j == -1){
             throw new Exception("后置关系添加失败");
         }
+        if (nodeVo.getUserId() == 1) {
+            cacheService.deleteAllMindListByKey(PUBLIC_ID);
+        }
+        cacheService.deleteAllMindListByKey(PRIVATE_ID);
     }
 
     @ApiOperation("跳转添加后置节点页面")
@@ -317,6 +324,10 @@ public class PrivateNodeController {
         if (j == -1){
             throw new Exception("后置关系添加失败");
         }
+        if (nodeVo.getUserId() == 1) {
+            cacheService.deleteAllMindListByKey(PUBLIC_ID);
+        }
+        cacheService.deleteAllMindListByKey(PRIVATE_ID);
     }
 
     @ApiOperation("获取节点内容")
@@ -382,6 +393,11 @@ public class PrivateNodeController {
                 if (deleteNode(nodeId, node.getMapId(), node.getBlogId())){
                     cacheService.deleteNodeByKey(NODE_CACHE + nodeId);
                     cacheService.deleteNodeByKey(BLOG_CACHE + node.getBlogId());
+                    cacheService.deleteMindListByKey(MIND_ID + node.getMapId());
+                    if (userId == 1) {
+                        cacheService.deleteAllMindListByKey(PUBLIC_ID);
+                    }
+                    cacheService.deleteAllMindListByKey(PRIVATE_ID);
                     return "删除前置节点成功";
                 }
             }
@@ -396,6 +412,11 @@ public class PrivateNodeController {
                 if (deleteNode(nodeId, node.getMapId(), node.getBlogId())){
                     cacheService.deleteNodeByKey(NODE_CACHE + nodeId);
                     cacheService.deleteNodeByKey(BLOG_CACHE + node.getBlogId());
+                    cacheService.deleteMindListByKey(MIND_ID + node.getMapId());
+                    if (userId == 1) {
+                        cacheService.deleteAllMindListByKey(PUBLIC_ID);
+                    }
+                    cacheService.deleteAllMindListByKey(PRIVATE_ID);
                     return "删除后置节点成功";
                 }
             }
@@ -424,6 +445,7 @@ public class PrivateNodeController {
                 throw new Exception("更新标题失败");
             }
             cacheService.deleteNodeByKey(NODE_CACHE + nodeId);
+            cacheService.deleteAllMindListByKey(PRIVATE_ID);
         }
         if (updateVo.getSelect().contains("1") || !blog.getBlogTitle().equals(updateVo.getTitle())
                 || !blog.getBlogDes().equals(updateVo.getDesc())){
@@ -437,6 +459,10 @@ public class PrivateNodeController {
             if (mapService.updateMapByMapId(node.getMapId(), updateVo.getMapData()) == -1){
                 throw new Exception("更新思维导图失败");
             }
+            if (userId == 1) {
+                cacheService.deleteAllMindListByKey(PUBLIC_ID);
+            }
+            cacheService.deleteAllMindListByKey(PRIVATE_ID);
         }
     }
 

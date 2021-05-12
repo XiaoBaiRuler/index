@@ -48,4 +48,11 @@ public interface CommentService {
      * @return int
      */
     int deleteCommentByNodeId(Integer nodeId);
+
+    /**
+     * 删除单个评论
+     * @param commentId commentId
+     * @return int 节点Id
+     */
+    int deleteCommentByCommentId(Integer commentId);
 }

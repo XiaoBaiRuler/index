@@ -3,6 +3,7 @@ package net.xiaobais.xiaobai.controller.admin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.xiaobais.xiaobai.model.User;
+import net.xiaobais.xiaobai.service.CacheService;
 import net.xiaobais.xiaobai.service.FileService;
 import net.xiaobais.xiaobai.service.UserService;
 import net.xiaobais.xiaobai.vo.EditUserVo;
@@ -27,8 +28,11 @@ public class AdminUserController {
     private UserService userService;
     @Resource
     private FileService fileService;
+    @Resource
+    private CacheService cacheService;
 
     private static final String NAME = "xiaobai_img";
+    private static final String PREF_KEY = "/admin/getAllUser";
 
     @ApiOperation("跳转用户管理主页")
     @GetMapping("/toAdminUser")
@@ -42,7 +46,13 @@ public class AdminUserController {
     public List<User> getAllUser(@RequestParam Integer pageNumber,
                                  @RequestParam Integer pageSize,
                                  @RequestParam String message){
-        return userService.getAllUsersByPageAndMessage(pageNumber, pageSize, message);
+        String key = PREF_KEY + "#" + pageNumber + "#" + pageSize + "#" + message;
+        List<User> list = cacheService.getUserList(key);
+        if (list == null){
+            list = userService.getAllUsersByPageAndMessage(pageNumber, pageSize, message);
+            cacheService.setUserList(key, list);
+        }
+        return list;
     }
 
     @ApiOperation("根据用户名模糊查询用户个数")
@@ -85,6 +95,12 @@ public class AdminUserController {
             avatar = user.getUserAvatar().replace(DigestUtils.md5Hex(user.getUsername() + NAME),
                     DigestUtils.md5Hex(editUserVo.getUsername() + NAME));
         }
-        return userService.editUser(userId, editUserVo, avatar) ? "修改成功" : "#修改失败";
+        if (userService.editUser(userId, editUserVo, avatar)){
+            cacheService.deleteAllUserByPreKey(PREF_KEY);
+            return "修改成功";
+        }
+        else{
+            return "#修改失败";
+        }
     }
 }

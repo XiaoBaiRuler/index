@@ -773,5 +773,23 @@
             </div>
         </div>
     </div>
+
+    <!--删除评论-->
+    <div class="ui deleteComment basic modal" th:fragment="deleteCommentModel">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            是否删除该评论
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                否
+            </div>
+            <div class="ui green ok inverted button" id="deleteCommentModel">
+                <i class="checkmark icon"></i>
+                是
+            </div>
+        </div>
+    </div>
 </body>
 </html>

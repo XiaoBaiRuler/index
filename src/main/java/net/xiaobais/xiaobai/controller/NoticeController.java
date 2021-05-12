@@ -46,8 +46,11 @@ public class NoticeController {
     private PreviousService previousService;
     @Resource
     private NextService nextService;
+    @Resource
+    private CacheService cacheService;
 
     private static final String NODE_PREFIX = "/public/node/";
+    private static final String PUBLIC_ID = "/public/getNodeMind";
 
     @ApiOperation("跳转通知管理页面")
     @GetMapping("/toNotice")
@@ -148,8 +151,11 @@ public class NoticeController {
         UserVo user = JwtUtils.getUserVo(JwtUtils.getToken(cookies));
         Integer newNodeId = copyPrivateNodeToPublicNode(nodeId, userId, rootId, flag);
         String message = user.getUsername() + "同意你发布的博客作为他的附近节点, 节点链接为" + NODE_PREFIX + newNodeId;
-        return noticeService.dealPublicNodeNotice(message, userId, nodeId, newNodeId, noticeId) ?
-                "发送通知成功" : "#发送通知失败";
+        if (noticeService.dealPublicNodeNotice(message, userId, nodeId, newNodeId, noticeId)){
+            cacheService.deleteAllMindListByKey(PUBLIC_ID);
+            return "发送通知成功";
+        }
+        return "#发送通知失败";
     }
 
     @ApiOperation("驳回发布节点通知")

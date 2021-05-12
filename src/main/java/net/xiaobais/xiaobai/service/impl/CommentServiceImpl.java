@@ -92,6 +92,22 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.deleteByExample(example);
     }
 
+    @Override
+    public int deleteCommentByCommentId(Integer commentId) {
+        Comment comment = commentMapper.selectByPrimaryKey(commentId);
+        if (comment == null){
+            return -2;
+        }
+        CommentExample example = new CommentExample();
+        example.createCriteria().andParentIdEqualTo(commentId)
+                .andNodeIdEqualTo(comment.getNodeId());
+        List<Comment> comments = commentMapper.selectByExample(example);
+        if (comments != null && !comments.isEmpty()){
+            return -2;
+        }
+        return commentMapper.deleteByPrimaryKey(commentId) != -1 ? comment.getNodeId() : -1;
+    }
+
     private CommentVo commentToCommentVo(Comment comment, boolean f, List<CommentVo> children){
         CommentVo commentVo = new CommentVo();
         User user = userService.getUserById(comment.getUserId());

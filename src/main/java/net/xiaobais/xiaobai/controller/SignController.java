@@ -37,6 +37,10 @@ public class SignController {
     private MapService mapService;
     @Resource
     private FileService fileService;
+    @Resource
+    private CacheService cacheService;
+
+    private static final String PREF_KEY = "/admin/getAllUser";
 
     @ApiOperation("跳转注册页面")
     @GetMapping("/toSign")
@@ -86,6 +90,7 @@ public class SignController {
             if (!fileService.createRootDirectory(username)){
                 throw new Exception("创建图片文件夹失败");
             }
+            cacheService.deleteAllUserByPreKey(PREF_KEY);
         }
         return "#";
     }

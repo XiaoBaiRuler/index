@@ -37,8 +37,11 @@ public class IteratorController {
     private IteratorService iteratorService;
     @Resource
     private NoticeService noticeService;
+    @Resource
+    private CacheService cacheService;
 
     private static final int SIZE = 1000;
+    private static final String PUBLIC_ID = "/public/getNodeMind";
 
     @ApiOperation("跳转添加迭代节点页面")
     @GetMapping("/toAddIterator/{nodeId}")
@@ -108,6 +111,7 @@ public class IteratorController {
         if (!noticeService.addIteratorNotice(userId, nextId, k, nodeId, message)){
             throw new Exception("迭代通知创建失败");
         }
+        cacheService.deleteAllMindListByKey(PUBLIC_ID);
     }
 
     @ApiOperation("展示迭代节点")
