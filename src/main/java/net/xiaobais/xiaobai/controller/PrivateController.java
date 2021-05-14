@@ -59,6 +59,9 @@ public class PrivateController {
         }
         // 获取根节点
         Node node = nodeService.findNodeById(indexId);
+        if (node == null){
+            return "error/403";
+        }
         Blog blog = blogService.findBlogById(node.getBlogId());
 
         model.addAttribute("isUpdate", isUpdate);

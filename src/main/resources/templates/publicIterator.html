@@ -3,7 +3,7 @@
 <head>
     <span th:replace="com/head :: cdnHead"></span>
     <title >index</title>
-    <span th:replace="com/head :: cdnEditHead"></span>
+    <span th:replace="com/head :: cdnShowHead"></span>
     <style type="text/css">
         table{
             border: 1px solid skyblue;
@@ -27,7 +27,7 @@
         #mind_container{
             height: 1000px;
         }
-        .right_bar{
+        .simpleBar{
             position: fixed !important;
             z-index: 10 !important;
             bottom: 0 !important;
@@ -69,7 +69,7 @@
         <div th:replace="com/model :: showIndexMapModel"></div>
         <div th:replace="com/model :: showIndexBlogModel"></div>
         <div th:replace="com/foot :: foot"></div>
-        <div th:replace="com/Bar :: right_bar"></div>
+        <div th:replace="com/Bar :: simple_right_bar"></div>
     </div>
 
     <script type="text/javascript">

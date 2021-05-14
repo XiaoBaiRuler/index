@@ -27,7 +27,7 @@
         #mind_container{
             height: 1000px;
         }
-        .right_bar{
+        .simpleBar{
             position: fixed !important;
             z-index: 10 !important;
             bottom: 0 !important;
@@ -43,7 +43,7 @@
     <div id="top"></div>
     <br><br><br>
     <div class="ui fluid container" v-show="isNode">
-        <a class="ui red right ribbon label" @click.once="submitIterator">保存</a>
+        <a class="ui red right ribbon label" @click="submitIterator">保存</a>
         <div class="ui three column grid">
             <div :class="left" v-show="isLeft">
                 <div class="ui fluid container">
@@ -127,7 +127,7 @@
     </div>
     <br><br>
     <div th:replace="com/foot :: foot"></div>
-    <div th:replace="com/Bar :: right_bar"></div>
+    <div th:replace="com/Bar :: simple_right_bar"></div>
 </div>
 
 <script type="text/javascript">
@@ -161,7 +161,8 @@
             nexPage: true,
             preInput: "",
             nexInput: "",
-            iterator_content: ""
+            iterator_content: "",
+            flag: true
         },
         beforeMount: function(){
             // 用户信息
@@ -443,15 +444,26 @@
             },
             submitIterator: function(){
                 let iterator = new FormData()
+                if (this.nodeId == 1){
+                    alert("网站根节点不允许迭代");
+                    return;
+                }
+                if (this.iterator_content.length === 0){
+                    alert("理由不能为空");
+                    return;
+                }
                 iterator.append("nodeId", this.nodeId)
                 iterator.append("html", document.getElementById("html").value)
                 iterator.append("map", JSON.stringify(this.jm.get_data("node_array").data))
                 iterator.append("username", this.userVo.username)
                 iterator.append("userId", this.userVo.userId)
                 iterator.append("reason", this.iterator_content)
-                axios.post('/person/public/addIterator', iterator,
-                    {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
-                    .then(response => {window.location.href = "/public/node/" + this.nodeId})
+                if (this.flag){
+                    axios.post('/person/public/addIterator', iterator,
+                        {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
+                        .then(response => {window.location.href = "/public/node/" + this.nodeId})
+                    this.flag = false
+                }
             },
             toTop: function(){
                 window.location.href = '#top'

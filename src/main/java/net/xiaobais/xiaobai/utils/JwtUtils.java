@@ -83,6 +83,9 @@ public class JwtUtils {
      * @return UserVo
      */
     public static UserVo getUserVo(String token){
+        if (token == null || "".equals(token)){
+            return null;
+        }
         Claims claims = Jwts.parser()
                 .setSigningKey(KEY)
                 .parseClaimsJws(token)
@@ -118,6 +121,9 @@ public class JwtUtils {
      * @return boolean
      */
     public static boolean isExpiration(String token){
+        if (token == null || "".equals(token)){
+            return false;
+        }
         try {
             Jwts.parser().setSigningKey(KEY)
                     .parseClaimsJws(token)

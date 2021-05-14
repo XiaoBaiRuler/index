@@ -2,7 +2,7 @@ server:
   port: 8080
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/xiaobai?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://106.52.223.207:3306/xiaobai?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: '#Huang888666'
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -85,6 +85,5 @@ user:
 ---
 file:
   dir: "E:\\xiaobai\\image\\"
-  size: "560#"
-  avatar: "200#"
   url: "http://localhost:8081/image/"
+  cut: "//"

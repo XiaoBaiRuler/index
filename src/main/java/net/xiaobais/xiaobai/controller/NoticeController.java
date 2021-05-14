@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @Author xiaobai
@@ -167,7 +166,7 @@ public class NoticeController {
         if ("".equals(message)){
             return "#不能处理为空";
         }
-        if (!Objects.equals(JwtUtils.getUserId(request.getCookies()[0].getValue()), userId)){
+        if (JwtUtils.getUserId(JwtUtils.getToken(request.getCookies())) != 1){
             return "#你没有权限";
         }
         return noticeService.errorPublicNodeNotice(nodeId, message, userId, noticeId) ?

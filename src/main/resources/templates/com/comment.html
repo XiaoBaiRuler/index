@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
 <body>
     <div class="ui container" style="width: 85%;">
-        <div class="ui sky blue stacked segment" th:fragment="comments">
+        <div class="ui sky blue stacked segment" th:fragment="comments" v-if="userVo.userId === 1">
             <div class="ui raised segment" id="comments">
                 <h3 class="ui dividing header">评论区</h3>
                 <h6 class="ui right aligned teal dividing header">

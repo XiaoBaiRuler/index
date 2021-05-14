@@ -264,14 +264,6 @@
             <i class="archive icon"></i>
             是否驳回请求
         </div>
-        <div class="ui content">
-            <div class="ui inverted form">
-                <div class="field">
-                    <label>驳回理由</label>
-                    <textarea rows="2" name="reason" v-model="reason"></textarea>
-                </div>
-            </div>
-        </div>
         <div class="actions">
             <div class="ui red basic cancel inverted button">
                 <i class="remove icon"></i>
@@ -393,11 +385,9 @@
     <div class="ui showBlog fullscreen modal" th:fragment="showIndexBlogModel">
         <i class="close icon"></i>
         <div class="content">
-            <div class="ui container" style="width: 80%;">
-                <div class="ui stacked segment">
-                    <h1 class="ui center aligned header">{{showNode.title}}</h1>
-                    <div id="showBlogContent" style="height: 90%;"></div>
-                </div>
+            <div class="ui container" style="width: 90%; height: auto">
+                <h1 class="ui center aligned header">{{showNode.title}}</h1>
+                <div id="showBlogContent" style="height: auto;"></div>
             </div>
         </div>
     </div>
@@ -405,10 +395,8 @@
     <div class="ui showMap fullscreen modal" th:fragment="showIndexMapModel">
         <i class="close icon"></i>
         <div class="content">
-            <div class="ui container" style="width: 80%;">
-                <div class="ui stacked segment">
-                    <div id="mapContainer" style="height: 90%;"></div>
-                </div>
+            <div class="ui container" style="width: 90%; height: auto;">
+                <div id="mapContainer" style="height: auto;"></div>
             </div>
         </div>
     </div>

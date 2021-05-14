@@ -23,6 +23,8 @@ public class FileServiceImpl implements FileService {
 
     @Value("${file.dir}")
     private String directory;
+    @Value("${file.cut}")
+    private String cut;
 
     private static final String NAME = "xiaobai_img";
     private static final String AVATAR = "avatar";
@@ -47,7 +49,7 @@ public class FileServiceImpl implements FileService {
         String s = DigestUtils.md5Hex(username + NAME);
         File file = new File(directory + s);
         if (file.exists() || file.mkdirs()){
-            File avatar = new File(directory + s + "//" + "avatar");
+            File avatar = new File(directory + s + cut + "avatar");
             return avatar.mkdirs();
         }
         else{
@@ -127,7 +129,7 @@ public class FileServiceImpl implements FileService {
                         if (count < 0 && count >= -6){
                             FileVo fileVo = new FileVo();
                             fileVo.setFileName(value.getName());
-                            String type= value.getName().substring(value.getName().lastIndexOf(".")+1);
+                            String type= value.getName().substring(value.getName().lastIndexOf(".") + 1);
                             if ("jpg".equals(type) || "png".equals(type) || "gif".equals(type)){
                                 fileVo.setFileUrl(prePath + value.getName());
                             }

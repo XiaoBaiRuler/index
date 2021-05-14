@@ -115,7 +115,7 @@
                                 <td>{{index}}</td>
                                 <td>{{notice.message}}</td>
                                 <td>
-                                    <button class="ui yellow inverted button" @click="toShow(notice.iteratorId, userId)" v-show="notice.isReply">迭代节点</button>
+                                    <button class="ui yellow inverted button" @click="toShow(notice.iteratorId, userId)" v-show="!notice.reply">迭代节点</button>
                                 </td>
                                 <td>
                                     <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">当前节点</button>
@@ -265,7 +265,8 @@
                 changeTitle: "",
                 changeDes: "",
                 editor: null,
-                showNode: {}
+                showNode: {},
+                flag: false
             },
             beforeMount: function(){
                 // 用户信息
@@ -318,7 +319,7 @@
                     this.noticeId = noticeId
                     $('.ui.agr.basic.modal').modal('show');
                 },
-                toShow: function(nodeId){
+                toShow: function(nodeId, userId){
                     axios.get("/private/getNode?nodeId=" + nodeId)
                         .then(response => {
                             this.node = response.data
@@ -414,7 +415,6 @@
                         .catch(error => console.log(error))
                     this.preparePage(this.userId, this.pageNumber, this.pageSize, "")
                 },
-
                 toIterator: function(){
                     this.aItemActive = "item"
                     this.bItemActive = "active item"
@@ -424,7 +424,7 @@
                     this.isSuggest = false
                     axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
                         .then(response => {
-                            this.nubmer = response.data
+                            this.number = response.data
                             this.nitNumber = 1
                         })
                         .catch(error => console.log(error))
@@ -439,7 +439,7 @@
                     this.isSuggest = true
                     axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
                         .then(response => {
-                            this.nubmer = response.data
+                            this.number = response.data
                             this.nitNumber = 1
                         })
                         .catch(error => console.log(error))
@@ -479,7 +479,7 @@
                     if (flag){
                         axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
                             .then(response => {
-                                this.nubmer = response.data
+                                this.number = response.data
                                 this.prepare(true)
                             })
                             .catch(error => console.log(error))
@@ -487,7 +487,7 @@
                     else{
                         axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
                             .then(response => {
-                                this.nubmer = response.data
+                                this.number = response.data
                                 this.prepare(false)
                             })
                             .catch(error => console.log(error))
@@ -546,6 +546,10 @@
             }
         })
         $(document).on('click', '#reject', function() {
+            if (app.reason.length === 0){
+                alert("理由不能为空");
+                return;
+            }
             let vo = new FormData()
             vo.append("nodeId", app.nodeId)
             vo.append("userId", app.whoId)
@@ -577,7 +581,7 @@
                 .then(response => {
                     let msg = response.data
                     if (!msg.includes("#")){
-                        !app.flag ? app.nit.splice(app.index, 1) : app.nit.splice(app.index, 1)
+                        !app.flag ? app.nit.splice(app.index, 1) : app.sit.splice(app.index, 1)
                     }
                     alert(msg)
                 })

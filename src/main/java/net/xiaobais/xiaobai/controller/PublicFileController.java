@@ -194,6 +194,6 @@ public class PublicFileController {
     }
 
     public static void main(String[] args) {
-        System.out.println(DigestUtils.md5Hex("helloworld" + NAME));
+        System.out.println(DigestUtils.md5Hex("colatis" + NAME));
     }
 }

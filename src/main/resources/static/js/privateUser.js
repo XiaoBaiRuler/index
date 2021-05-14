@@ -63,7 +63,7 @@ $(document).on('click', '#changePrivateButton', function() {
 })
 
 function toShowBlog(nodeId){
-    axios.get("/private/getNodeById?id=" + nodeId)
+    axios.get("/private/getNode?nodeId=" + nodeId)
         .then(response => {
             app.showNode = response.data
             if (app.showNode.content === null){

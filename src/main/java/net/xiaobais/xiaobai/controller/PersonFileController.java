@@ -21,6 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -38,10 +39,13 @@ public class PersonFileController {
     @Resource
     private FileService fileService;
 
-    @Value("${file.dir}")
-    private String directory;
+
     @Value("${file.url}")
     private String url;
+    @Value("${file.dir}")
+    private String directory;
+    @Value("${file.cut}")
+    private String cut;
     private static final String NAME = "xiaobai_img";
     private static final String AVATAR = "avatar";
 
@@ -57,22 +61,20 @@ public class PersonFileController {
         return "privateImage";
     }
 
-    @CrossOrigin
     @ApiOperation("读取分页查找所有目录")
     @GetMapping("/file/getAllDir")
     @ResponseBody
-    public List<DirVo> getAllDir(HttpServletRequest request, Integer pageNumber, String s){
+    public List<DirVo> getAllDir(HttpServletRequest request, Integer pageNumber, String s) throws IOException {
         Cookie[] cookies = request.getCookies();
         if (cookies == null){
             return null;
         }
         String username = JwtUtils.getUsername(JwtUtils.getToken(cookies));
         String key = DigestUtils.md5Hex(username + NAME);
-        File file = new File(directory + key);
+        File file = new File(String.valueOf(Paths.get(directory + key)));
         return fileService.getAllDir(file.listFiles(), s, pageNumber);
     }
 
-    @CrossOrigin
     @ApiOperation("读取目录个数")
     @GetMapping("/file/getCountDir")
     @ResponseBody
@@ -83,7 +85,7 @@ public class PersonFileController {
         }
         String username = JwtUtils.getUsername(JwtUtils.getToken(cookies));
         String key = DigestUtils.md5Hex(username + NAME);
-        File file = new File(directory + key);
+        File file = new File(directory + key + cut);
         return fileService.getCountDir(file.listFiles(), s);
     }
 
@@ -101,7 +103,8 @@ public class PersonFileController {
         String username = JwtUtils.getUsername(JwtUtils.getToken(cookies));
         String key = DigestUtils.md5Hex(username + NAME);
         String[] split = dir.split("/");
-        File file = new File(directory + key + "//" + split[0]);
+        File file = new File(directory + key + cut + split[0]);
+        System.out.println(directory + key + cut + split[0]);
         if (file.exists()){
             return dir + "#目录已经存在";
         }
@@ -126,12 +129,11 @@ public class PersonFileController {
         // 源路径
         String username = JwtUtils.getUsername(JwtUtils.getToken(cookies));
         String key = DigestUtils.md5Hex(username + NAME);
-        File file = new File(directory + key + "//" + oldDir);
-        File newFile = new File(directory + key + "//" + newDir.split("/")[0]);
+        File file = new File(directory + key + cut + oldDir);
+        File newFile = new File(directory + key + cut + newDir.split("/")[0]);
         return file.renameTo(newFile) ? "修改成功" : "#修改失败";
     }
 
-    @CrossOrigin
     @ApiOperation("读取所有文件")
     @GetMapping("/file/getAllFile")
     @ResponseBody
@@ -145,11 +147,10 @@ public class PersonFileController {
         }
         String username = JwtUtils.getUsername(JwtUtils.getToken(cookies));
         String key = DigestUtils.md5Hex(username + NAME);
-        File file = new File(directory + key + "//" + dir);
+        File file = new File(directory + key + cut + dir);
         return fileService.getAllFiles(file.listFiles(), s, pageNumber, url + key + "/" + dir + "/");
     }
 
-    @CrossOrigin
     @ApiOperation("统计文件个数")
     @GetMapping("/file/getCountFile")
     @ResponseBody
@@ -160,7 +161,7 @@ public class PersonFileController {
         }
         String username = JwtUtils.getUsername(JwtUtils.getToken(cookies));
         String key = DigestUtils.md5Hex(username + NAME);
-        File file = new File(directory + key + "//" + dir);
+        File file = new File(directory + key + cut + dir);
         return fileService.getCountFiles(file.listFiles(), s.toString());
     }
 
@@ -181,7 +182,7 @@ public class PersonFileController {
         String key = DigestUtils.md5Hex(username + NAME);
         String newFilePath = directory + key;
         if (!"".equals(userDir)){
-            newFilePath = newFilePath + "//" + userDir;
+            newFilePath = newFilePath + cut + userDir;
         }
         File newFile = new File(newFilePath);
         if (!newFile.exists()){
@@ -189,11 +190,9 @@ public class PersonFileController {
         }
         // 业务层
         String originFileName = file.getOriginalFilename();
-        String str = newFilePath + "//" + originFileName;
+        String str = newFilePath + cut + originFileName;
         if (fileService.uploadFile(str, file)){
-            Thumbnails.of(str)
-                    .scale(0.25f)
-                    .toFile(newFile + "//" + originFileName);
+            Thumbnails.of(str).scale(0.65f).toFile(str);
             return originFileName;
         }
         return  "#上传失败";
@@ -228,9 +227,7 @@ public class PersonFileController {
         if (!fileService.uploadFile(str, file)){
             return "#文件上传失败";
         }
-        Thumbnails.of(str)
-                .size(200, 200)
-                .toFile(newFile + "//" + originFileName);
+        Thumbnails.of(str).size(200, 200).toFile(str);
         Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
         User user = new User();
         user.setUserId(userId);
@@ -256,7 +253,7 @@ public class PersonFileController {
         String key = DigestUtils.md5Hex(username + NAME);
         String newFilePath = directory + key;
         if (!"".equals(userDir)){
-            newFilePath = newFilePath + "//" + userDir;
+            newFilePath = newFilePath + cut + userDir;
         }
         File newFile = new File(newFilePath);
         if (!newFile.exists()){
@@ -265,7 +262,7 @@ public class PersonFileController {
         // 业务层
         for (MultipartFile file : files) {
             String origin = file.getOriginalFilename();
-            String str = newFilePath + "//" + origin;
+            String str = newFilePath + cut + origin;
             if (!fileService.uploadFile(origin, file)){
                 return origin + "上传失败";
             }
@@ -313,7 +310,7 @@ public class PersonFileController {
         }
         String username = JwtUtils.getUsername(JwtUtils.getToken(cookies));
         String key = DigestUtils.md5Hex(username + NAME);
-        File file = new File(directory + key + "//" + path);
+        File file = new File(directory + key + cut + path);
         if (file.isDirectory()){
             File[] files = file.listFiles();
             if (files == null){

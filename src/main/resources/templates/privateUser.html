@@ -3,7 +3,7 @@
 <head>
     <span th:replace="com/head :: cdnHead"></span>
     <title>个人信息管理</title>
-    <span th:replace="com/head :: cdnEditHead"></span>
+    <span th:replace="com/head :: cdnShowHead"></span>
 </head>
 <body>
     <div id="app">
@@ -556,7 +556,6 @@
                     axios.get("/private/getAllPrivate")
                         .then(response => {
                             this.privateNode = response.data;
-                            console.log(this.privateNode)
                             $('.ui.collectToPrivate.modal').modal('show');
                             $('.ui.radio.checkbox').checkbox();
                         })

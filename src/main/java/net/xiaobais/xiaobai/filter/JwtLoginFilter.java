@@ -56,6 +56,17 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) throws IOException {
+        // 先清理留下来的token
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    cookie.setMaxAge(0);
+                    cookie.setValue("");
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                }
+            }
+        }
         UserEntity userEntity = (UserEntity) authResult.getPrincipal();
         String jwtToken = JwtUtils.generateJsonWebToken(userEntity);
         Cookie cookie = new Cookie("token", jwtToken);

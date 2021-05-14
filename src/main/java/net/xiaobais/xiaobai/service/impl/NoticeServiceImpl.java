@@ -53,6 +53,7 @@ public class NoticeServiceImpl implements NoticeService {
     private static final String DEAL_PREFIX = "/person/public";
     private static final String NODE_PREFIX = "/public/node/";
     private static final String BLOG_CACHE = "/public/blog";
+    private static final String PUBLIC_ID = "/public/getNodeMind";
     private static final String EMAIL_STR = "\n,进入通知:界面:";
     private static final Integer SIZE = 5;
 
@@ -297,10 +298,12 @@ public class NoticeServiceImpl implements NoticeService {
             throw new Exception("删除迭代关系失败");
         }
         if (nodeMapper.deleteByPrimaryKey(iteratorId) == -1){
-            cacheService.deleteNodeByKey(NODE_PREFIX + iteratorId);
-            cacheService.deleteBlogByKey(BLOG_CACHE + node.getBlogId());
             throw new Exception("删除迭代节点失败");
         }
+        cacheService.deleteNodeByKey(NODE_PREFIX + iteratorId);
+        cacheService.deleteNodeByKey(NODE_PREFIX + nodeId);
+        cacheService.deleteBlogByKey(BLOG_CACHE + node.getBlogId());
+        cacheService.deleteAllMindListByKey(PUBLIC_ID);
         return true;
     }
 
@@ -327,7 +330,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (noticeMapper.updateByPrimaryKeySelective(changeNotice) == -1){
             throw new Exception("删除iterator通知失败");
         }
-        return false;
+        return true;
     }
 
     @Override

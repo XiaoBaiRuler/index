@@ -424,12 +424,54 @@ public class PrivateNodeController {
         return "删除失败";
     }
 
-    @ApiOperation("更新节点内容")
+    @ApiOperation("管理员更新节点内容")
+    @Transactional(rollbackFor = Exception.class)
+    @PostMapping("/updatePublicNode/{nodeId}")
+    @ResponseBody
+    public void updatePublicNode(@PathVariable Integer nodeId, UpdatePrivateVo updateVo,
+                              HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return;
+        }
+        Integer userId = JwtUtils.getUserId(JwtUtils.getToken(cookies));
+        if ("".equals(updateVo.getTitle()) || "".equals(updateVo.getDesc()) || "".equals(updateVo.getBlogContent())){
+            return;
+        }
+        Node node = publicNodeService.findPublicNodeByNodeId(nodeId);
+        Blog blog = blogService.findBlogById(node.getBlogId());
+        if (!updateVo.getTitle().equals(node.getNodeName())){
+            if (privateNodeService.updateNodeByNodeId(nodeId, updateVo.getTitle()) == -1){
+                throw new Exception("更新标题失败");
+            }
+            cacheService.deleteNodeByKey(NODE_CACHE + nodeId);
+            cacheService.deleteAllMindListByKey(PRIVATE_ID);
+        }
+        if (updateVo.getSelect().contains("1") || !blog.getBlogTitle().equals(updateVo.getTitle())
+                || !blog.getBlogDes().equals(updateVo.getDesc())){
+            if (blogService.updateBlogByBlogId(node.getBlogId(), updateVo.getTitle(),
+                    updateVo.getBlogContent(), updateVo.getDesc()) == -1){
+                throw new Exception("更新博客内容失败");
+            }
+            cacheService.deleteBlogByKey(BLOG_CACHE + node.getBlogId());
+        }
+        if (updateVo.getSelect().contains("2")){
+            if (mapService.updateMapByMapId(node.getMapId(), updateVo.getMapData()) == -1){
+                throw new Exception("更新思维导图失败");
+            }
+            if (userId == 1) {
+                cacheService.deleteAllMindListByKey(PUBLIC_ID);
+            }
+            cacheService.deleteAllMindListByKey(PRIVATE_ID);
+        }
+    }
+
+    @ApiOperation("普通用户更新节点内容")
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/updateNode/{nodeId}")
     @ResponseBody
     public void updateNode(@PathVariable Integer nodeId, UpdatePrivateVo updateVo,
-                              HttpServletRequest request) throws Exception {
+                           HttpServletRequest request) throws Exception {
         Cookie[] cookies = request.getCookies();
         if (cookies == null){
             return;

@@ -40,7 +40,9 @@ public class FollowController {
     @ResponseBody
     public void addFollowAndFans(@RequestParam Integer userId, @RequestParam Integer followId)
             throws Exception {
-
+        if (userId.equals(followId)){
+            return;
+        }
         if (followService.getFollowByUserIdAndFollowId(userId, followId)){
             throw new Exception("已存在关系");
         }

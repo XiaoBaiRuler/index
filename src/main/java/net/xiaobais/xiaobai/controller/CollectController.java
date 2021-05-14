@@ -52,6 +52,7 @@ public class CollectController {
 
     private static final String NODE_PREFIX = "/public/node/";
     private static final String TOP_COLLECT_CACHE = "/public/getTopCollect";
+    private static final String PRIVATE_ID = "/private/getNodeMind";
 
     @ApiOperation("添加收藏")
     @GetMapping("/person/public/addNodeStar")
@@ -136,6 +137,7 @@ public class CollectController {
             if (j == -1){
                 throw new Exception("复制后置关系失败");
             }
+            cacheService.deleteAllMindListByKey(PRIVATE_ID);
             return url;
         }
     }

@@ -3,7 +3,7 @@
 	<head>
 		<span th:replace="com/head :: cdnHead"></span>
 		<title >publicUser</title>
-		<span th:replace="com/head :: cdnEditHead"></span>
+		<span th:replace="com/head :: cdnShowHead"></span>
 		<script type="text/javascript" th:src="@{/js/showPublic.js}"></script>
 	</head>
 	<body>
@@ -373,6 +373,10 @@
 						}
 					},
 					follow: function(){
+						if (this.userVo.userId == this.userId){
+							alert("不能关注自己")
+							return;
+						}
 						axios.get("/public/follow?userId=" + this.userVo.userId + "&followId=" + this.userId)
 								.then(response => {
 									this.isFan = true

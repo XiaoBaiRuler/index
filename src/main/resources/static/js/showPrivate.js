@@ -253,7 +253,7 @@ function toChangeNoticeAndBlog(noticeId, nodeId){
                         addNodeVo.append("desc", app.changeDes)
                         addNodeVo.append("blogContent", content)
                         addNodeVo.append("select", ["1"])
-                        axios.post('/private/updateNode/' + nodeId, addNodeVo,
+                        axios.post('/private/updatePublicNode/' + nodeId, addNodeVo,
                             {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
                             .then(response => {
                                 axios.get('/person/public/dealSuggestNotice?noticeId=' + noticeId)

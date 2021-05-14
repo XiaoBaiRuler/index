@@ -66,10 +66,10 @@
                                     <a :href="notice.dealUrl" v-if="notice.dealUrl != ''">相关链接</a>
                                 </td>
                                 <td>
-                                    <button class="ui yellow inverted button" @click="toShow(notice.nodeId)">相关节点</button>
+                                    <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">相关节点</button>
                                 </td>
                                 <td>
-                                    <button class="ui green inverted button" @click="toYes(index, notice.noticeId)">确认</button>
+                                    <button class="ui green inverted button" @click="toYes(index, notice.noticeId, 1)">确认</button>
                                 </td>
                             </tr>
                             </tbody>
@@ -117,7 +117,7 @@
                                 <td>{{index}}</td>
                                 <td>{{notice.message}}</td>
                                 <td>
-                                    <button class="ui yellow inverted button" @click="toShow(notice.iteratorId, userId)" v-show="notice.isReply">迭代节点</button>
+                                    <button class="ui yellow inverted button" @click="toShow(notice.iteratorId, userId)" v-show="!notice.reply">迭代节点</button>
                                 </td>
                                 <td>
                                     <button class="ui yellow inverted button" @click="toShow(notice.nodeId, userId)">当前节点</button>
@@ -128,7 +128,7 @@
                                 </td>
                                 <td>
                                     <button class="ui green inverted button"
-                                            v-if="notice.reply" @click="toYes(index, notice.noticeId, false)">确认</button>
+                                            v-if="notice.reply" @click="toYes(index, notice.noticeId, 2)">确认</button>
                                     <button class="ui green inverted button"
                                             v-if="!notice.reply" @click="toAgr(index, notice.noticeId)">同意</button>
                                     <button class="ui green inverted button"
@@ -189,7 +189,7 @@
                                 </td>
                                 <td>
                                     <button class="ui green inverted button"
-                                            v-if="notice.reply" @click="toYes(index, notice.noticeId, true)">确认</button>
+                                            v-if="notice.reply" @click="toYes(index, notice.noticeId, 3)">确认</button>
                                     <button class="ui green inverted button"
                                             v-if="!notice.reply" @click="toChange(index, notice.noticeId, notice.nodeId)">修改</button>
                                     <button class="ui teal inverted button"
@@ -265,8 +265,9 @@
                 changeTitle: "",
                 changeDes: "",
                 editor: null,
-                showNode: {}
-
+                showNode: {},
+                flag: false,
+                select: -1,
             },
             beforeMount: function(){
                 // 用户信息
@@ -303,23 +304,23 @@
                     .catch(error => console.log(error))
             },
             methods: {
-                toYes: function(index, noticeId, flag){
+                toYes: function(index, noticeId, select){
                     this.index = index
                     this.noticeId = noticeId
-                    this.flag = flag
+                    this.select = select
                     $('.ui.yes.basic.modal').modal('show');
                 },
-                toRej: function(index, noticeId, url){
+                toRej: function(index, noticeId){
                     this.index = index
                     this.noticeId = noticeId
                     $('.ui.rej.basic.modal').modal('show');
                 },
-                toAgr: function(index, noticeId, url){
+                toAgr: function(index, noticeId){
                     this.index = index
                     this.noticeId = noticeId
                     $('.ui.agr.basic.modal').modal('show');
                 },
-                toShow: function(nodeId){
+                toShow: function(nodeId, userId){
                     axios.get("/public/getNode?nodeId=" + nodeId)
                         .then(response => {
                             this.node = response.data
@@ -421,7 +422,7 @@
                     this.isSuggest = false
                     axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
                         .then(response => {
-                            this.nubmer = response.data
+                            this.number = response.data
                             this.nitNumber = 1
                         })
                         .catch(error => console.log(error))
@@ -436,19 +437,19 @@
                     this.isSuggest = true
                     axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
                         .then(response => {
-                            this.nubmer = response.data
+                            this.number = response.data
                             this.nitNumber = 1
                         })
                         .catch(error => console.log(error))
                     this.prepare(true)
                 },
-                toPre: function(){
+                toPre: function(flag){
                     if (this.nitNumber > 1){
                         this.nitNumber --;
                         this.prepare(flag)
                     }
                 },
-                toNex: function(){
+                toNex: function(flag){
                     if (this.nitNumber < this.number){
                         this.nitNumber ++;
                         this.prepare(flag)
@@ -476,7 +477,7 @@
                     if (flag){
                         axios.get("/person/public/getSuggestNoticeCount?message=" + this.message)
                             .then(response => {
-                                this.nubmer = response.data
+                                this.number = response.data
                                 this.prepare(true)
                             })
                             .catch(error => console.log(error))
@@ -484,7 +485,7 @@
                     else{
                         axios.get("/person/public/getIteratorNoticeCount?message=" + this.message)
                             .then(response => {
-                                this.nubmer = response.data
+                                this.number = response.data
                                 this.prepare(false)
                             })
                             .catch(error => console.log(error))
@@ -510,6 +511,7 @@
                     toShowSug(suggestId)
                 },
                 toStop: function(index, noticeId){
+                    this.index = index
                     $('.ui.rejectSuggest.basic.modal')
                         .modal('setting',{
                             closable  : false,
@@ -529,7 +531,7 @@
                                     {headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}})
                                     .then(response => {
                                         if (!response.data.includes("#")){
-                                            !app.flag ? app.nit.splice(app.index, 1) : app.nit.splice(app.index, 1)
+                                            app.sit.splice(app.index, 1)
                                         }
                                         alert(response.data)
                                         return true;
@@ -550,8 +552,15 @@
                 .then(response => {
                     let msg = response.data
                     if (!msg.includes("#")){
-                        app.notices.splice(app.index, 1)
-                        app.nit.splice(app.index, 1)
+                        if (app.select === 1){
+                            app.notices.splice(app.index, 1)
+                        }
+                        else if (app.select === 2){
+                            app.nit.splice(app.index, 1)
+                        }
+                        else if (app.select === 3){
+                            app.sit.splice(app.index, 1)
+                        }
                     }
                     alert(msg)
                 })

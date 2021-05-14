@@ -68,6 +68,12 @@ public class IteratorController {
     public void addIterator(Integer nodeId, String html,
                             String map, String username,
                             String reason, Integer userId) throws Exception {
+        if (nodeId == 1){
+            return;
+        }
+        if (reason == null || "".equals(reason)){
+            return;
+        }
         Node node = nodeService.findNodeById(nodeId);
         Integer nextId = node.getUserId();
         // 新建一个blog

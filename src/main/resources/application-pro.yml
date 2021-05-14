@@ -84,6 +84,5 @@ user:
 ---
 file:
   dir: "/data/image/"
-  size: "560_"
-  avatar: "200_"
   url: "http://www.xiaobais.net:8080/image/"
+  cut: "/"
