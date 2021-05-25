@@ -317,7 +317,6 @@
                     this.isNode = !this.isNode
                 },
                 changeEditor: function(){
-                    console.log(this.isEditor)
                     this.isEditor = !this.isEditor
                     if (this.isEditor) {
                         if(!this.isPrepare){
@@ -417,9 +416,7 @@
 
                 },
                 prepareMind: function(){
-
                     this.prepareEditorMind(false, 'jsmind_container')
-
                     axios.get('/private/getNodeMind?nodeId=' + this.nodeId + "&userId=" + this.userVo.userId.toString() + "&level=3")
                         .then(response => {
                             let options = {
@@ -571,7 +568,6 @@
                     axios.get("/private/getAllPublic")
                         .then(response => {
                             this.publicNode = response.data;
-                            console.log(this.privateNode)
                             $('.ui.submit.modal')
                                 .modal({
                                     closable  : false,

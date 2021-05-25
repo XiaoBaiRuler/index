@@ -56,27 +56,25 @@ public class PrivateMindServiceImpl implements PrivateMindService {
         pItem.add(ROOT + nodeId);
         pItem.add("" + previous.size());
         parent.add(pItem);
-        while (count < level){
-            while (!queue.isEmpty()){
-                for (int i = 0; i < parent.size(); i++) {
-                    ArrayList<String> item = parent.poll();
-                    for (int j = 0; j < Integer.parseInt(item.get(1)); j++) {
-                        Node remove = queue.poll();
-                        if (remove != null){
-                            previous = previousService.findPrivatePreviousByNodeIdAndUserId(remove.getNodeId(), userId);
+        while (!queue.isEmpty() && count < level){
+            for (int i = 0; i < parent.size(); i++) {
+                ArrayList<String> item = parent.poll();
+                for (int j = 0; j < Integer.parseInt(item.get(1)); j++) {
+                    Node remove = queue.poll();
+                    if (remove != null){
+                        previous = previousService.findPrivatePreviousByNodeIdAndUserId(remove.getNodeId(), userId);
 
-                            ArrayList<String> newItem = new ArrayList<>();
-                            newItem.add(LEFT + remove.getNodeId());
-                            newItem.add("" + previous.size());
-                            parent.add(newItem);
-                            queue.addAll(previous);
-                            MindVo mv = new MindVo(LEFT + remove.getNodeId(),
-                                    item.get(0), false,
-                                    HtmlUtils.privateHtmlToString(remove.getNodeId(), userId,
-                                            remove.getNodeName(), LEFT + remove.getNodeId(), "true"),
-                                    LEFT, true);
-                            lists.add(mv);
-                        }
+                        ArrayList<String> newItem = new ArrayList<>();
+                        newItem.add(LEFT + remove.getNodeId());
+                        newItem.add("" + previous.size());
+                        parent.add(newItem);
+                        queue.addAll(previous);
+                        MindVo mv = new MindVo(LEFT + remove.getNodeId(),
+                                item.get(0), false,
+                                HtmlUtils.privateHtmlToString(remove.getNodeId(), userId,
+                                        remove.getNodeName(), LEFT + remove.getNodeId(), "true"),
+                                LEFT, true);
+                        lists.add(mv);
                     }
                 }
             }
@@ -84,6 +82,7 @@ public class PrivateMindServiceImpl implements PrivateMindService {
         }
 
         // 后置节点
+        queue.clear();
         List<Node> next;
         count = 0;
         next = nextService.findPrivateNextByNodeIdAndUserId(nodeId, userId);
@@ -94,28 +93,25 @@ public class PrivateMindServiceImpl implements PrivateMindService {
         nItem.add(ROOT + nodeId);
         nItem.add("" + next.size());
         nextParent.add(nItem);
+        while (!queue.isEmpty() && count < level){
+            for (int i = 0; i < nextParent.size(); i++) {
+                ArrayList<String> item = nextParent.poll();
+                for (int j = 0; j < Integer.parseInt(item.get(1)); j++) {
+                    Node remove = queue.poll();
+                    if (remove != null){
+                        next = nextService.findPrivateNextByNodeIdAndUserId(remove.getNodeId(), userId);
 
-        while (count < level){
-            while (!queue.isEmpty()){
-                for (int i = 0; i < nextParent.size(); i++) {
-                    ArrayList<String> item = nextParent.poll();
-                    for (int j = 0; j < Integer.parseInt(item.get(1)); j++) {
-                        Node remove = queue.poll();
-                        if (remove != null){
-                            next = nextService.findPrivateNextByNodeIdAndUserId(remove.getNodeId(), userId);
+                        ArrayList<String> newItem = new ArrayList<>();
+                        newItem.add(RIGHT + remove.getNodeId());
+                        newItem.add("" + next.size());
+                        nextParent.add(newItem);
 
-                            ArrayList<String> newItem = new ArrayList<>();
-                            newItem.add(RIGHT + remove.getNodeId());
-                            newItem.add("" + next.size());
-                            nextParent.add(newItem);
-
-                            queue.addAll(next);
-                            MindVo mv = new MindVo(RIGHT + remove.getNodeId(), item.get(0), false,
-                                    HtmlUtils.privateHtmlToString(remove.getNodeId(), userId,
-                                            remove.getNodeName(), RIGHT + remove.getNodeId(), "false"),
-                                    RIGHT, true);
-                            lists.add(mv);
-                        }
+                        queue.addAll(next);
+                        MindVo mv = new MindVo(RIGHT + remove.getNodeId(), item.get(0), false,
+                                HtmlUtils.privateHtmlToString(remove.getNodeId(), userId,
+                                        remove.getNodeName(), RIGHT + remove.getNodeId(), "false"),
+                                RIGHT, true);
+                        lists.add(mv);
                     }
                 }
             }

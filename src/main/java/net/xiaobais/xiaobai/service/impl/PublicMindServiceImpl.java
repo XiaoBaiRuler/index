@@ -75,32 +75,29 @@ public class PublicMindServiceImpl implements PublicMindService {
         pair.add(ROOT + nodeId);
         pair.add(""+ previous.size());
         parent.add(pair);
-        while (count < level){
-            while (!queue.isEmpty()){
-                for (int i = 0; i < parent.size(); i++) {
-                    ArrayList<String> item = parent.poll();
-                    for (int j = 0; j < Integer.parseInt(Objects.requireNonNull(item).get(1)); j++) {
-                        Node remove = queue.poll();
-                        if (remove != null){
-                            previous = previousService.findPreviousByNodeId(remove.getNodeId());
+        while (!queue.isEmpty() && count < level){
+            for (int i = 0; i < parent.size(); i++) {
+                ArrayList<String> item = parent.poll();
+                for (int j = 0; j < Integer.parseInt(Objects.requireNonNull(item).get(1)); j++) {
+                    Node remove = queue.poll();
+                    if (remove != null){
+                        previous = previousService.findPreviousByNodeId(remove.getNodeId());
 
-                            ArrayList<String> newPair = new ArrayList<>(2);
-                            newPair.add(LEFT + remove.getNodeId());
-                            newPair.add(""+ previous.size());
-                            parent.add(newPair);
-                            queue.addAll(previous);
+                        ArrayList<String> newPair = new ArrayList<>(2);
+                        newPair.add(LEFT + remove.getNodeId());
+                        newPair.add(""+ previous.size());
+                        parent.add(newPair);
+                        queue.addAll(previous);
 
-                            MindVo mv = new MindVo(LEFT + remove.getNodeId(), item.get(0), false,
-                                    HtmlUtils.publicHtmlToString(remove.getNodeId(), remove.getNodeName()),
-                                    LEFT, true);
-                            lists.add(mv);
-                        }
+                        MindVo mv = new MindVo(LEFT + remove.getNodeId(), item.get(0), false,
+                                HtmlUtils.publicHtmlToString(remove.getNodeId(), remove.getNodeName()),
+                                LEFT, true);
+                        lists.add(mv);
                     }
                 }
             }
             count ++;
         }
-
         // 建议节点
         MindVo suggest = new MindVo(SUGGEST + nodeId, ROOT + nodeId, false, SUGGEST, RIGHT, true);
         lists.add(suggest);
@@ -112,8 +109,8 @@ public class PublicMindServiceImpl implements PublicMindService {
                     RIGHT, true);
             lists.add(mv);
         });
-
         // 后置节点
+        queue.clear();
         List<Node> next;
         count = 0;
         next = nextService.findNextByNodeId(nodeId);
@@ -124,26 +121,23 @@ public class PublicMindServiceImpl implements PublicMindService {
         nextPair.add(ROOT + nodeId);
         nextPair.add(""+ next.size());
         nextParent.add(nextPair);
+        while (!queue.isEmpty() && count < level){
+            for (int i = 0; i < nextParent.size(); i++) {
+                ArrayList<String> item = nextParent.poll();
+                for (int j = 0; j < Integer.parseInt(item.get(1)); j++) {
+                    Node remove = queue.poll();
+                    if (remove != null){
+                        next = nextService.findNextByNodeId(remove.getNodeId());
 
-        while (count < level){
-            while (!queue.isEmpty()){
-                for (int i = 0; i < nextParent.size(); i++) {
-                    ArrayList<String> item = nextParent.poll();
-                    for (int j = 0; j < Integer.parseInt(item.get(1)); j++) {
-                        Node remove = queue.poll();
-                        if (remove != null){
-                            next = nextService.findNextByNodeId(remove.getNodeId());
+                        ArrayList<String> newPair = new ArrayList<>(2);
+                        newPair.add(RIGHT + remove.getNodeId());
+                        newPair.add(""+ next.size());
+                        nextParent.add(newPair);
 
-                            ArrayList<String> newPair = new ArrayList<>(2);
-                            newPair.add(RIGHT + remove.getNodeId());
-                            newPair.add(""+ next.size());
-                            nextParent.add(newPair);
-
-                            queue.addAll(next);
-                            MindVo mv = new MindVo(RIGHT + remove.getNodeId(), item.get(0), false,
-                                    HtmlUtils.publicHtmlToString(remove.getNodeId(), remove.getNodeName()), RIGHT, true);
-                            lists.add(mv);
-                        }
+                        queue.addAll(next);
+                        MindVo mv = new MindVo(RIGHT + remove.getNodeId(), item.get(0), false,
+                                HtmlUtils.publicHtmlToString(remove.getNodeId(), remove.getNodeName()), RIGHT, true);
+                        lists.add(mv);
                     }
                 }
             }
